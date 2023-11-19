@@ -80,61 +80,42 @@ prompt()
 		# Set host color according to SSH or not (static)
 		[ -z "$SSH_TTY" ] && host_style="$green" || host_style="$blue"
 
-		# PS1: user@host pwd (-- <branch> [flags])
-		PS1=""
-		PS1+="\[${reset}\]"
-		PS1+="\[\$(${user_style})\]\u"
-		PS1+="\[${white}\]@"
-		PS1+="\[${host_style}\]\h"
-		PS1+=" "
-		PS1+="\[${white}\]\w"
-		PS1+=" \$(command -v __prompt_git_details &> /dev/null &&"
-		PS1+="__prompt_git_details \"${cyan}\" \"${purple}\")"
-		PS1+="\n\$ \[${reset}\]"
-
 		# vi edition mode strings
 		vi_ins_string="\1${white}\2"
 		vi_cmd_string="\1${red}\2"
 
 		# PS2: color will be set accordingly to vi mode
 		PS2="> \[${reset}\]"
-
-		# PS4: +   HH:mm:ss:ms [LINENO]: <cmd>
-		PS4=""
-		PS4+="${red}+"
-		PS4+=$(printf "\t")
-		PS4+="${yellow}\$(${date_cmd})"
-		PS4+=" "
-		PS4+="${green}[\$LINENO]"
-		PS4+="${white}:"
-		PS4+=" "
-		PS4+="${reset}"
 	else
-		# Set PS1
-		PS1=""
-		PS1+="\u"
-		PS1+="@"
-		PS1+="\h"
-		PS1+=" "
-		PS1+="\w"
-		PS1+=" \$(command -v __prompt_git_details &> /dev/null &&"
-		PS1+="__prompt_git_details)"
-		PS1+="\n "
-
 		# vi edition mode strings
 		vi_ins_string="$"
 		vi_cmd_string="*"
-
-		# Set PS4
-		PS4=""
-		PS4="+"
-		PS4+=$(printf "\t")
-		PS4+="\$(${date_cmd})"
-		PS4+=" "
-		PS4+="[\$LINENO]"
-		PS4+=":"
-		PS4+=" "
 	fi
+
+	# PS1: user@host pwd (-- <branch> [flags])
+	PS1=""
+	PS1+="\[${reset}\]"
+	PS1+="\[\$(${user_style})\]\u"
+	PS1+="\[${white}\]@"
+	PS1+="\[${host_style}\]\h"
+	PS1+=" "
+	PS1+="\[${white}\]\w"
+	if [ 0 -ne "$PROMPT_GIT_STATUS" ]; then
+		PS1+=" \$(command -v __prompt_git_details &> /dev/null &&"
+		PS1+="__prompt_git_details \"${cyan}\" \"${purple}\")"
+	fi
+	[ "$TERM_COLORS" -ge 256 ] && PS1+="\n\$ \[${reset}\]" || PS1+="\n "
+
+	# PS4: +   HH:mm:ss:ms [LINENO]: <cmd>
+	PS4=""
+	PS4+="\[${red}\]+"
+	PS4+=$(printf "\t")
+	PS4+="\[${yellow}\]\$(${date_cmd})"
+	PS4+=" "
+	PS4+="\[${green}\][\$LINENO]"
+	PS4+="\[${white}\]:"
+	PS4+=" "
+	PS4+="\[${reset}\]"
 
 	# Set vi editing mode string
 	bind "set show-mode-in-prompt on"

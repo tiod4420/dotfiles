@@ -24,6 +24,7 @@ bashrc()
 	declare -A BREW_PATHS
 	local LS_VERSION=""
 	local OS=""
+	local PROMPT_GIT_STATUS=1
 	local TERM_COLORS=0
 	declare -a BREW_FORMULAS_PATH
 	local BREW_FORMULA_PATH
