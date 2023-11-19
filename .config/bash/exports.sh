@@ -5,9 +5,9 @@
 exports()
 {
 	# Set language preferences
-	export LANG="en_US.UTF-8";
+	export LANG="en_US.UTF-8"
 	# Set locale preferences
-	export LC_ALL="en_US.UTF-8";
+	export LC_ALL="en_US.UTF-8"
 
 	# Set groff options for colored less and man
 	export GROFF_NO_SGR=1
@@ -19,11 +19,11 @@ exports()
 	export MANPAGER="less"
 
 	# Increase Bash history size
-	export HISTSIZE="32768";
+	export HISTSIZE="32768"
 	# Increase Bash history file size
-	export HISTFILESIZE=$HISTSIZE;
+	export HISTFILESIZE=$HISTSIZE
 	# Omit duplicates and commands that begin with a space from history.
-	export HISTCONTROL="ignoreboth";
+	export HISTCONTROL="ignoreboth"
 
 	# Get number of colors of the terminal
 	if [ "$TERM_COLORS" -ge 256 ]; then

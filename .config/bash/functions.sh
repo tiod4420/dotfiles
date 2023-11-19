@@ -140,7 +140,7 @@ epoch()
 }
 
 # Extract usual archive formats
-extr()
+extract()
 {
 	if [ ! -f "$1" ]; then
 		echo "${FUNCNAME}: '${1}' is not a regular file" >&2
