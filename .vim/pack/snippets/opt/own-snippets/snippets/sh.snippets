@@ -42,12 +42,12 @@ snippet go
 	local OPTIND OPTARG $2
 	while getopts '${1:o}' ${2:opts}
 	do
-		case $$2 in
-			${3:o0})
+		case \$$2 in
+			${3:0})
 				${0:#staments}
 				;;
 			\?)
-				echo "Invalid option: -${OPTARG}" && exit 1
+				echo "Invalid option: -\${OPTARG}" && exit 1
 				;;
 		esac
 	done
