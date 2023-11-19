@@ -126,11 +126,11 @@ snippet ns
 		${0:$VISUAL}
 	}
 snippet cout
-	std::cout << "${0}" << std::endl;
+	std::cout << ${0:${VISUAL:""}} << std::endl;
 snippet cerr
-	std::cerr << "${0}" << std::endl;
+	std::cerr << ${0:${VISUAL:""}} << std::endl;
 snippet cin
-	std::cin >> ${0:var};
+	std::cin >> ${0:${VISUAL:var}};
 snippet stcast
 	static_cast<${2:const uint8_t *}>(${1:${VISUAL:ptr}})
 snippet dycast
