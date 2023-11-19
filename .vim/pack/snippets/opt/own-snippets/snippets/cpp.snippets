@@ -109,17 +109,13 @@ snippet unique
 snippet class
 	class ${1:${VISUAL:Class}} {
 	    public:
-		${1}();
-		${1}(const ${1} &);
-		${1}(${1} &&);
-
-		~${1}();
-
-		${1} &operator=(const ${1} &);
-		${1} &operator=(${1} &&);
+		${1}(void);
+		~${1}(void);
+		${0}
 
 	    private:
-		${0}
+		${1}(const ${1} &other) = delete;
+		${1} &operator=(const ${1} &other) = delete;
 	};
 snippet ns
 	namespace ${1:ns} {
