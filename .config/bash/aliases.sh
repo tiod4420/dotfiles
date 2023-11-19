@@ -38,6 +38,11 @@ aliases()
 	alias ff="find . -name"
 	alias ft="grep -RI"
 
+	# Change permissions of file
+	alias chdir="chmod u=rwx,g=rx,o=rx"
+	alias chfile="chmod u=rw,g=r,o=r"
+	alias chux="chmod u+x"
+
 	# OpenSSL fast command
 	alias asn1parse="openssl asn1parse -i -dump"
 	alias b64enc="openssl base64"
@@ -55,6 +60,9 @@ aliases()
 	alias path='echo $PATH | tr ":" "\n"'
 	# Check what there is to do in current directory
 	alias todo="grep -RIi TODO --exclude-dir={.git,build,externals}"
+
+	# Start a VirtualBox VM in headless mode
+	alias vmstart="VBoxManage startvm --type headless"
 
 	# Normalize open across Linux and OSX
 	! check_has_cmd open && check_has_cmd xdg-open && alias open="xdg-open";
