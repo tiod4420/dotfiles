@@ -22,7 +22,7 @@ snippet cmake
 snippet exe
 	set(TARGET_NAME ${1:${VISUAL:target}})
 
-	file(GLOB SOURCES src/*.cpp src/*.h)
+	file(GLOB SOURCES src/*.c src/*.h)
 	file(GLOB HEADERS include/*.h)
 
 	add_executable(\${TARGET_NAME} \${SOURCES} \${HEADERS})
@@ -47,7 +47,7 @@ snippet exe
 snippet lib
 	set(TARGET_NAME ${1:${VISUAL:target}})
 
-	file(GLOB SOURCES src/*.cpp src/*.h)
+	file(GLOB SOURCES src/*.c src/*.h)
 	file(GLOB HEADERS include/*.h)
 
 	add_library(\${TARGET_NAME} ${2:STATIC} \${SOURCES} \${HEADERS})
