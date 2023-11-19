@@ -10,6 +10,10 @@ snippet struct
 	struct ${1:Struct} {
 	    ${2}
 	}
+snippet enum
+	enum ${1:Enum} {
+	    ${0}
+	}
 snippet new
 	fn new(${1}) -> ${2:Self} {
 	    ${2} {
@@ -18,16 +22,6 @@ snippet new
 	}
 snippet impl
 	impl ${1} {
-	    ${0}
-	}
-snippet drop
-	impl Drop for ${1:Struct} {
-	    fn drop(&mut self) {
-	        ${0}
-	    }
-	}
-snippet enum
-	enum ${1:Enum} {
 	    ${0}
 	}
 snippet mod
@@ -53,13 +47,9 @@ snippet iflet
 snippet todo
 	// TODO: ${0:$VISUAL}
 snippet pr
-	println!("${1}"${2});
+	println!("${1}"${2});${0}
 snippet dump
 	println!("{:#?}", ${1:$VISUAL});
-snippet opt
-	Option<${1:i32}>
-snippet res
-	Result<${1:&str}, ${2:()}>
 snippet array
 	let ${1:array} = vec![${2:0u8}; ${3:len}];
 snippet vec
@@ -68,9 +58,5 @@ snippet box
 	Box::new(${0:$VISUAL})
 snippet rc
 	Rc::new(${0:$VISUAL})
-snippet use
-	use ${1:std::$2};
-snippet crate
-	extern crate ${1:sync};
 snippet #[
-	#[${1:derive}(${2:Debug})]
+	#[derive(${1:Debug})]
