@@ -6,32 +6,33 @@ nnoremap <C-j> :tabclose<CR>
 nnoremap <C-k> :tabnew<CR>
 nnoremap <C-l> :tabnext<CR>
 
-" Search and replace local or global declaration
-nnoremap <Leader>r :call RefactorDecl('[[', '][')<CR>
-nnoremap <Leader>R :call RefactorDecl('gg', 'G')<CR>
+" vimgrep operator
+nnoremap <expr> <Leader>g VimGrepOperator() .. 'iw'
+xnoremap <expr> <Leader>g VimGrepOperator()
+noremap <expr> <Leader>G VimGrepOperator()
 
 " Comment/uncomment operator
-nnoremap <expr> <Leader>c CommentOperator()
-nnoremap <expr> <Leader>cc CommentOperator() .. '_'
+nnoremap <expr> <Leader>c CommentOperator() .. '_'
 xnoremap <expr> <Leader>c CommentOperator()
+noremap <expr> <Leader>C CommentOperator()
 
 " snipMate visual buffer copy operator
-noremap <expr> <Leader>v SnipMateVisualCopy()
-nnoremap <expr> <Leader>vv SnipMateVisualCopy() .. 'iw'
+nnoremap <expr> <Leader>v SnipMateVisualCopy() .. 'iw'
 xnoremap <expr> <Leader>v SnipMateVisualCopy()
+noremap <expr> <Leader>V SnipMateVisualCopy()
 
 " snipMate visual buffer cut operator
-noremap <expr> <Leader>x SnipMateVisualCut()
-nnoremap <expr> <Leader>xx SnipMateVisualCut() .. 'iw'
+nnoremap <expr> <Leader>x SnipMateVisualCut() .. 'iw'
 xmap <Leader>x <Plug>snipMateVisual
+noremap <expr> <Leader>X SnipMateVisualCut()
 
 " Clear search results
 nnoremap <Leader>/ :call setreg("/", "", "v")<CR>
-" Move cursor to begin/end of match
-nnoremap <Leader>e //\e<CR>
-" Display path of the file
-nnoremap <Leader>p <C-G>
-" Call format program for whole file
+" Format the whole file
 nnoremap <Leader>q gggqG2<C-O>
-" Search for extra whitespaces
+" Search and replace local declaration
+nnoremap <Leader>r :call RefactorDecl('[[', '][')<CR>
+" Search and replace global declaration
+nnoremap <Leader>R :call RefactorDecl('gg', 'G')<CR>
+" Search for trailing whitespaces
 nnoremap <Leader>w /\s\+$<CR>

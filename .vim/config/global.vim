@@ -25,7 +25,7 @@ if has("mouse") | set mouse=a | endif
 " Backspace behaviour
 set backspace=indent,eol,start
 " Scrolls some lines before the bottom
-set scrolloff=3
+set scrolloff=2
 
 " Case insensitive search
 set ignorecase

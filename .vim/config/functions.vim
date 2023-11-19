@@ -22,7 +22,7 @@ function s:RestoreEnv(dic)
 endfunction
 
 " Comment or uncomment the char/line/block provided
-function CommentOperator(type = '') abort
+function CommentOperator(type = '')
 	if !exists('b:comment_str')
 		return
 	endif
@@ -38,9 +38,9 @@ function CommentOperator(type = '') abort
 
 		let l:regex_str = '^\(\s*\)' .. escape(b:comment_str, '/') .. '\s'
 		if getline(".") !~ l:regex_str
-			silent exe "noautocmd keepjumps normal! '[_\<C-V>']I" .. b:comment_str .. ' '
+			silent execute "noautocmd keepjumps normal! '[_\<C-V>']I" .. b:comment_str .. ' '
 		else
-			silent exe "'[,']" .. 's/' .. l:regex_str .. '\?/\1/e'
+			silent execute "'[,']" .. 's/' .. l:regex_str .. '\?/\1/e'
 		endif
 	finally
 		call <SID>RestoreEnv(l:saved)
@@ -48,7 +48,7 @@ function CommentOperator(type = '') abort
 endfunction
 
 " Copy char/line/block into SnipMate register
-function SnipMateVisualCopy(type = '') abort
+function SnipMateVisualCopy(type = '')
 	const commands = #{
 		\ line: "'[V']y",
 		\ char: "`[v`]y",
@@ -64,7 +64,7 @@ function SnipMateVisualCopy(type = '') abort
 	try
 		set clipboard= selection=inclusive
 
-		silent exe 'noautocmd keepjumps normal! ' .. get(commands, a:type, '')
+		silent execute 'noautocmd keepjumps normal! ' .. get(commands, a:type, '')
 		let b:snipmate_visual = @"
 	finally
 		call <SID>RestoreEnv(l:saved)
@@ -72,7 +72,7 @@ function SnipMateVisualCopy(type = '') abort
 endfunction
 
 " Cut char/line/block into SnipMate register
-function SnipMateVisualCut(type = '') abort
+function SnipMateVisualCut(type = '')
 	const commands = #{
 		\ line: "'[V']d",
 		\ char: "`[v`]d",
@@ -88,7 +88,7 @@ function SnipMateVisualCut(type = '') abort
 	try
 		set clipboard= selection=inclusive
 
-		silent exe 'noautocmd keepjumps normal! ' .. get(commands, a:type, '')
+		silent execute 'noautocmd keepjumps normal! ' .. get(commands, a:type, '')
 		let b:snipmate_visual = @"
 	finally
 		call <SID>RestoreEnv(l:saved)
@@ -99,7 +99,7 @@ endfunction
 function RefactorDecl(start, end)
 	let l:saved = <SID>SaveEnv()
 
-	silent exe 'noautocmd keepjumps normal! yiw'
+	silent execute 'noautocmd keepjumps normal! yiw'
 	let l:old_word = @"
 
 	call inputsave()
@@ -107,8 +107,40 @@ function RefactorDecl(start, end)
 	normal :<ESC>
 	call inputrestore()
 
-	exe 'noautocmd keepjumps normal! ' .. a:start .. 'm<' .. a:end .. 'm>'
-	exe 'noautocmd keepjumps' .. "'<,'>" .. 's/\V\<' .. l:old_word .. '\>/' .. l:new_word .. '/gcI'
+	silent execute 'noautocmd keepjumps normal! ' .. a:start .. 'm<' .. a:end .. 'm>'
+	silent execute 'noautocmd keepjumps' .. "'<,'>" .. 's/\V\<' .. l:old_word .. '\>/' .. l:new_word .. '/gcI'
 
 	call <SID>RestoreEnv(l:saved)
+endfunction
+
+function VimGrepOperator(type = '')
+	const commands = #{
+		\ line: "'[V']y",
+		\ char: "`[v`]y",
+		\ block: "`[\<c-v>`]y"
+	\ }
+
+	if a:type == ''
+		set opfunc=VimGrepOperator
+		return 'g@'
+	endif
+
+	let l:saved = <SID>SaveEnv()
+	try
+		set clipboard= selection=inclusive
+
+		silent execute 'noautocmd keepjumps normal! ' .. get(commands, a:type, '')
+		let l:pattern = escape(@", '\/')
+
+		if exists("b:vimgrep_ft") && b:vimgrep_ft->len()
+			let l:files = '**/*.{' .. b:vimgrep_ft->join(",") .. '}'
+		else
+			let l:files = &filetype->len() ? '**/*.%:e' : '%'
+		endif
+
+		silent execute 'vimgrep /\C\<' .. l:pattern .. '\>/j ' .. l:files
+		copen
+	finally
+		call <SID>RestoreEnv(l:saved)
+	endtry
 endfunction
