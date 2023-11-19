@@ -604,12 +604,6 @@ setup_vim()
 	version=$(version_get vim)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Check if vim version is less than 8.0
-	if version_lt "$version" 8.0; then
-		setup_vim_7
-		return
-	fi
-
 	# Create .vim directory if does not exist
 	mkdir -p "${HOME}/.vim"
 	RES=$?; [ 0 -ne $RES ] && return 1
@@ -639,11 +633,6 @@ setup_vim()
 	done
 
 	return 0
-}
-
-setup_vim_7()
-{
-	deploy_dir -n .vim .vim-7
 }
 
 # Main script
