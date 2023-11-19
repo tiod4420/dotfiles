@@ -9,6 +9,8 @@ set encoding=utf-8 nobomb
 
 " Enable screen interaction
 if has("mouse") | set mouse=a | endif
+" Enable SGR-style mouse handling
+if has("mouse_sgr") | set ttymouse=sgr | endif
 " Enable title changes
 if has ("title") | set title | endif
 
