@@ -94,3 +94,21 @@ function SnipMateVisualCut(type = '') abort
 		call <SID>RestoreEnv(l:saved)
 	endtry
 endfunction
+
+" Search and replace local or global declaration
+function RefactorDecl(start, end)
+	let l:saved = <SID>SaveEnv()
+
+	silent exe 'noautocmd keepjumps normal! yiw'
+	let l:old_word = @"
+
+	call inputsave()
+	let l:new_word = input("New name: ")
+	normal :<ESC>
+	call inputrestore()
+
+	exe 'noautocmd keepjumps normal! ' .. a:start .. 'm<' .. a:end .. 'm>'
+	exe 'noautocmd keepjumps' .. "'<,'>" .. 's/\V\<' .. l:old_word .. '\>/' .. l:new_word .. '/gcI'
+
+	call <SID>RestoreEnv(l:saved)
+endfunction
