@@ -57,4 +57,4 @@ snippet fun
 		${0:#function_body}
 	}
 snippet check
-	RES=\$?; [ 0 -ne \$RES ] && echo "${1}" && exit ${2:1}
+	RES=\$?; [ 0 -ne \$RES ] && exit ${1:1}
