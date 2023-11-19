@@ -100,6 +100,10 @@
 	# Update remote branches as well
 	prune = true
 
+[merge]
+	# Use vimdiff as merge tool
+	tool = vimdiff
+
 [pull]
 	# Fast-forward merges only
 	ff = only
