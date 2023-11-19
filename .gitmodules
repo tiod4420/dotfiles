@@ -34,6 +34,3 @@
 [submodule ".vim/pack/themes/opt/gruvbox"]
 	path = .vim/pack/themes/opt/gruvbox
 	url = https://github.com/morhetz/gruvbox
-[submodule ".config/alacritty/base16"]
-	path = .config/alacritty/base16
-	url = https://github.com/aarowill/base16-alacritty

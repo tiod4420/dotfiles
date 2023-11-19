@@ -318,9 +318,6 @@ setup_alacritty()
 		RES=$?; [ 0 -ne $RES ] && return 1
 	done
 
-	deploy_dir .config/alacritty/base16
-	RES=$?; [ 0 -ne $RES ] && return 1
-
 	return 0
 }
 
