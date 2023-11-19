@@ -12,6 +12,7 @@ exports()
 		"findutils"
 		"gnu-sed"
 		"grep"
+		"openssl@1.1"
 	)
 	local i
 
@@ -24,14 +25,20 @@ exports()
 
 			# Add only if not already in PATH
 			BREW_BIN="${BREW_PATHS[$i]}/libexec/gnubin"
+			[ ! -d "$BREW_BIN" ] && BREW_BIN="${BREW_PATHS[$i]}/bin"
 			if ! echo $PATH | grep -q $BREW_BIN; then
-				PATH="${BREW_BIN}:${PATH}"
+				if [ -d "$BREW_BIN" ]; then
+					PATH="${BREW_BIN}:${PATH}"
+				fi
 			fi
 
 			# Add only if not already in MANPATH
 			BREW_MAN="${BREW_PATHS[$i]}/libexec/gnuman"
+			[ ! -d "$BREW_MAN" ] && BREW_MAN="${BREW_PATHS[$i]}/man"
 			if ! echo $MANPATH | grep -q $BREW_MAN; then
-				MANPATH="${BREW_MAN}:${MANPATH}"
+				if [ -d "$BREW_MAN" ]; then
+					MANPATH="${BREW_MAN}:${MANPATH}"
+				fi
 			fi
 		done
 	fi

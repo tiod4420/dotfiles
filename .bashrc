@@ -20,6 +20,7 @@ bashrc()
 		"findutils"
 		"gnu-sed"
 		"grep"
+		"openssl@1.1"
 	)
 	declare -A BREW_PATHS
 	local LS_VERSION=""
