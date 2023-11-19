@@ -155,6 +155,7 @@ endfunction
 
 " Search and replace local or global declaration
 function RefactorDecl(start, end)
+	let l:view = winsaveview()
 	let l:saved = <SID>SaveEnv()
 
 	silent execute 'noautocmd keepjumps normal yiw'
@@ -169,4 +170,5 @@ function RefactorDecl(start, end)
 	silent execute 'noautocmd keepjumps ' . "'<,'>" . 's/\V\<' . l:old_word . '\>/' . l:new_word . '/gcI'
 
 	call <SID>RestoreEnv(l:saved)
+	call winrestview(l:view)
 endfunction
