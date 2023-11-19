@@ -64,9 +64,9 @@ exports()
 	# Make vim the default editor.
 	export EDITOR="vim"
 	# Make less the default pager
-	export PAGER="less -F -R -X"
+	export PAGER="less"
 	# Make less the default man pager
-	export MANPAGER="less -F -R -X"
+	export MANPAGER="less"
 
 	# Increase Bash history size
 	export HISTSIZE="32768";
@@ -125,19 +125,33 @@ exports()
 		GCC_COLORS+="quote=1"
 		export GCC_COLORS
 
-		# Set colors for man pages (no export to keep env clean)
-		# Start bold mode
-		MAN_COLOR_md=$'\e[0;38;5;3m'
-		# End all mode like so, us, mb, md and mr
-		MAN_COLOR_me=$'\e[0m'
-		# Start standout mode
-		MAN_COLOR_so=$'\e[0;48;5;2m'
-		# End standout mode
-		MAN_COLOR_se=$'\e[0m'
-		# Start underline
-		MAN_COLOR_us=$'\e[0;38;5;2m'
-		# End underline
-		MAN_COLOR_ue=$'\e[0m'
+		# Set colors for man pages (no export to keep the display of env clean)
+		man()
+		{
+			# Start blink -- unused
+			local LESS_TERMCAP_mb=$'\e[0m'
+			# Start bold -- section titles
+			local LESS_TERMCAP_md=$'\e[0;38;5;16m'
+			# End blink, bold, and underline
+			local LESS_TERMCAP_me=$'\e[0m'
+			# End standout
+			local LESS_TERMCAP_se=$'\e[0m'
+			# Start standout -- bottom bar
+			local LESS_TERMCAP_so=$'\e[0;48;5;19m'
+			# End underline
+			local LESS_TERMCAP_ue=$'\e[0m'
+			# Start underline -- parameters, keywords
+			local LESS_TERMCAP_us=$'\e[0;38;5;3m'
+
+			LESS_TERMCAP_mb=${LESS_TERMCAP_mb} \
+			LESS_TERMCAP_md=${LESS_TERMCAP_md} \
+			LESS_TERMCAP_me=${LESS_TERMCAP_me} \
+			LESS_TERMCAP_se=${LESS_TERMCAP_se} \
+			LESS_TERMCAP_so=${LESS_TERMCAP_so} \
+			LESS_TERMCAP_ue=${LESS_TERMCAP_ue} \
+			LESS_TERMCAP_us=${LESS_TERMCAP_us} \
+			command man "$@"
+		}
 
 		# Set GTest colors
 		export GTEST_COLOR=1

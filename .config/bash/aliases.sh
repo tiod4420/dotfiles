@@ -32,19 +32,6 @@ aliases()
 
 		# Set color for ls
 		alias ls="ls ${COLOR_FLAG}"
-
-		# Redefine man to use colors with less as a pager
-		#(not technically an alias)
-		man()
-		{
-			LESS_TERMCAP_md=${MAN_COLOR_md} \
-			LESS_TERMCAP_me=${MAN_COLOR_me} \
-			LESS_TERMCAP_so=${MAN_COLOR_so} \
-			LESS_TERMCAP_se=${MAN_COLOR_se} \
-			LESS_TERMCAP_us=${MAN_COLOR_us} \
-			LESS_TERMCAP_ue=${MAN_COLOR_ue} \
-			command man "$@"
-		}
 	fi
 
 	# Search for file or text in current directory

@@ -9,6 +9,7 @@ syntax on
 try
 	let g:gruvbox_contrast_dark="hard"
 	colorscheme gruvbox
+	highlight Todo ctermfg=167 cterm=bold
 catch
 	colorscheme desert
 
@@ -23,4 +24,4 @@ catch
 endtry
 
 " Color of extra whitespaces
-highlight link ExtraWhitespace IncSearch
+highlight link ExtraWhiteSpace ErrorMsg
