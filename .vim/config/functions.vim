@@ -37,7 +37,7 @@ function VimGrepOperator(...)
 		set clipboard= selection=inclusive
 
 		if l:type == "char"
-			silent execute 'noautocmd keepjumps normal! `[v`]y'
+			silent execute 'noautocmd keepjumps normal `[v`]y'
 			let l:pattern = [ @" ]
 			" Search exact keyword if possible
 			let l:marker = (l:pattern[0] =~# '^\k\k*$') ? { "begin": '\<', "end": '\>' } : { "begin": '', "end": '' }
@@ -85,7 +85,7 @@ function CommentOperator(...)
 
 		let l:regex_str = '^\(\s*\)' . escape(b:comment_str, '/') . '\s'
 		if getline(".") !~ l:regex_str
-			silent execute "noautocmd keepjumps normal! '[_\<C-V>']I" . b:comment_str . ' '
+			silent execute "noautocmd keepjumps normal '[_\<C-V>']I" . b:comment_str . ' '
 		else
 			silent execute "'[,']" . 's/' . l:regex_str . '\?/\1/e'
 		endif
@@ -113,7 +113,7 @@ function SnipMateVisualCopy(...)
 	try
 		set clipboard= selection=inclusive
 
-		silent execute 'noautocmd keepjumps normal! ' . l:commands[l:type]
+		silent execute 'noautocmd keepjumps normal ' . l:commands[l:type]
 		let b:snipmate_visual = @"
 	finally
 		call <SID>RestoreEnv(l:saved)
@@ -139,7 +139,7 @@ function SnipMateVisualCut(...)
 	try
 		set clipboard= selection=inclusive
 
-		silent execute 'noautocmd keepjumps normal! ' . l:commands[l:type]
+		silent execute 'noautocmd keepjumps normal ' . l:commands[l:type]
 		let b:snipmate_visual = @"
 	finally
 		call <SID>RestoreEnv(l:saved)
@@ -150,7 +150,7 @@ endfunction
 function RefactorDecl(start, end)
 	let l:saved = <SID>SaveEnv()
 
-	silent execute 'noautocmd keepjumps normal! yiw'
+	silent execute 'noautocmd keepjumps normal yiw'
 	let l:old_word = @"
 
 	call inputsave()
@@ -158,8 +158,8 @@ function RefactorDecl(start, end)
 	normal :<ESC>
 	call inputrestore()
 
-	silent execute 'noautocmd keepjumps normal! ' . a:start . 'm<' . a:end . 'm>'
-	silent execute 'noautocmd keepjumps' . "'<,'>" . 's/\V\<' . l:old_word . '\>/' . l:new_word . '/gcI'
+	silent execute 'noautocmd keepjumps normal ' . a:start . 'm<' . a:end . 'm>'
+	silent execute 'noautocmd keepjumps ' . "'<,'>" . 's/\V\<' . l:old_word . '\>/' . l:new_word . '/gcI'
 
 	call <SID>RestoreEnv(l:saved)
 endfunction
