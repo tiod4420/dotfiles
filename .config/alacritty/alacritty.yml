@@ -74,19 +74,18 @@ colors:
 
 # Binding settings
 key_bindings:
+  # Normal mode commands
+  - { key: C,      mods: Control|Shift,                   action: Copy             }
+  - { key: F,      mods: Control|Shift,                   action: ToggleFullScreen }
+  - { key: I,      mods: Control|Shift, mode: ~Search,    action: ToggleViMode     }
+  - { key: N,      mods: Control|Shift,                   action: SpawnNewInstance }
+  - { key: V,      mods: Control|Shift,                   action: Paste            }
+  - { key: W,      mods: Control|Shift,                   action: Quit             }
+  # Font resize
+  - { key: Key0,   mods: Control,                         action: ResetFontSize    }
+  - { key: Minus,  mods: Control,                         action: DecreaseFontSize }
+  - { key: Equals, mods: Control,                         action: IncreaseFontSize }
   # Vi mode toggles
-  - { key: I,      mods: Shift|Control, mode: ~Search,    action: ToggleViMode     }
+  - { key: C,      mods: Control|Shift, mode: Vi|~Search, action: ClearSelection   }
   - { key: Escape,                      mode: Vi|~Search, action: ToggleViMode     }
   - { key: Escape,                      mode: Vi|~Search, action: ClearSelection   }
-    # Font resize
-  - { key: Equals, mods: Control,                         action: IncreaseFontSize }
-  - { key: Minus,  mods: Control,                         action: DecreaseFontSize }
-  - { key: Key0,   mods: Control,                         action: ResetFontSize    }
-    # Identical mappings between Linux and MacOS
-  - { key: C,      mods: Control|Shift,                   action: Copy             }
-  - { key: C,      mods: Control|Shift, mode: Vi|~Search, action: ClearSelection   }
-  - { key: V,      mods: Control|Shift, mode: ~Vi,        action: Paste            }
-  - { key: F,      mods: Control|Shift, mode: ~Search,    action: SearchForward    }
-  - { key: B,      mods: Control|Shift, mode: ~Search,    action: SearchBackward   }
-    # Disabled for now as there is no confirmation dialog yet
-  - { key: W,      mods: Command,                         action: None             }
