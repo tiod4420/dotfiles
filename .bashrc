@@ -76,7 +76,7 @@ add_man()
 	local OPTARG
 	local OPTIND
 	local opts
-	local where
+	local where="tail"
 	local dir_array
 	local path_array
 	local dir
@@ -85,7 +85,7 @@ add_man()
 	# Parse arguments
 	while getopts ":f" opts; do
 		case "$opts" in
-			f) where=head;;
+			f) where="head";;
 			\?) echo "Invalid option: -${OPTARG}" && return 1;;
 		esac
 	done
@@ -125,7 +125,7 @@ add_path()
 	local OPTARG
 	local OPTIND
 	local opts
-	local where
+	local where="tail"
 	local dir_array
 	local path_array
 	local dir
@@ -134,7 +134,7 @@ add_path()
 	# Parse arguments
 	while getopts ":f" opts; do
 		case "$opts" in
-			f) where=head;;
+			f) where="head";;
 			\?) echo "Invalid option: -${OPTARG}" && return 1;;
 		esac
 	done
