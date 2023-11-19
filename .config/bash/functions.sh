@@ -42,24 +42,25 @@ cert()
 # Disassemble function
 disas()
 {
-	local version
 	local OPTARG
 	local OPTIND
 	local opts
+	local objdump
+	local version
+	local arch
 	local binary
-	local symbol
+	local symbols
+	local options
 
-	# Get objdump version (GNU or BSD)
-	if objdump --version | grep -qi GNU; then
-		version="gnu"
-	else
-		version="bsd"
-	fi
+	# Set objdump binary
+	objdump=objdump
+	[ -n "$OBJDUMP" ] && objdump=$OBJDUMP
 
 	# Parse arguments
-	while getopts ":s:" opts; do
+	while getopts ":a:s:" opts; do
 		case "$opts" in
-			s) symbol=$OPTARG;;
+			a) arch=$OPTARG;;
+			s) symbols=$OPTARG;;
 			\?) (1>&2 echo "${FUNCNAME}: invalid parameter: -${OPTARG}") && return 1;;
 		esac
 	done
@@ -67,21 +68,42 @@ disas()
 	shift $((OPTIND - 1))
 	binary=$1
 
-	if [ -z "$binary" ]; then
-		echo "usage: ${FUNCNAME} [-s SYMBOL] BINARY" >&2
+	if [ -z "$binary" ] || [ -z "$objdump" ]; then
+		echo "usage: ${FUNCNAME} [-a ARCH] [-s SYMBOLS] BINARY" >&2
 		return 1
 	fi
 
-	# Setup propery objdump options
-	if [ -n "$symbol" ]; then
-		if [ "gnu" = "$version" ]; then
-			symbol="--disassemble=${symbol}"
-		else
-			symbol="--disassemble-symbols=${symbol}"
+	# Get objdump flavour
+	if $objdump --version | grep -qi gnu; then
+		version=gnu
+	else
+		version=llvm
+	fi
+
+	# Get target architecture
+	if [ -z "$arch" ]; then
+		if file binary | grep -qi x86; then
+			arch=x86
 		fi
 	fi
 
-	objdump --disassembler-options=intel $symbol $binary
+	# Set disassemble options
+	if [ -n "$symbols" ]; then
+		case $version in
+			gnu) options+="--disassemble=${symbols}";;
+			llvm) options+="--disassemble-symbols=${symbols}";;
+		esac
+	fi
+
+	# Set x86 assembly flavour to Intel
+	if [ "x86" = "$arch" ]; then
+		case $version in
+			gnu) options+=" --disassembler-options=intel";;
+			llvm) options+=" --x86-asm-syntax=intel";;
+		esac
+	fi
+
+	$objdump --demangle --disassemble $options $binary
 }
 
 # Handle epoch time
