@@ -94,12 +94,16 @@ call <SID>AddDevelopment("html,css,javascript", '//', {
 			\ "expandtab": { "shiftwidth": 2, "tabstop": 2 },
 			\ })
 
+call <SID>AddDevelopment("java,kotlin", '//', {
+			\ "expandtab": { "shiftwidth": 4, "tabstop": 4 },
+			\ })
+
 call <SID>AddDevelopment("groovy", '//', {
 			\ "files": "Jenkinsfile"
+			\ "expandtab": { "shiftwidth": 4, "tabstop": 4 },
 			\ })
 
 call <SID>AddDevelopment("asm,nasm", ';')
 call <SID>AddDevelopment("cmake,sh", '#')
-call <SID>AddDevelopment("java,kotlin", '//')
 call <SID>AddDevelopment("tmux", '#')
 call <SID>AddDevelopment("vim", '"')
