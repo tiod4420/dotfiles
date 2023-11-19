@@ -1,8 +1,5 @@
 " Global shortcut mappings
 
-" Map leader
-let mapleader="\\"
-
 " Tab navigation
 nnoremap <C-h> :tabprevious<CR>
 nnoremap <C-j> :tabclose<CR>
@@ -28,14 +25,10 @@ nnoremap <Right> <C-w>>
 nnoremap <Leader>/ :call ClearSearch()<CR>
 " Toogle extra whitespaces
 nnoremap <Leader>ws :call ExtraWhiteSpaceSearchToggle()<CR>
-" Toggle NERDTree (tabs)
-nmap <Leader>n <plug>NERDTreeTabsToggle<CR>
 " Toggle hex
 nnoremap <Leader>x :call HexToggle()<CR>
 " Toggle base64
 nnoremap <Leader>b :call Base64Toggle()<CR>
-" Formatting program
-nmap <Leader>= gq
 
 " User command to encode the buffer to hex
 command -nargs=0 HexEnc :call HexEnc()
