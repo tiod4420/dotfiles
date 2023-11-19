@@ -16,6 +16,9 @@ exports()
 	)
 	local i
 
+	# Add Rust development environment to PATH
+	PATH="${HOME}/.cargo/bin:${PATH}"
+
 	# Set Homebrew bin and man to PATH and MANPATH
 	if [ "osx" = "$OS" ]; then
 		# Loop over all brew utils that we want into our PATH
