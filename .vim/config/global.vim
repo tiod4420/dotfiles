@@ -20,8 +20,6 @@ set backspace=indent,eol,start
 set colorcolumn=80,100
 " Show line number
 set number
-" Search path for find and related
-set path+=**
 " Show ruler at the bottom right
 set ruler
 " Scrolls some lines before the bottom
