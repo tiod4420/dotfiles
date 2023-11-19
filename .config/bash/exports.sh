@@ -42,7 +42,7 @@ exports()
 		# Start blink -- unused
 		export LESS_TERMCAP_mb=$(get_color -e reset)
 		# Start bold -- section titles
-		export LESS_TERMCAP_md=$(get_color -e red)
+		export LESS_TERMCAP_md=$(get_color -e blue)
 		# End blink, bold, and underline
 		export LESS_TERMCAP_me=$(get_color -e reset)
 		# End standout
@@ -96,12 +96,11 @@ make_bsdls_colors()
 make_gcc_colors()
 {
 	local gcc_colors=(
-		"error=$(get_color -m raw -o red)"
-		"warning=$(get_color -m raw -o yellow)"
-		"note=$(get_color -m raw -o cyan)"
-		"caret=$(get_color -m raw -o green)"
-		"locus=$(get_color -m raw -o)"
-		"quote=$(get_color -m raw -o)"
+		"locus=$(get_color -m raw -o brwhite)"
+		"error=$(get_color -m raw red)"
+		"warning=$(get_color -m raw yellow)"
+		"note=$(get_color -m raw blue)"
+		"quote=$(get_color -m raw green)"
 	)
 
 	join_array ":" ${gcc_colors[@]}

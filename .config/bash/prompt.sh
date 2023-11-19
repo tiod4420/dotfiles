@@ -44,7 +44,7 @@ build_ps1_prefix()
 	local host_style
 
 	# Check if user is root
-	[ "root" != "${USER}" ] && user_style="cyan" || user_style="red"
+	[ "root" != "${USER}" ] && user_style="green" || user_style="red"
 	# Check if host is local
 	[ -z "$SSH_TTY" ] && host_style="blue" || host_style="yellow"
 
@@ -52,7 +52,7 @@ build_ps1_prefix()
 	get_color -m ps1 reset "@"
 	get_color -m ps1 ${host_style} "\h"
 	get_color -m ps1 reset " "
-	get_color -m ps1 color20 "\w"
+	get_color -m ps1 brwhite "\w"
 	get_color -m ps1 reset
 }
 
