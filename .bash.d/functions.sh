@@ -5,179 +5,6 @@
 functions()
 {
 
-# Update functions only if possible (i.e admin on the system)
-if [ "true" = "$UPDATABLE_CONFIG" ]; then
-	# Update all system
-	update_all()
-	{
-		# Update OS
-		command -v update_system &> /dev/null && update_system
-		# Update brew
-		command -v update_brew &> /dev/null && update_brew
-		# Update pip
-		command -v update_pip &> /dev/null && update_pip
-		# Update dotfiles
-		command -v update_dotfiles &> /dev/null && update_dotfiles
-	}
-
-	if [ "linux" = "$OS" ]; then
-		# Upgrade on Linux
-		update_system()
-		{
-			if command -v apt &> /dev/null; then
-				# Debian/Ubuntu
-				sudo apt update && sudo apt upgrade
-			elif command -v yum &> /dev/null; then
-				# RHEL/CentOS/Red Hat/Fedora
-				sudo yum update
-			elif command -v pacman &> /dev/null; then
-				# Arch Linux
-				sudo pacman --sync --refresh --sysupgrade
-			fi
-		}
-	elif [ "osx" = "$OS" ]; then
-		# Upgrade on OSX
-		update_system()
-		{
-			softwareupdate --install --all
-		}
-
-		# Update brew
-		update_brew()
-		{
-			if command -v brew &> /dev/null; then
-				brew update && brew upgrade && brew cleanup
-			fi
-		}
-	fi
-
-	# Update pip
-	update_pip()
-	{
-		# Upgrade pip2
-		if command -v pip2 &> /dev/null; then
-			sudo pip2 install --upgrade pip
-		fi
-		# Upgrade pip3
-		if command -v pip3 &> /dev/null; then
-			sudo pip3 install --upgrade pip;
-		fi
-	}
-fi
-
-# Delete automatically created files from current folder, recursively
-cleanup()
-{
-	local file
-
-	# Check if any argument is provided
-	[ 0 -eq "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
-
-	# Delete files recursively
-	for file in $@; do
-		find . -type f -name "${file}" -ls -delete
-	done
-}
-
-# Decryption function (Encrypt-then-MAC)
-decrypt()
-{
-	local OPTIND
-	local ARG="" OPTIONS=""
-	local FILE_IN="" FILE_OUT=""
-	local PASSWORD="" PASSWORD_FILE=""
-	local FILE_TMP_ENC="" FILE_TMP_MAC=""
-	local PASSWORD_ENC="" PASSWORD_MAC=""
-	local RES=1
-
-	# Set traps to remove temporary files
-	trap "[ -f \"\$FILE_TMP_ENC\" ] && rm \$FILE_TMP_ENC; \
-		[ -f \"\$FILE_TMP_MAC\" ] && rm \$FILE_TMP_MAC" RETURN
-
-	# Parse options
-	while getopts ":i:k:o:p:" ARG; do
-		case $ARG in
-			'i')
-				FILE_IN=$OPTARG
-				;;
-			'k')
-				PASSWORD=$OPTARG
-				;;
-			'o')
-				FILE_OUT=$OPTARG
-				;;
-			'p')
-				PASSWORD_FILE=$OPTARG
-				;;
-			':')
-				echo "${FUNCNAME}: No parameter for -${OPTARG}"
-				return 1
-				;;
-			'?')
-				echo "${FUNCNAME}: Unknown command -${OPTARG}"
-				return 1
-				;;
-			*)
-				;;
-		esac
-	done
-
-	# Read password if provided from a file
-	if [ -n "$PASSWORD_FILE" ]; then
-		# Check that password is not set twice
-		if [ -n "$PASSWORD" ]; then
-			echo "${FUNCNAME}: password set twice"
-			return 1
-		fi
-		# Read password from file
-		PASSWORD=$(cat $PASSWORD_FILE)
-		RES=$?; [ 0 -ne "$RES" ] && return $RES
-	fi
-
-	# Cannot have no password file and no input file
-	[ -z "$FILE_IN" ] && [ -z "$PASSWORD" ] && return 1
-
-	# Get password if empty
-	if [ -z "$PASSWORD" ]; then
-		read -s -p "Enter password: " PASSWORD
-		RES=$?; [ 0 -ne "$RES" ] && return $RES
-		echo ""
-	fi
-
-	# Set actual passwords
-	PASSWORD_ENC="${PASSWORD}_ENC"
-	PASSWORD_MAC="${PASSWORD}_MAC"
-
-	# base64 decode
-	FILE_TMP_MAC=$(mktemp -p .)
-	RES=$?; [ 0 -ne "$RES" ] && return $RES
-	[ -n "$FILE_IN" ] && OPTIONS="-in $FILE_IN"
-	openssl base64 -d $OPTIONS -out $FILE_TMP_MAC
-	RES=$?; [ 0 -ne "$RES" ] && return $RES
-
-	# Split the two files
-	FILE_TMP_ENC=$(mktemp -p .)
-	RES=$?; [ 0 -ne "$RES" ] && return $RES
-	tail --bytes=+65 $FILE_TMP_MAC > $FILE_TMP_ENC
-	RES=$?; [ 0 -ne "$RES" ] && return $RES
-	truncate --size=64 $FILE_TMP_MAC
-	RES=$?; [ 0 -ne "$RES" ] && return $RES
-
-	# Check digest
-	cmp --silent $FILE_TMP_MAC \
-		<(openssl dgst -sha512 -hmac $PASSWORD_MAC -binary \
-		$FILE_TMP_ENC)
-	RES=$?; [ 0 -ne "$RES" ] && echo "$0: invalid MAC" && return $RES
-
-	# Decrypt input data
-	[ -n "$FILE_OUT" ] && OPTIONS="-out $FILE_OUT"
-	openssl enc -aes-256-cbc -d -k $PASSWORD_ENC -md sha256 \
-		-pbkdf2 -in $FILE_TMP_ENC $OPTIONS
-	RES=$?; [ 0 -ne "$RES" ] && return $RES
-
-	return 0
-}
-
 # Encryption function (Encrypt-then-MAC)
 encrypt()
 {
@@ -284,44 +111,103 @@ encrypt()
 	return 0
 }
 
-# Kindof universal extractor
-extractor()
+# Decryption function (Encrypt-then-MAC)
+decrypt()
 {
-	local file
-	local dir
+	local OPTIND
+	local ARG="" OPTIONS=""
+	local FILE_IN="" FILE_OUT=""
+	local PASSWORD="" PASSWORD_FILE=""
+	local FILE_TMP_ENC="" FILE_TMP_MAC=""
+	local PASSWORD_ENC="" PASSWORD_MAC=""
+	local RES=1
 
-	# Check if argument is provided
-	[ "$#" -lt 1 ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
+	# Set traps to remove temporary files
+	trap "[ -f \"\$FILE_TMP_ENC\" ] && rm \$FILE_TMP_ENC; \
+		[ -f \"\$FILE_TMP_MAC\" ] && rm \$FILE_TMP_MAC" RETURN
 
-	file=$1
-	dir=$([ -n "$2" ] && echo $2 || echo '.')
+	# Parse options
+	while getopts ":i:k:o:p:" ARG; do
+		case $ARG in
+			'i')
+				FILE_IN=$OPTARG
+				;;
+			'k')
+				PASSWORD=$OPTARG
+				;;
+			'o')
+				FILE_OUT=$OPTARG
+				;;
+			'p')
+				PASSWORD_FILE=$OPTARG
+				;;
+			':')
+				echo "${FUNCNAME}: No parameter for -${OPTARG}"
+				return 1
+				;;
+			'?')
+				echo "${FUNCNAME}: Unknown command -${OPTARG}"
+				return 1
+				;;
+			*)
+				;;
+		esac
+	done
 
-	case $file in
-		*.7z)
-			7z e $file -o $dir
-			;;
-		*.jar)
-			unzip $file -d $dir
-			;;
-		*.rar)
-			unrar x $file $dir
-			;;
-		*.tar.bz2 | *.tbz2)
-			tar xjvf $file -C $dir
-			;;
-		*.tar.gz | *.tgz)
-			tar xzvf $file -C $dir
-			;;
-		*.tar.xz | *.txz)
-			tar xJvf $file -C $dir
-			;;
-		*.zip)
-			unzip $file -d $dir
-			;;
-		*)
-			echo "File format not supported"
-			;;
-	esac
+	# Read password if provided from a file
+	if [ -n "$PASSWORD_FILE" ]; then
+		# Check that password is not set twice
+		if [ -n "$PASSWORD" ]; then
+			echo "${FUNCNAME}: password set twice"
+			return 1
+		fi
+		# Read password from file
+		PASSWORD=$(cat $PASSWORD_FILE)
+		RES=$?; [ 0 -ne "$RES" ] && return $RES
+	fi
+
+	# Cannot have no password file and no input file
+	[ -z "$FILE_IN" ] && [ -z "$PASSWORD" ] && return 1
+
+	# Get password if empty
+	if [ -z "$PASSWORD" ]; then
+		read -s -p "Enter password: " PASSWORD
+		RES=$?; [ 0 -ne "$RES" ] && return $RES
+		echo ""
+	fi
+
+	# Set actual passwords
+	PASSWORD_ENC="${PASSWORD}_ENC"
+	PASSWORD_MAC="${PASSWORD}_MAC"
+
+	# base64 decode
+	FILE_TMP_MAC=$(mktemp -p .)
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+	[ -n "$FILE_IN" ] && OPTIONS="-in $FILE_IN"
+	openssl base64 -d $OPTIONS -out $FILE_TMP_MAC
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	# Split the two files
+	FILE_TMP_ENC=$(mktemp -p .)
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+	tail --bytes=+65 $FILE_TMP_MAC > $FILE_TMP_ENC
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+	truncate --size=64 $FILE_TMP_MAC
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	# Check digest
+	cmp --silent $FILE_TMP_MAC \
+		<(openssl dgst -sha512 -hmac $PASSWORD_MAC -binary \
+		$FILE_TMP_ENC)
+	RES=$?; [ 0 -ne "$RES" ] && echo "$0: invalid MAC" && return $RES
+
+	# Decrypt input data
+	[ -n "$FILE_OUT" ] && OPTIONS="-out $FILE_OUT"
+	openssl enc -aes-256-cbc -d -k $PASSWORD_ENC -md sha256 \
+		-pbkdf2 -in $FILE_TMP_ENC $OPTIONS
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	return 0
 }
 
 # Handle epoch time
@@ -390,15 +276,6 @@ cert()
 		2>&1 <<< "GET / HTTP/1.0\n\n" | sed -ne "/${begin}/,/${end}/p"
 }
 
-# Create a directory and pushd into it
-mkpushd()
-{
-	# Check if argument is provided
-	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
-	# Create directory and jump into it
-	mkdir -p $1 && pushd $1
-}
-
 # Get the size of a file or of a directory
 fsize()
 {
@@ -447,16 +324,7 @@ ff()
 	# Check if argument is provided
 	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
 	# Search for file execpted .git directory
-	find . -name "$1" -not -path "*/.git/*" 2> /dev/null
-}
-
-# Search for text within history file
-fh()
-{
-	# Check if argument is provided
-	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
-	# Search for text in history file
-	(cat $HISTFILE ; history) | grep --color=always "$1" | less -XRE
+	find . -name "$1" --exclude-dir=".git" 2> /dev/null
 }
 
 # Search for text within the current directory
@@ -465,17 +333,7 @@ ft()
 	# Check if argument is provided
 	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
 	# Search for text excepted .git directory
-	grep -R --color=always --exclude-dir=".git" "$1" "." 2> /dev/null | \
-		less -XRE
-}
-
-# Search for which file contains a given string
-fw()
-{
-	# Check if argument is provided
-	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
-	# Search for text excepted .git directory
-	grep -R -l --color=always --exclude-dir=".git" "$1" "." 2> /dev/null
+	grep -R --color=always --exclude-dir=".git" "$1" "." 2> /dev/null | less
 }
 
 }

@@ -56,11 +56,6 @@ prompt()
 	local host_style=""
 	local vi_ins_string=""
 	local vi_cmd_string=""
-	local date_cmd=""
-
-	# Set date command according to the version
-	date --version &> /dev/null &&
-		date_cmd="date -u +%T:%3NZ" || date_cmd="date -j -u +%TZ"
 
 	if [ "$TERM_COLORS" -ge 256 ]; then
 		reset="\e[0m"

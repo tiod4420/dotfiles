@@ -60,15 +60,13 @@ aliases()
 	# Allow display of raw characters (only ANSI colors) with less
 	alias less="less -R"
 
-	## Use Git’s colored diff when available
-	command -v git &> /dev/null && alias diff="git diff --no-index"
-
-	# Reload the shell (i.e. invoke as a login shell)
-	alias reload="exec ${SHELL} -l"
 	# Print each PATH entry on a separate line
 	alias path='echo -e ${PATH//:/\\n}'
 	# Map command to one argument
 	alias map='xargs -n1'
+
+	# Use Git’s colored diff when available
+	command -v git &> /dev/null && alias git-diff="git diff --no-index"
 
 	# Normalize open across Linux and OSX
 	[ "linux" = "$OS" ] && alias open="xdg-open";
