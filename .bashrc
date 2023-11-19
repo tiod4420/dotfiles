@@ -16,6 +16,7 @@ bashrc()
 	)
 	declare -r -a BREW_FORMULAS=(
 		"bash-completion"
+		"bison"
 		"coreutils"
 		"findutils"
 		"gnu-sed"

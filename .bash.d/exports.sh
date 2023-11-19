@@ -8,6 +8,7 @@ exports()
 	local BREW_BIN=""
 	local BREW_MAN=""
 	declare -r -a BREW_UTILS=(
+		"bison"
 		"coreutils"
 		"findutils"
 		"gnu-sed"
