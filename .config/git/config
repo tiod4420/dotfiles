@@ -102,10 +102,6 @@
 	# Fast-forward merges only
 	ff = only
 
-[push]
-	# Push relevant annotated tags when pushing branches out
-	followTags = true
-
 [user]
 	# Do not guess user identity
 	useConfigOnly = true
