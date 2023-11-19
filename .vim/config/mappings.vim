@@ -6,6 +6,10 @@ nnoremap <C-j> :tabclose<CR>
 nnoremap <C-k> :tabnew<CR>
 nnoremap <C-l> :tabnext<CR>
 
+" Move tabs
+nnoremap <Leader>[ :tabmove -1<CR>
+nnoremap <Leader>] :tabmove +1<CR>
+
 " Comment/uncomment operator
 nnoremap <expr> <Leader>c CommentOperator() . '_'
 xnoremap <expr> <Leader>c CommentOperator()
@@ -38,5 +42,5 @@ nnoremap <Leader>t /TODO<CR>
 " Search for trailing whitespaces
 nnoremap <Leader>w /\s\+$<CR>
 " Quickfix window navigation
-nnoremap <Leader>[ :cprev<CR>
-nnoremap <Leader>] :cnext<CR>
+nnoremap <Leader>p :cprev<CR>
+nnoremap <Leader>n :cnext<CR>

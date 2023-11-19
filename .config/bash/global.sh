@@ -14,6 +14,8 @@ global()
 
 	# Append to the Bash history file, rather than overwriting it
 	shopt -s histappend 2> /dev/null
+	# Doesn't directly use history substitution
+	shopt -s histverify 2> /dev/null
 	# Set VI command line editing mode
 	set -o vi
 	# Set the binding to vi mode
