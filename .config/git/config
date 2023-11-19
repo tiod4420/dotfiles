@@ -108,6 +108,10 @@
 	# Fast-forward merges only
 	ff = only
 
+[pretty]
+	# One-line formatter to display GPG signature status
+	sign = "format:%C(auto)%h%C(reset) %C(magenta)%G?%C(reset)%C(auto)%d%C(reset) %C(auto)%s%C(reset)"
+
 [user]
 	# Do not guess user identity
 	useConfigOnly = true
