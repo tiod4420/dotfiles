@@ -8,16 +8,24 @@ snippet fn
 	fn ${1:function_name}(${2}) ${3:-> ${4:T} }{
 	    ${0:$VISUAL}
 	}
+snippet struct
+	struct ${1:Struct} {
+	    ${0:$VISUAL}
+	}
+snippet enum
+	enum ${1:Enum} {
+	    ${0:$VISUAL}
+	}
 snippet impl
-	impl ${1:${VISUAL:MyStruct}} {
+	impl ${1:${VISUAL:Struct}} {
 	    ${0}
 	}
 snippet trait
-	impl${3:<T>} ${1:MyTrait} for ${2:${VISUAL:MyStruct}} {
+	impl ${1:Trait} for ${2:${VISUAL:Struct}} {
 	    ${0}
 	}
 snippet new
-	impl ${1:${VISUAL:MyStruct}} {
+	impl ${1:${VISUAL:Struct}} {
 	    pub fn new(${3}) -> Self {
 	        Self {
 	            ${0}
@@ -25,25 +33,25 @@ snippet new
 	    }
 	}
 snippet from
-	impl From<${2:T}> for ${1:${VISUAL:MyStruct}} {
+	impl From<${2:T}> for ${1:${VISUAL:Struct}} {
 	    fn from(${3:from}: ${2}) -> Self {
 	        ${0}
 	    }
 	}
 snippet asref
-	impl AsRef<${2:T}> for ${1:${VISUAL:MyStruct}} {
+	impl AsRef<${2:T}> for ${1:${VISUAL:Struct}} {
 	    fn as_ref(&self) -> &${2} {
 	        ${0}
 	    }
 	}
 snippet asmut
-	impl AsMut<${2:T}> for ${2:${VISUAL:MyStruct}} {
+	impl AsMut<${2:T}> for ${2:${VISUAL:Struct}} {
 	    fn as_mut(&mut self) -> &mut ${2} {
 	        ${0}
 	    }
 	}
 snippet deref
-	impl Deref for ${1:${VISUAL:MyStruct}} {
+	impl Deref for ${1:${VISUAL:Struct}} {
 	    type Target = ${2:T};
 
 	    fn deref(&self) -> &${2} {
@@ -51,7 +59,7 @@ snippet deref
 	    }
 	}
 snippet drop
-	impl Drop for ${1:${VISUAL:MyStruct}} {
+	impl Drop for ${1:${VISUAL:Struct}} {
 	    fn drop(&mut self) {
 	        ${0}
 	    }
@@ -73,9 +81,9 @@ snippet spawn
 	    ${0:$VISUAL}
 	});
 snippet opt
-	Option<${1}>
+	Option<${1:$VISUAL}>
 snippet res
-	Result<${1}, ${2}>
+	Result<${1:$VISUAL}, ${2:Err}>
 snippet vec
 	vec![${1}]
 snippet box
