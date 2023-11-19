@@ -41,7 +41,8 @@ epoch()
 # Download a X509 certificate from an URL
 cert()
 {
-	local server name
+	local server
+	local name
 	local all
 	# Certificate delimiters
 	local begin="-----BEGIN CERTIFICATE-----"
@@ -51,7 +52,7 @@ cert()
 	[ 0 -eq "$#" ] && return 0
 
 	# Get the full certificate chain or not
-	if [ "-a" = "$1" ] || [ "--all" = "$1" ]; then
+	if [ "-a" = "$1" -o "--all" = "$1" ]; then
 		all="-showcerts"
 		shift
 	fi

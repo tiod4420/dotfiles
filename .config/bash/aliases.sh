@@ -4,8 +4,6 @@
 
 aliases()
 {
-	local COLOR_FLAG=""
-
 	# Easier navigation
 	alias ..="cd .."
 	alias ...="cd ../.."
@@ -15,24 +13,21 @@ aliases()
 	alias cp="cp -i"
 	alias mv="mv -i"
 
-	# Get color flag for ls, according to the current ls version
-	if [ "$TERM_COLORS" -ge 256 ]; then
-		# Set colors for grep
-		alias grep="grep --color=auto"
-		# Set colors for fgrep
-		alias fgrep="fgrep --color=auto"
-		# Set colors for egrep
-		alias egrep="egrep --color=auto"
+	# Retrieve ls version from here, as path might change during setup
+	local ls_version=$(get_ls_version)
+	[ "gnuls" = "$ls_version" ] && alias ls="ls --color=auto"
+	[ "bsdls" = "$ls_version" ] && alias ls="ls -G"
 
-		if [ "gnuls" = "$LS_VERSION" ]; then
-			COLOR_FLAG="--color=auto"
-		elif [ "bsdls" = "$LS_VERSION" ]; then
-			COLOR_FLAG="-G"
-		fi
+	# ls aliases
+	alias ll="ls -lh"
+	alias la="ll -A"
 
-		# Set color for ls
-		alias ls="ls ${COLOR_FLAG}"
-	fi
+	# Set colors for grep
+	alias grep="grep --color=auto"
+	# Set colors for fgrep
+	alias fgrep="fgrep --color=auto"
+	# Set colors for egrep
+	alias egrep="egrep --color=auto"
 
 	# Search for file or text in current directory
 	alias ff="find . -name"
@@ -48,10 +43,6 @@ aliases()
 	# Convert hex to binary and reverse
 	alias tobin="xxd -p -r"
 	alias tohex="xxd -p -c 32"
-
-	# ls aliases
-	alias ll="ls -lh"
-	alias la="ll -A"
 
 	# Allow display of raw characters (only ANSI colors) with less
 	alias less="less -F -R -X"
