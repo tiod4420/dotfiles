@@ -44,9 +44,9 @@ build_ps1_prefix()
 	local host_style
 
 	# Check if user is root
-	[ "root" != "$USER" ] && user_style=white || user_style=red
+	is_normal_user && user_style=white || user_style=red
 	# Check if host is local
-	[ -z "$SSH_TTY" ] && host_style=cyan || host_style=yellow
+	is_local_host && host_style=cyan || host_style=yellow
 
 	get_color -m ps1 -d ${user_style} "\u"
 	get_color -m ps1 reset "@"

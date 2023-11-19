@@ -72,11 +72,10 @@ get_color()
 	local msg
 
 	# Parsing options
-	while getopts "b:deoim:ru" opts $@; do
+	while getopts "b:doim:ru" opts $@; do
 		case "$opts" in
 			b) bg_color=$OPTARG;;
 			d) is_dim=1;;
-			e) e=e;;
 			i) is_italic=1;;
 			m) mode=$OPTARG;;
 			o) is_bold=1;;
@@ -107,13 +106,17 @@ get_color()
 	fi
 
 	# Process string
-	if [ -n "$color_str" -a "raw" != "$mode" ]; then
+	if [ -n "$color_str" -a "gcc" != "$mode" ]; then
 		color_str="\e[${color_str}m"
-		[ "ps1" = "$mode" ] && color_str="\[${color_str}\]"
+
+		case "$mode" in
+			less) e=e;;
+			ps1) color_str="\[${color_str}\]";;
+		esac
 	fi
 
 	# Print even if empty to have status code
-	echo -n${e-} "${color_str}${msg}"
+	echo -n${e-} "${color_str-}${msg-}"
 }
 
 get_color_code()
@@ -177,6 +180,16 @@ get_os_type()
 	esac
 }
 
+is_local_host()
+{
+	[ -z "$SSH_CLIENT" ] && [ -z "$SSH_TTY" ]
+}
+
+is_normal_user()
+{
+	[ "root" != "$USER" ]
+}
+
 join_array()
 {
 	local delim=$1
@@ -190,4 +203,5 @@ unset -f bashrc
 unset -f check_and_source check_file check_has_cmd
 unset -f get_color get_color_code
 unset -f get_ls_version get_os_type
+unset -f is_local_host is_normal_user
 unset -f join_array

@@ -40,19 +40,19 @@ exports()
 
 		# Export less color codes, for colored manpages
 		# Start blink -- unused
-		export LESS_TERMCAP_mb=$(get_color -e reset)
+		export LESS_TERMCAP_mb=$(get_color -m less reset)
 		# Start bold -- section titles
-		export LESS_TERMCAP_md=$(get_color -e blue)
+		export LESS_TERMCAP_md=$(get_color -m less blue)
 		# End blink, bold, and underline
-		export LESS_TERMCAP_me=$(get_color -e reset)
+		export LESS_TERMCAP_me=$(get_color -m less reset)
 		# End standout
-		export LESS_TERMCAP_se=$(get_color -e reset)
+		export LESS_TERMCAP_se=$(get_color -m less reset)
 		# Start standout -- bottom bar
-		export LESS_TERMCAP_so=$(get_color -e reverse)
+		export LESS_TERMCAP_so=$(get_color -m less reverse)
 		# End underline
-		export LESS_TERMCAP_ue=$(get_color -e reset)
+		export LESS_TERMCAP_ue=$(get_color -m less reset)
 		# Start underline -- parameters, keywords
-		export LESS_TERMCAP_us=$(get_color -e yellow)
+		export LESS_TERMCAP_us=$(get_color -m less yellow)
 	fi
 }
 
@@ -96,11 +96,11 @@ make_bsdls_colors()
 make_gcc_colors()
 {
 	local gcc_colors=(
-		"locus=$(get_color -m raw -o brwhite)"
-		"error=$(get_color -m raw red)"
-		"warning=$(get_color -m raw yellow)"
-		"note=$(get_color -m raw blue)"
-		"quote=$(get_color -m raw green)"
+		"locus=$(get_color -m gcc -o brwhite)"
+		"error=$(get_color -m gcc red)"
+		"warning=$(get_color -m gcc yellow)"
+		"note=$(get_color -m gcc blue)"
+		"quote=$(get_color -m gcc green)"
 	)
 
 	join_array ":" ${gcc_colors[@]}
