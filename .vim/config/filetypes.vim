@@ -28,6 +28,8 @@ if has("autocmd")
 		autocmd Filetype sh call DevelopmentEnvironment("est")
 		" C and C++
 		autocmd Filetype c,cpp call DevelopmentEnvironment("es", "clang-format")
+		" CMake
+		autocmd Filetype cmake call DevelopmentEnvironment("e")
 		" Assembly
 		autocmd Filetype nasm call DevelopmentEnvironment("esi")
 		" Python
