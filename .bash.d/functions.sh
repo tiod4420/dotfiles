@@ -326,7 +326,7 @@ ff()
 	[ 0 -eq "$#" ] && return 0
 	[ 1 -lt "$#" ] && (1>&2 echo "${FUNCNAME}: too many operands") && return 1
 	# Search for file execpted .git directory
-	find . -name "$1" --exclude-dir=".git" 2> /dev/null
+	find . -name "$1" 2> /dev/null
 }
 
 # Search for text within the current directory
@@ -336,7 +336,7 @@ ft()
 	[ 0 -eq "$#" ] && return 0
 	[ 1 -lt "$#" ] && (1>&2 echo "${FUNCNAME}: too many operands") && return 1
 	# Search for text excepted .git directory
-	grep -R --color=always --exclude-dir=".git" "$1" "." 2> /dev/null | less
+	grep -R --color=always "$1" "." 2> /dev/null
 }
 
 # Dump a file as a C array

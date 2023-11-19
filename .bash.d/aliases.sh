@@ -66,7 +66,7 @@ aliases()
 	alias map='xargs -n1'
 
 	# Use Git’s colored diff when available
-	command -v git &> /dev/null && alias git-diff="git diff --no-index"
+	command -v git &> /dev/null && alias gdiff="git diff --no-index"
 
 	# Normalize open across Linux and OSX
 	[ "linux" = "$OS" ] && alias open="xdg-open";
