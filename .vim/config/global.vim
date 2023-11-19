@@ -60,6 +60,3 @@ let g:netrw_banner=0
 let g:netrw_liststyle=3
 " Open files is like preview
 let g:netrw_browse_split=3
-
-" Enable matchit
-packadd! matchit
