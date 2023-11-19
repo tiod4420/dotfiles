@@ -311,6 +311,19 @@ get_color_code()
 	esac
 }
 
+is_ide_term()
+{
+	# Checks for IntelliJ IDEA
+	[ -n "$INTELLIJ_ENVIRONMENT_READER" ] && return 0
+	[ "JetBrains-JediTerm" = "$TERMINAL_EMULATOR" ] && return 0
+
+	# Checks for Visual Studio Code
+	[ -n "$VSCODE_PID" ] && return 0
+	[ "vscode" = "$TERM_PROGRAM" ] && return 0
+
+	return 1
+}
+
 is_local_host()
 {
 	[ -z "$SSH_CLIENT" ] && [ -z "$SSH_TTY" ]
@@ -351,13 +364,8 @@ run_tmux()
 		return 1
 	fi
 
-	# Check that we're not running from IntelliJ IDEA
-	if [ -n "$INTELLIJ_ENVIRONMENT_READER" ]; then
-		return 1
-	fi
-
-	# Check that we're not running from Visual Studio Code
-	if [ -n "$VSCODE_PID" ]; then
+	# Check that we're not running from IDE terminal
+	if is_ide_term; then
 		return 1
 	fi
 
@@ -376,13 +384,8 @@ run_ssh_agent()
 		return 1
 	fi
 
-	# Check that we're not running from IntelliJ IDEA
-	if [ -n "$INTELLIJ_ENVIRONMENT_READER" ]; then
-		return 1
-	fi
-
-	# Check that we're not running from Visual Studio Code
-	if [ -n "$VSCODE_PID" ]; then
+	# Check that we're not running from IDE terminal
+	if is_ide_term; then
 		return 1
 	fi
 
@@ -395,6 +398,6 @@ unset -f add_man add_path
 unset -f check_and_exec check_and_source
 unset -f check_has_cmd check_has_file
 unset -f get_color get_color_code
-unset -f is_local_host is_normal_user
+unset -f is_ide_term is_local_host is_normal_user
 unset -f join_array
 unset -f run_tmux run_ssh_agent
