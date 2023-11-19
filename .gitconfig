@@ -94,6 +94,10 @@
 	# Use hexdump to diff binary files
 	textconv = hexdump -v -C
 
+[pull]
+	# Fast-forward merges only
+	ff = only
+
 [push]
 	# Push relevant annotated tags when pushing branches out
 	followTags = true
