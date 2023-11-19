@@ -1,2 +1,5 @@
+[alias]
+playground = "playground"
+
 [net]
 git-fetch-with-cli=true
