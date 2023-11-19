@@ -1,23 +1,22 @@
 [alias]
-	# Allow git git git...
-	git = !exec git
-
-	# Command aliases
-	# List contributors
-	contributors = shortlog --email --numbered --summary
-	# List commits
-	list = log --pretty=oneline -n 30 --graph --abbrev-commit
-	# Update last commit with staged files without editing the message
-	oops = commit --amend --no-edit
-
-	# Shell functions
 	# List aliases
 	alias = "!f() { git config --get-regexp \"^alias\\.\" | " \
 		"sed -r -e \"s/^alias\\.([^ ]*)\\s(.*)/alias \\1='\\2'/\"; }; f"
+	# Edit last commit message
+	amend = commit --amend
 	# Set author of repository
 	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
 		"git config --local user.name \"$1\" && " \
 		"git config --local user.email \"$2\"; }; f"
+	# List contributors
+	contributors = shortlog --email --numbered --summary
+	# Allow git git git...
+	git = !exec git
+	# List commits logs
+	lo = log --pretty=oneline -n 30 --graph --abbrev-commit
+	# Update last commit with staged files without editing the message
+	oops = commit --amend --no-edit
+	# Show local author
 	who = "!f() { echo \"$(git config --local user.name)\" " \
 		"\"<$(git config --local user.email)>\"; }; f" 
 

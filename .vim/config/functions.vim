@@ -15,5 +15,5 @@ endfunction
 
 " Search for extra whitespaces
 function! ExtraWhiteSpaceSearch()
-	call feedkeys("/\s\+$n")
+	call feedkeys("/" . '\s\+$' . "\<CR>")
 endfunction
