@@ -52,8 +52,6 @@ aliases()
 	alias todo="grep -RI TODO --exclude-dir={.git,build,externals}"
 	# Edit todo file
 	alias todolist="vim \$TODO_FILE"
-	# which seems deprecated in some OS
-	alias which="command -v"
 
 	# Use Git’s colored diff when available
 	check_has_cmd git && alias gdiff="git diff --no-index"
