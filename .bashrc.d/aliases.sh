@@ -18,8 +18,6 @@ aliases()
 
 	# Get color flag for ls, according to the current ls version
 	if [ "$TERM_COLORS" -ge 256 ]; then
-		# Set color for dir
-		alias dir="ls --color=auto"
 		# Set colors for grep
 		alias grep="grep --color=auto"
 		# Set colors for fgrep

@@ -373,7 +373,7 @@ mkpushd()
 fsize()
 {
 	local args
-	local dir='.'
+	local dir="."
 
 	# Check if argument is provided
 	[ 1 -eq "$#" ] && [ -n "$dir" ] && dir=$1
@@ -386,7 +386,7 @@ fsize()
 # Count the number of files of a directory
 nfiles()
 {
-	local dir
+	local dir="."
 
 	# Check if argument is provided
 	[ 1 -eq "$#" ] && dir=$1
