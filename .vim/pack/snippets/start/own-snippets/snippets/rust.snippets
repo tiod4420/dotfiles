@@ -52,6 +52,8 @@ snippet opt
 	Option<${1:$VISUAL}>
 snippet res
 	Result<${1:$VISUAL}, ${2:Err}>
+snippet err
+	Result<${1:T}, Box<dyn std::error::Error>>
 snippet vec
 	vec![${1}]
 snippet box
