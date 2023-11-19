@@ -3,7 +3,7 @@ snippet main
 	    ${0}
 	}
 snippet fn
-	fn ${1:function_name}(${2})${3: -> $4 }{
+	fn ${1:function_name}(${2}) ${3}{
 	    ${0}
 	}
 snippet struct
@@ -67,7 +67,7 @@ snippet foreach
 	    ${0}
 	}
 snippet iflet
-	if let ${1:Some($2)} = ${3} {
+	if let Some(${1}) = ${2} {
 	    ${0:$VISUAL}
 	}
 snippet todo

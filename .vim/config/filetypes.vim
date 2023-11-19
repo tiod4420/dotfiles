@@ -35,6 +35,7 @@ if has("autocmd")
 		autocmd Filetype rust setlocal formatprg=rustfmt
 		autocmd Filetype rust setlocal keywordprg=rusty-man
 		autocmd FileType rust nnoremap <Leader>q :RustFmt<CR>
+		autocmd FileType rust setlocal colorcolumn=80,120
 		" sh
 		autocmd Filetype sh call DevelopmentEnvironment()
 		" Python
