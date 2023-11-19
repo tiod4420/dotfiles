@@ -1,5 +1,8 @@
 " Global shortcut mappings
 
+" Redraw screen
+nnoremap <Leader>r :redraw!<CR>
+
 " Tab navigation
 nnoremap <C-h> :tabprevious<CR>
 nnoremap <C-j> :tabclose<CR>

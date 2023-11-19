@@ -9,6 +9,7 @@ aliases()
 	# Easier navigation
 	alias ..="cd .."
 	alias ...="cd ../.."
+	alias ....="cd ../../.."
 
 	# Shortcuts for usual directories
 	alias cdl="cd ~/Downloads"
