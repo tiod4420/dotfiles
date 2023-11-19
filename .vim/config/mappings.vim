@@ -33,7 +33,7 @@ noremap <expr> <Leader>X SnipMateVisualCut()
 " Clear search results
 nnoremap <Leader>/ :call setreg("/", "", "v")<CR>
 " Toggle paste mode
-nnoremap <Leader>p :set paste!<CR>
+nnoremap <Leader>p :set paste!<CR>:set paste?<CR>
 " Format the whole file
 nnoremap <Leader>q gggqG2<C-O>
 " Search and replace local or global declarations
@@ -43,3 +43,6 @@ nnoremap <Leader>R :call RefactorDecl('gg', 'G')<CR>
 nnoremap <Leader>t /TODO<CR>
 " Search for trailing whitespaces
 nnoremap <Leader>w /\s\+$<CR>
+
+" Command line abbreviation for :find
+cnoreabbrev <expr> ff (getcmdtype() == ':' && getcmdline() =~ '^ff$') ? 'find' : 'ff'
