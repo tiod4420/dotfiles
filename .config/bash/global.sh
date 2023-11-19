@@ -56,8 +56,17 @@ setup_osx()
 	local brew_bin
 	local brew_man
 
+	# Force fresh path
+	if [ -x /usr/libexec/path_helper ]; then
+		PATH=""
+		eval $(/usr/libexec/path_helper -s)
+	fi
+
+	# Check homebrew exists
+	! check_has_cmd brew && return
+
 	# Get Homebrew's installation path, or empty string if not existing
-	check_has_cmd brew && brew_prefix="$(brew --prefix)"
+	brew_prefix="$(brew --prefix)"
 
 	## Setup bash autocomplete
 	check_and_source "${brew_prefix}/opt/bash-completion/etc/profile.d/bash_completion.sh"
