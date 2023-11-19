@@ -45,15 +45,6 @@ bashrc()
 	# Get number of colors of the terminal
 	TERM_COLORS=$(tput colors || echo 0)
 
-	# Get version of ls
-	if ls --color -d . &> /dev/null; then
-		LS_VERSION="gnuls"
-	elif  ls -G -d . &> /dev/null; then
-		LS_VERSION="bsdls"
-	else
-		LS_VERSION="unknown"
-	fi
-
 	# Check OS name
 	case $(uname | tr "[:upper:]" "[:lower:]") in
 		linux*)

@@ -46,6 +46,15 @@ exports()
 		done
 	fi
 
+	# Get version of ls and set in script variable
+	if ls --color -d . &> /dev/null; then
+		LS_VERSION="gnuls"
+	elif  ls -G -d . &> /dev/null; then
+		LS_VERSION="bsdls"
+	else
+		LS_VERSION="unknown"
+	fi
+
 	# Set language preferences
 	export LANG="en_US.UTF-8";
 	# Set locale preferences
