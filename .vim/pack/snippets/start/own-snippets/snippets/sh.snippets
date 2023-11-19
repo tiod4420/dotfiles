@@ -38,7 +38,7 @@ snippet fun
 		${0:$VISUAL}
 	}
 snippet check
-	${1:RES}=\$?; [ 0 -ne \$${1} ] && exit 1
+	${2:RES}=\$?; [ 0 -ne \$${2} ] && ${1:exit} 1
 snippet getopts
 	local OPTARG OPTIND
 	local OPTERR=0

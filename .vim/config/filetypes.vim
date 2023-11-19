@@ -80,7 +80,6 @@ call <SID>AddDevelopment("rust", '//', {
 			\ "files": "*.lalrpop",
 			\ "colorcolumn":"80,120",
 			\ "formatprg": "rustfmt",
-			\ "keywordprg": "rusty-man",
 			\ "extra": "nnoremap <buffer> <Leader>q :RustFmt<CR>",
 			\ })
 
