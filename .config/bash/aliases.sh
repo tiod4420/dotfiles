@@ -67,7 +67,7 @@ aliases()
 	alias la="ll -A"
 
 	# Allow display of raw characters (only ANSI colors) with less
-	alias less="less -R"
+	alias less="less -F -R -X"
 
 	# Map command to one argument
 	alias map='xargs -n1'

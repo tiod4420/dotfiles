@@ -20,7 +20,7 @@
 	lo = log --pretty=oneline -n 30 --graph --abbrev-commit
 	# Update last commit with staged files without editing the message
 	oops = commit --amend --no-edit
-	#
+	# Edit author of the current commit
 	reauthor = commit --amend --no-edit --reset-author
 	# Update submodules
 	subupdate = submodule update
@@ -47,8 +47,6 @@
 	untrackedCache = true
 	# Default editor
 	editor = vim
-	# Default pager
-	pager = less
 
 [color]
 	# Use colors in commands that are capable when tty is a terminal

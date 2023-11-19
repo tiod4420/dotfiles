@@ -64,9 +64,9 @@ exports()
 	# Make vim the default editor.
 	export EDITOR="vim"
 	# Make less the default pager
-	export PAGER="less -R"
+	export PAGER="less -F -R -X"
 	# Make less the default man pager
-	export MANPAGER="less -R";
+	export MANPAGER="less -F -R -X"
 
 	# Increase Bash history size
 	export HISTSIZE="32768";

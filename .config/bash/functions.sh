@@ -71,6 +71,18 @@ cert()
 		2>&1 <<< "GET / HTTP/1.0\n\n" | sed -ne "/${begin}/,/${end}/p"
 }
 
+# Jump to .git root working tree
+gitroot()
+{
+	local dir=$PWD
+	while [ "/" != "$dir" ]; do
+		[ -d "${dir}/.git" ] && cd $dir && return 0
+		dir=$(dirname "$dir")
+	done
+
+	(1>&2 echo "${FUNCNAME}: root working tree not found") && return 1
+}
+
 # Local HTTP server
 http()
 {
