@@ -36,6 +36,10 @@
 	# List aliases
 	alias = "!f() { git config --get-regexp \"^alias\\.\" | " \
 		"sed -r -e \"s/^alias\\.([^ ]*)\\s(.*)/alias \\1='\\2'/\"; }; f"
+	# Set author of repository
+	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
+		"git config --local user.name \"$1\" && " \
+		"git config --local user.email \"$2\"; }; f"
 	# Switch to a branch, creating it if necessary
 	go = "!f() { [ -n \"$1\" ] && " \
 		"(git checkout -b \"$1\" 2> /dev/null || " \
@@ -43,11 +47,11 @@
 		"}; f"
 	# Delete tag and retag current commit
 	retag = "!f() { git tag -d \"$1\" &> /dev/null && git tag \"$1\"; }; f"
-	# Credit an author on the latest commit.
-	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
+	# Change author on the latest commit.
+	reauthor = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
 		"git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
-	# Credit a co-author on the latest commit.
-	coauthor = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
+	# Add a co-author on the latest commit.
+	recoauthor = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
 		"GIT_EDITOR=\"git interpret-trailers --in-place " \
 		"--trailer='Co-authored-by: $1 <$2>'\" " \
 		"git commit --amend; }; f"
