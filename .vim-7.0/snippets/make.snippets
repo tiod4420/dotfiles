@@ -1,0 +1,30 @@
+## Skeletton Makefile
+snippet make
+	.PHONY: all clean mrproper
+
+	# Variables
+	CC       = gcc
+	CFLAGS   = -O2 -Wall -Werror -pedantic
+
+	PROG	= ${1:a.out}
+	SRC	= ${2:\$(wildcard *.c)}
+	OBJ	= \$(SRC:.c=.o)
+
+	# Rules
+	all: \$(PROG)
+
+	\$(PROG): \$(OBJ)
+		\$(CC) \$(CFLAGS) -o \$@ \$+
+
+	%.o: %.c
+		\$(CC) \$(CFLAGS) -c -o \$@ \$+
+
+	clean:
+		\$(RM) *.o
+
+	mrproper: clean
+		\$(RM) \$(PROG)
+## Add a target 
+snippet add
+	${1:}.o: ${1}.c ${1}.h
+		\$(CC) \$(CFLAGS) -c -o \$@ \$^
