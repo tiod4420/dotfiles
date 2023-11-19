@@ -52,15 +52,15 @@ function VimGrepOperator(...)
 		let l:pattern = substitute(l:pattern, "\t", '\\t', "g")
 		let l:pattern = substitute(l:pattern, "\n", '\\n', "g")
 
-		if exists("b:vimgrep_ft") && len(b:vimgrep_ft)
-			" Recursive search for defined filetypes if possible
-			let l:files = '**/*.{' . join(b:vimgrep_ft, ",") . '}'
+		if exists("b:vimgrep_ft")
+			let l:files = b:vimgrep_ft
+		elseif len(&filetype)
+			let l:files = '**/*.%:e'
 		else
-			" Recursive search for current file extension if possible
-			" Otherwise, just for the current file
-			let l:files = len(&filetype) ? '**/*.%:e' : '%'
+			let l:files = '%'
 		endif
 
+		echom 'vimgrep /\C' . l:marker["begin"] . l:pattern . l:marker["end"] . '/j ' . l:files
 		silent execute 'vimgrep /\C' . l:marker["begin"] . l:pattern . l:marker["end"] . '/j ' . l:files
 		copen
 	finally

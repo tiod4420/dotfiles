@@ -20,7 +20,7 @@ function s:AddDevelopment(language, comment_str, ...)
 
 	augroup Development
 
-	execute l:auft . "syntax match ExtraWhiteSpace " . '"\s\+$"' . " containedin=ALL"
+	execute l:auft . "syntax match ExtraWhiteSpace \"" . '\s\+$' . "\" containedin=ALL"
 	execute l:auft . "let b:comment_str = '" . a:comment_str . "'"
 
 	" Additional file extensions
@@ -33,7 +33,9 @@ function s:AddDevelopment(language, comment_str, ...)
 	endif
 
 	if has_key(l:options, "expandtab")
-		execute l:auft . "setlocal expandtab shiftwidth=" . l:options["expandtab"] . " tabstop=" . l:options["expandtab"]
+		execute l:auft . "setlocal expandtab"
+		execute l:auft . "setlocal shiftwidth=" . l:options["expandtab"]["shiftwidth"]
+		execute l:auft . "setlocal tabstop=" . l:options["expandtab"]["tabstop"]
 	endif
 
 	if has_key(l:options, "formatprg")
@@ -42,6 +44,13 @@ function s:AddDevelopment(language, comment_str, ...)
 
 	if has_key(l:options, "keywordprg")
 		execute l:auft . "setlocal keywordprg=" . l:options["keywordprg"]
+	endif
+
+	if has_key(l:options, "vimgrep_ft")
+		if len(l:options["vimgrep_ft"])
+			let l:vimgrep_ft = join(map(l:options["vimgrep_ft"], { _, val -> "**/*." . v:val }), " ")
+			execute l:auft . "let b:vimgrep_ft=\"" . l:vimgrep_ft . "\""
+		endif
 	endif
 
 	" Additional command
@@ -58,11 +67,13 @@ augroup end
 " Add rules
 call <SID>AddDevelopment("c", '//', {
 			\ "formatprg": "clang-format",
+			\ "vimgrep_ft": [ "c", "h" ]
 			\ })
 
 call <SID>AddDevelopment("cpp", '//', {
 			\ "files": "*.edl",
 			\ "formatprg": "clang-format",
+			\ "vimgrep_ft": [ "cpp", "h", "cxx", "hpp", "c" ]
 			\ })
 
 call <SID>AddDevelopment("rust", '//', {
@@ -74,12 +85,12 @@ call <SID>AddDevelopment("rust", '//', {
 			\ })
 
 call <SID>AddDevelopment("python", '#', {
-			\ "expandtab": 4,
+			\ "expandtab": { "shiftwidth": 4, "tabstop": 4 },
 			\ "keywordprg": "pydoc",
 			\ })
 
 call <SID>AddDevelopment("html,css,javascript", '//', {
-			\ "expandtab": 2,
+			\ "expandtab": { "shiftwidth": 2, "tabstop": 2 },
 			\ })
 
 call <SID>AddDevelopment("asm,nasm", ';')
