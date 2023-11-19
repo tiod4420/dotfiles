@@ -50,8 +50,6 @@ aliases()
 	alias path='echo $PATH | tr ":" "\n"'
 	# Check what there is to do in current directory
 	alias todo="grep -RI TODO --exclude-dir={.git,build,externals}"
-	# Edit todo file
-	alias todolist="vim \$TODO_FILE"
 
 	# Use Git’s colored diff when available
 	check_has_cmd git && alias gdiff="git diff --no-index"
