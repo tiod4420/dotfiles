@@ -62,7 +62,7 @@ aliases()
 
 	# Convert hex to binary and reverse
 	alias tobin="xxd -p -r"
-	alias tohex="xxd -p"
+	alias tohex="xxd -p -c 32"
 
 	# ls aliases
 	alias ll="ls -lh"
