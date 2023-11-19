@@ -127,15 +127,12 @@ deploy_git()
 		echo "version '${VERSION}'"
 	fi
 
-	deploy_file .gitconfig
-	RES=$?; [ 0 -ne $RES ] && exit 1
-
 	# Create .git.d directory if does not exist
-	mkdir -p "${HOME}/.git.d"
+	mkdir -p "${HOME}/.config/git"
 	RES=$?; [ 0 -ne $RES ] && exit 1
 
 	# Add git configuration files
-	for FILE in .git.d/*; do
+	for FILE in .config/git/*; do
 		[ ! -f "$FILE" ] && continue
 
 		deploy_file $FILE
