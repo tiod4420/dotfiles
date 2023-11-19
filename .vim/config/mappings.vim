@@ -30,9 +30,11 @@ noremap <expr> <Leader>X SnipMateVisualCut()
 nnoremap <Leader>/ :call setreg("/", "", "v")<CR>
 " Format the whole file
 nnoremap <Leader>q gggqG2<C-O>
-" Search and replace local declaration
+" Search and replace local or global declarations
 nnoremap <Leader>r :call RefactorDecl('[[', '][')<CR>
-" Search and replace global declaration
 nnoremap <Leader>R :call RefactorDecl('gg', 'G')<CR>
 " Search for trailing whitespaces
 nnoremap <Leader>w /\s\+$<CR>
+" Quickfix window navigation
+nnoremap <Leader>[ :cprev<CR>
+nnoremap <Leader>] :cnext<CR>
