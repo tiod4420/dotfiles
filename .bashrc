@@ -32,7 +32,6 @@ bashrc()
 	local BREW_FORMULA_PATH
 	local file
 	local i
-	local GIT_BARE_DIR="${HOME}/.git_bare"
 	local UPDATABLE_CONFIG="true"
 
 	# Get Homebrew's installation path, or empty string if not existing

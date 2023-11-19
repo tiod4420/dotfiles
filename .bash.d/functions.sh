@@ -65,28 +65,6 @@ if [ "true" = "$UPDATABLE_CONFIG" ]; then
 	}
 fi
 
-# Create function to update dotfiles
-# It cannot be used as a regular function as we need to resolve some path
-# during the .bashrc sourcing
-local UPDATE_DOTFILES=""
-UPDATE_DOTFILES+='update_dotfiles() { '
-UPDATE_DOTFILES+='    local GIT_DIR WORK_TREE;'
-# Create options for git update
-UPDATE_DOTFILES+="    GIT_DIR=\"--git-dir=${GIT_BARE_DIR}\";"
-UPDATE_DOTFILES+='    WORK_TREE="--work-tree=${HOME}";'
-# Jump to $HOME
-UPDATE_DOTFILES+='    if pushd $HOME; then'
-# Update work tree ($HOME) with git directory, recurse on  submodules
-UPDATE_DOTFILES+='        git $GIT_DIR $WORK_TREE pull --recurse-submodules;'
-# Source new configuration
-UPDATE_DOTFILES+='        [ 0 -eq "$?" ] && source "${HOME}/.bashrc";'
-# Go back to previous directory
-UPDATE_DOTFILES+='        popd;'
-UPDATE_DOTFILES+='    fi;'
-UPDATE_DOTFILES+='}'
-# Evaluate string to create the function
-eval $UPDATE_DOTFILES
-
 # Delete automatically created files from current folder, recursively
 cleanup()
 {
