@@ -156,6 +156,32 @@ deploy_dir()
 	return 0
 }
 
+deploy_terminfo()
+{
+	local RES
+	local termname=$1
+	local file=$2
+	local location
+
+	location=$(find "${HOME}/.terminfo" -name "$termname" 2> /dev/null)
+
+	if [ -n "$location" ]; then
+		# Terminfo is installed by the user
+		file_status "$termname" "SKIP"
+	elif infocmp "$termname" &> /dev/null; then
+		# Terminfo is installed by the system
+		file_status "$termname" "SKIP"
+	else
+		# Terminfo is not installed
+		tic -xe "$termname" "$file"
+		RES=$?; [ 0 -ne $RES ] && return 1
+
+		file_status "$termname" "DEPLOYED"
+	fi
+
+	return 0
+}
+
 file_copy()
 {
 	[ "true" != "$DRY_RUN" ] && cp $@ || return 0
@@ -225,6 +251,9 @@ version_get()
 		git)
 			git --version | sed -E "s/.*git version (${d})\.(${d})\.(${d}).*/\1.\2.\3/"
 			;;
+		infocmp)
+			infocmp -V | sed -E "s/.*ncurses (${d})\.(${d})\.(${d}).*/\1.\2.\3/"
+			;;
 		ssh)
 			ssh -V 2>&1 | sed -E "s/.*OpenSSH_(${d})\.(${d})p(${d}).*/\1.\2p\3/"
 			;;
@@ -246,7 +275,7 @@ version_lt()
 }
 
 # Deploy functions
-deploy_alacritty()
+setup_alacritty()
 {
 	local RES
 
@@ -270,7 +299,7 @@ deploy_alacritty()
 	return 0
 }
 
-deploy_bash()
+setup_bash()
 {
 	local RES
 	local version
@@ -305,7 +334,7 @@ deploy_bash()
 	return 0
 }
 
-deploy_clang_format()
+setup_clang_format()
 {
 	local RES
 	local version
@@ -332,7 +361,7 @@ deploy_clang_format()
 	return 0
 }
 
-deploy_git()
+setup_git()
 {
 	local RES
 	local version
@@ -359,7 +388,7 @@ deploy_git()
 	return 0
 }
 
-deploy_rust()
+setup_rust()
 {
 	local RES
 
@@ -380,7 +409,7 @@ deploy_rust()
 	return 0
 }
 
-deploy_ssh()
+setup_ssh()
 {
 	local RES
 	local version
@@ -407,7 +436,34 @@ deploy_ssh()
 	return 0
 }
 
-deploy_tmux()
+setup_terminfo()
+{
+	local RES
+	local version
+
+	echo -n "Deploying terminfo -- "
+
+	# Get version
+	version=$(version_get infocmp)
+	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
+
+	# Short circuit setup of terminfo if ncurses is not installed
+	[ -z "$version" ] && return 0
+
+	# Deploy missing terminfo
+	deploy_terminfo alacritty "${ROOT_DIR}/terminfo/alacritty.info"
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	deploy_terminfo alacritty-direct "${ROOT_DIR}/terminfo/alacritty.info"
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	deploy_terminfo tmux-256color "${ROOT_DIR}/terminfo/terminfo.src"
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	return 0
+}
+
+setup_tmux()
 {
 	local RES
 	local version
@@ -440,7 +496,7 @@ deploy_tmux()
 	return 0
 }
 
-deploy_vim()
+setup_vim()
 {
 	local RES
 	local version
@@ -455,7 +511,7 @@ deploy_vim()
 
 	# Check if vim version is less than 8.0
 	if version_lt "$version" "8.0"; then
-		deploy_vim_7
+		setup_vim_7
 		return
 	fi
 
@@ -490,7 +546,7 @@ deploy_vim()
 	return 0
 }
 
-deploy_vim_7()
+setup_vim_7()
 {
 	deploy_dir -n .vim .vim-7
 }
@@ -514,40 +570,42 @@ echo ""
 echo "Deploying dotfiles"
 deploy_file .gdbinit
 RES=$?; [ 0 -ne $RES ] && exit 1
-deploy_dir .terminfo/
-RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 # Deploy multi-files configuration
-deploy_alacritty
+setup_alacritty
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
-deploy_bash
+setup_bash
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
-deploy_clang_format
+setup_clang_format
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
-deploy_git
+setup_git
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
-deploy_rust
+setup_rust
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
-deploy_ssh
+setup_ssh
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
-deploy_tmux
+setup_terminfo
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
-deploy_vim
+setup_tmux
+RES=$?; [ 0 -ne $RES ] && exit 1
+echo ""
+
+setup_vim
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
