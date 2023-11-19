@@ -51,8 +51,14 @@ aliases()
 	alias ff="find . -name"
 	alias ft="grep -R"
 
-	# OpenSSL asn1parse fast command
+	# OpenSSL fast command
 	alias asn1parse="openssl asn1parse -i -dump"
+	alias b64enc="openssl base64"
+	alias b64dec="openssl base64 -d"
+	alias x509="openssl x509 -noout -text"
+
+	# Python one-liners
+	alias pol="python -c"
 
 	# Convert hex to binary and reverse
 	alias tobin="xxd -p -r"
