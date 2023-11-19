@@ -93,7 +93,7 @@ git submodule update --init --recursive
 RES=$?; [ 0 -ne "$RES" ] && exit 1
 echo "Updating submodules -- DONE"
 
-echo "Deploying dotfiles for -- ${MACHINES[@]}"
+echo "Deploying dotfiles configurations -- ${MACHINES[@]}"
 echo ""
 
 # Deploy configuration
