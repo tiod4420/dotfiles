@@ -201,7 +201,7 @@ run_tmux()
 
 	# Check if no short circuit for tmux
 	[ -e "${HOME}/.notmux" ] && return 1
-	[ -e "${HOME}/.notmux" ] && return 1
+	[ -e "${HOME}/notmux" ] && return 1
 
 	# Check if session is local
 	! is_local_host && return 1
