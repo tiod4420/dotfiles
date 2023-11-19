@@ -73,7 +73,7 @@ bashrc()
 
 	# Load local configuration files that are not commited
 	# [!] Load after all other settings so it can override previous config
-	for file in "${CONFIG_DIR_PATH}/local/*.sh"; do
+	for file in ${CONFIG_DIR_PATH}/local/*.sh; do
 		[ -f "$file" ] && [ -r "$file" ] && source $file
 	done
 }
