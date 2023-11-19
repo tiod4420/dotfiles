@@ -2,7 +2,7 @@ snippet cmake
 	cmake_minimum_required(VERSION 3.10)
 	project(${1:Project} C)
 
-	option(ENABLE_TESTING OFF)
+	option(ENABLE_TESTING "Enable testing" OFF)
 
 	add_compile_options(
 		-Wall -Wextra -W -Wwrite-strings -Wpointer-arith -Wimplicit-fallthrough
