@@ -38,7 +38,7 @@
      Priority: 1
 @@ -63,6 +71,7 @@
  ObjCSpaceBeforeProtocolList: true
- 
+
  # Taken from git's rules
 +PenaltyBreakAssignment: 10 # Unknown to clang-format-4.0
  PenaltyBreakBeforeFirstCallParameter: 30

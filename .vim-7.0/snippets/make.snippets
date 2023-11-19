@@ -24,7 +24,7 @@ snippet make
 
 	mrproper: clean
 		\$(RM) \$(PROG)
-## Add a target 
+## Add a target
 snippet add
 	${1:}.o: ${1}.c ${1}.h
 		\$(CC) \$(CFLAGS) -c -o \$@ \$^

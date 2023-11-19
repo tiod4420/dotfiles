@@ -87,17 +87,19 @@ snippet custom
 	add_custom_target(${1:target} ${2:ALL}
 		${0:DEPENDS}
 		)
-snippet external
+snippet extern
 	include(ExternalProject)
 
-	set(TARGET_NAME ${1:target})
+	set(TARGET_NAME ${1:googletest})
 
 	ExternalProject_Add(\${TARGET_NAME}_dl
-		GIT_REPOSITORY    "${2:https://github.com/google/googletest.git}"
-		GIT_TAG           ${3:master}
+		GIT_REPOSITORY    ${2:https://github.com/google/googletest.git}
+		GIT_CONFIG        advice.detachedHead=false
 		GIT_SHALLOW       ON
+		GIT_TAG           ${3:release-1.10.0}
 		CMAKE_CACHE_ARGS  -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-		BUILD_COMMAND     \${CMAKE_COMMAND} --build <BINARY_DIR> --config Release
+		CMAKE_COMMAND     \${GTEST_CMAKE_COMMAND}
+		BUILD_COMMAND     \${CMAKE_COMMAND} --build <BINARY_DIR> --config \$<CONFIG>
 		UPDATE_COMMAND    ""
 		)
 	ExternalProject_Get_property(\${TARGET_NAME}_dl INSTALL_DIR)
@@ -113,7 +115,7 @@ snippet external
 		)
 
 	target_link_libraries(\${TARGET_NAME}
-		INTERFACE ${4:library}
+		INTERFACE ${4:gtest gmock Threads::Threads}
 		)
 
 	add_dependencies(\${TARGET_NAME} \${TARGET_NAME}_dl)

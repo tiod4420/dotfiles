@@ -18,7 +18,7 @@
 	oops = commit --amend --no-edit
 	# Show local author
 	who = "!f() { echo \"$(git config --local user.name)\" " \
-		"\"<$(git config --local user.email)>\"; }; f" 
+		"\"<$(git config --local user.email)>\"; }; f"
 
 [apply]
 	# Detect whitespace errors when applying a patch
@@ -70,7 +70,7 @@
 
 [color "status"]
 	# Added files
-	added = green 
+	added = green
 	# Name of the branch
 	branch = cyan
 	# Modified files
