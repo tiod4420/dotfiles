@@ -154,22 +154,16 @@ snippet mainn
 		${0}
 		return EXIT_SUCCESS;
 	}
-# function definition
-snippet fun
-	${1:void} ${2:function_name}(${3:void})
-	{
-		${0}
-	}
 # function definition with zero parameters
 snippet func
-	int ${1:function_name}(${2:void})
-	{
-		int ret;
-		${0}
-		ret = SUCCESS;
+	int ret = ${1}FAILURE;
+	int res;
+
+	${0}
+
+	ret = $1SUCCESS;
 	cleanup:
-		return ret;
-	}
+	return ret;
 snippet gocl
 	goto cleanup;
 # function definition with Doxygen documentation

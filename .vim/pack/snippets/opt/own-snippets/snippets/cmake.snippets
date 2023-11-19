@@ -2,32 +2,56 @@ snippet cmake
 	cmake_minimum_required(VERSION 3.10)
 	project(${1:Project} C)
 
-	option(BUILD_TESTING "Build the testing tree." OFF)
-	set(THREADS_PREFER_PTHREAD_FLAG ON)
-	find_package(Threads REQUIRED)
-	include(CTest)
+	option(ENABLE_TESTING "Enable testing" OFF)
 
+	add_compile_options(
+		-Wall -Wextra -W -Wwrite-strings -Wpointer-arith -Wimplicit-fallthrough
+		$<$<CONFIG:ASan>:-fsanitize=address$<SEMICOLON>-fsanitize=undefined>
+		$<$<CONFIG:Coverage>:--coverage>
+		)
+
+	add_link_options(
+		$<$<CONFIG:ASan>:-fsanitize=address$<SEMICOLON>-fsanitize=undefined>
+		$<$<CONFIG:Coverage>:--coverage>
+		)
+
+	# Set public include directory
+	set(${2:PROJECT}_INCLUDE_DIRECTORY \${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+	# Build external dependencies
 	add_subdirectory(externals)
-	add_subdirectory(src)
-	add_subdirectory(tests)
 
+	# Build target
+	add_subdirectory(src)
+
+	# Build tests
+	if(ENABLE_TESTING)
+		enable_testing()
+		add_subdirectory(tests)
+	endif()
 snippet inc
-	target_include_directories(${1:target PUBLIC ${2:include})
+	include_directories(${${1:include}})
 
 snippet find
 	find_package(${1:library} ${2:REQUIRED})
 
 snippet file
-	file(GLOB ${1:SOURCES} *.${2:c})
+	file(GLOB ${1:SOURCES} *.${2:cpp})
 
 snippet sub
 	add_subdirectory(${1:src})
 
 snippet lib
+	add_library(${1:lib} ${2:$1_SOURCES})
+
+snippet tar
 	target_link_libraries(${1:main} ${2:PUBLIC} ${3:lib})
 
 snippet add
 	add_executable(${1:main} ${2:\${SOURCES}})
+
+snippet set
+	set(${1:var} ${2:value})
 
 snippet dep
 	add_dependencies(${1:target} ${2:dep})
