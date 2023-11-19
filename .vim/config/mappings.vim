@@ -1,8 +1,5 @@
 " Global shortcut mappings
 
-" Redraw screen
-nnoremap <Leader>r :redraw!<CR>
-
 " Tab navigation
 nnoremap <C-h> :tabprevious<CR>
 nnoremap <C-j> :tabclose<CR>
@@ -17,3 +14,10 @@ nnoremap <Leader>e //e<CR>
 nnoremap <Leader>p <C-G>
 " Toogle extra whitespaces
 nnoremap <Leader>w :call ExtraWhiteSpaceSearch()<CR>
+" Display all snippets available
+nmap <Leader>m i<Plug>snipMateShow
+
+" Search and Replace local variable
+nnoremap <Leader>o gd[{V%:s///gcI<left><left><left><left>
+" Search and Replace global variable
+nnoremap <Leader>O gD:%s///gcI<left><left><left><left>
