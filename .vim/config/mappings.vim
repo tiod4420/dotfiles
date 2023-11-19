@@ -12,12 +12,13 @@ nnoremap <Leader>/ :call ClearSearch()<CR>
 nnoremap <Leader>e //e<CR>
 " Display path of the file
 nnoremap <Leader>p <C-G>
+" Call format program for whole file
+nnoremap <Leader>q gggqG
+" Search and Replace local variable
+nnoremap <Leader>r :let refactor = '\V\<<C-R><C-w>\>'<CR>[[V%:s/<C-R>=refactor<CR>//gcI<left><left><left><left>
+" Search and Replace global variable
+nnoremap <Leader>R :let refactor = '\V\<<C-R><C-w>\>'<CR>gg:%s/<C-R>=refactor<CR>//gcI<left><left><left><left>
+" Display all snippets available
+nmap <Leader>s i<Plug>snipMateShow
 " Toogle extra whitespaces
 nnoremap <Leader>w :call ExtraWhiteSpaceSearch()<CR>
-" Display all snippets available
-nmap <Leader>m i<Plug>snipMateShow
-
-" Search and Replace local variable
-nnoremap <Leader>o gd[{V%:s///gcI<left><left><left><left>
-" Search and Replace global variable
-nnoremap <Leader>O gD:%s///gcI<left><left><left><left>
