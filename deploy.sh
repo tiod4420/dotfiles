@@ -34,7 +34,7 @@ deploy_file()
 	[ ! -f "$SRC" ] && echo "${SRC}: No such file or directory" && exit 1
 
 	DST="${HOME}/${1}"
-	if [ "" != "$NAME" ]; then
+	if [ -n "$NAME" ]; then
 		DST="$(dirname $DST)/${NAME}"
 	fi
 
@@ -45,7 +45,7 @@ deploy_file()
 		cp $SRC $DST
 		RES=$?; [ 0 -ne $RES ] && exit 1
 
-		if [ "" != "$MODE" ]; then
+		if [ -n "$MODE" ]; then
 			chmod $MODE $DST
 			RES=$?; [ 0 -ne $RES ] && exit 1
 		fi
@@ -64,7 +64,7 @@ deploy_file()
 		# Default choice to yes
 		read -p "Do you want to overwrite file '${DST}'? [Y/n/d] " CHOICE
 		RES=$?; [ 0 -ne $RES ] && echo "" && exit 1
-		[ "" = "$CHOICE" ] && CHOICE="yes"
+		[ -z "$CHOICE" ] && CHOICE="yes"
 		CHOICE=$(echo $CHOICE | tr '[:upper:]' '[:lower:]')
 
 		case $CHOICE in
@@ -72,7 +72,7 @@ deploy_file()
 				cp $SRC $DST
 				RES=$?; [ 0 -ne $RES ] && exit 1
 
-				if [ "" != "$MODE" ]; then
+				if [ -n "$MODE" ]; then
 					chmod $MODE $DST
 					RES=$?; [ 0 -ne $RES ] && exit 1
 				fi
@@ -122,7 +122,7 @@ deploy_dir()
 	[ ! -d "$SRC" ] && echo "${SRC}: No such file or directory" && exit 1
 
 	DST="${HOME}/${1}"
-	if [ "" != "$NAME" ]; then
+	if [ -n "$NAME" ]; then
 		DST="$(dirname $DST)/${NAME}"
 	fi
 
@@ -147,7 +147,7 @@ deploy_dir()
 		# Default choice to yes
 		read -p "Do you want to replace directory '$(basename ${DST})'? [Y/n/d] " CHOICE
 		RES=$?; [ 0 -ne $RES ] && echo "" && exit 1
-		[ "" = "$CHOICE" ] && CHOICE="yes"
+		[ -z "$CHOICE" ] && CHOICE="yes"
 		CHOICE=$(echo $CHOICE | tr '[:upper:]' '[:lower:]')
 
 		case $CHOICE in
