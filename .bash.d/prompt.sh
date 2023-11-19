@@ -101,16 +101,6 @@ prompt()
 	fi
 	[ "$TERM_COLORS" -ge 256 ] && PS1+="\n\$ \[${reset}\]" || PS1+="\n "
 
-	# PS4: + FILE:LINENO: <cmd>
-	PS4=""
-	PS4+="\[${red}\]+"
-	PS4+=" "
-	PS4+="\[${green}\]\${BASH_SOURCE}"
-	PS4+="\[${white}\]:"
-	PS4+="\[${green}\]\${LINENO}"
-	PS4+="\[${white}\] - "
-	PS4+="\[${reset}\]"
-
 	# Set vi editing mode string
 	bind "set show-mode-in-prompt on"
 	# Set string for vi insert mode
@@ -122,8 +112,6 @@ prompt()
 	[ -n "$PS1" ] && export PS1
 	# Export PS2
 	[ -n "$PS2" ] && export PS2
-	# Export PS4
-	[ -n "$PS4" ] && export PS4
 }
 
 prompt

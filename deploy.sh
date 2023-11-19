@@ -8,6 +8,7 @@ RES=$?; [ 0 -ne $RES ] && "deploy_utils.sh: No such file or directory" && exit 1
 
 # Format: major(.minor(.patch))
 REGEX_VERSION="s/^\([0-9]\{1,\}\)\(\(\.[0-9]\{1,\}\)\{0,2\}\).*$/\1\2/p"
+REGEX_CLANG_FORMAT="s/^.*[^0-9]\([0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}\).*$/\1/p"
 
 deploy_bash()
 {
@@ -22,7 +23,7 @@ deploy_bash()
 		echo "not found"
 	else
 		VERSION=$(bash --version | head -n 1 | cut -d ' ' -f 4 | sed -n $REGEX_VERSION)
-		echo "version ${VERSION}"
+		echo "version '${VERSION}'"
 	fi
 
 	deploy_file .bash_profile
@@ -60,8 +61,8 @@ deploy_clang_format()
 		VERSION="0.0.0"
 		echo "not found"
 	else
-		VERSION=$(clang-format --version | cut -d ' ' -f 3)
-		echo "version ${VERSION}"
+		VERSION=$(clang-format --version | head -n 1 | sed -n $REGEX_CLANG_FORMAT)
+		echo "version '${VERSION}'"
 	fi
 
 	MAJOR=$(echo $VERSION | cut -d '.' -f 1)
@@ -98,7 +99,7 @@ deploy_git()
 		echo "not found"
 	else
 		VERSION=$(git --version | cut -d ' ' -f 3 | sed -n $REGEX_VERSION)
-		echo "version ${VERSION}"
+		echo "version '${VERSION}'"
 	fi
 
 	deploy_file .gitconfig
@@ -132,7 +133,7 @@ deploy_ssh()
 		echo "not found"
 	else
 		VERSION=$(ssh -V 2>&1 | cut -d' ' -f 1 | sed -e 's/^OpenSSH_//' -e 's/,$//' -e 's/p/\./g' | sed -n $REGEX_VERSION)
-		echo "version ${VERSION}"
+		echo "version '${VERSION}'"
 	fi
 
 	# Create .ssh directory if does not exist
@@ -163,7 +164,7 @@ deploy_vim()
 		echo "not found"
 	else
 		VERSION=$(vim --version | head -n 1 | cut -d ' ' -f 5 | sed -n $REGEX_VERSION)
-		echo "version ${VERSION}"
+		echo "version '${VERSION}'"
 	fi
 
 	MAJOR=$(echo $VERSION | cut -d '.' -f 1)

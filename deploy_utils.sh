@@ -59,7 +59,7 @@ deploy_file()
 	echo "DIFF"
 	while true; do
 		# Default choice to yes
-		read -p "Do you want to overwrite file '${DST}'? [Y/n/d] " CHOICE
+		read -p "Do you want to overwrite file '${DST}'? [Y/n/d/q] " CHOICE
 		RES=$?; [ 0 -ne $RES ] && echo "" && exit 1
 		[ -z "$CHOICE" ] && CHOICE="yes"
 		CHOICE=$(echo $CHOICE | tr '[:upper:]' '[:lower:]')
@@ -83,6 +83,9 @@ deploy_file()
 				;;
 			d?(iff)) # Display diff and retry
 				git diff --no-index $DST $SRC
+				;;
+			q?(uit)) # Quit the deployment
+				exit 0
 				;;
 			*) # Invalid choice and retry
 				echo "Choices are: yes|no|diff"
