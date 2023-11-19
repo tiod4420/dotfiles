@@ -222,7 +222,7 @@ fi
 # Start tmux if local shell and not inside tmux
 if check_has_cmd tmux; then
 	if [ -z "$TMUX" ]; then
-		run_tmux && exec tmux
+		run_tmux && exec tmux new-session -n "main"
 	fi
 fi
 
