@@ -12,7 +12,8 @@ snippet cmake
 		-Wall -Wextra -W -Wwrite-strings
 		\$<\$<CXX_COMPILER_ID:AppleClang>:-Wimplicit-fallthrough\$<SEMICOLON>-Wpointer-arith>
 		\$<\$<CXX_COMPILER_ID:Clang>:-Wimplicit-fallthrough\$<SEMICOLON>-Wpointer-arith>
-		\$<\$<OR:\$<CONFIG:>,\$<CONFIG:Release>>:-O2>
+		\$<\$<CONFIG:>:-O2>
+		\$<\$<CONFIG:Release>:-O2>
 		\$<\$<CONFIG:Debug>:-O0>
 		)
 	
