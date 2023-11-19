@@ -79,8 +79,8 @@ snippet whl
 	    ${0:$VISUAL}
 	}
 snippet spawn
-	thread::spawn(${1:move }|| {
-	    ${0:VISUAL}
+	thread::spawn(${1}|| {
+	    ${0:$VISUAL}
 	});
 snippet pr
 	println!("${1}"${2});
