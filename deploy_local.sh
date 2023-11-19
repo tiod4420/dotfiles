@@ -22,12 +22,27 @@ deploy_conf()
 	pushd $MACHINE &> /dev/null
 	RES=$?; [ 0 -ne $RES ] && exit 1
 
-	# Deploy single-file configuration
+	# Deploy simple configurations
 	for FILE in .*; do
-		[ ! -f "$FILE" ] && continue
+		# Exclude .git directory
+		[ ".git" == "$FILE" ] && continue
+		# Exclude special directories
+		[ ".bash.d" == "$FILE" ] && continue
+		[ ".git.d" == "$FILE" ] && continue
+		[ ".ssh" == "$FILE" ] && continue
+		[ ".vim" == "$FILE" ] && continue
 
-		deploy_file $FILE
-		RES=$?; [ 0 -ne $RES ] && exit 1
+		if [ -d "$FILE" ]; then
+			deploy_dir $FILE
+			RES=$?; [ 0 -ne $RES ] && exit 1
+		elif [ -f "$FILE" ]; then
+			deploy_file $FILE
+			RES=$?; [ 0 -ne $RES ] && exit 1
+		fi
+	done
+
+	# Deploy single-directory configuration
+	for DIR in .*; do
 	done
 
 	# Deploy multi-files configuration
