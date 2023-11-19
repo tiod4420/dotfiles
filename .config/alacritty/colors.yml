@@ -1,0 +1,21 @@
+colors:
+  vi_mode_cursor:
+    text: 'CellBackground'
+    cursor: '0xd65d0e'
+  selection:
+    text: 'CellBackground'
+    background: '0xd65d0e'
+  search:
+    matches:
+      foreground: 'CellBackground'
+      background: '0xfb4934'
+    focused_match:
+      foreground: 'CellBackground'
+      background: '0xfe8019'
+    bar:
+      foreground: '0xfbf1c7'
+      background: '0x504945'
+  line_indicator:
+    foreground: '0x1d2021'
+    background: '0xfe8019'
+

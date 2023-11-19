@@ -2,13 +2,44 @@
 
 shopt -s extglob
 
+ROOT_DIR=$(dirname ${BASH_SOURCE})
+
 # Include utils
-source deploy_utils.sh &> /dev/null
-RES=$?; [ 0 -ne $RES ] && "deploy_utils.sh: No such file or directory" && exit 1
+if [ ! -f "${ROOT_DIR}/deploy_utils.sh" ]; then
+	echo "deploy_utils.sh: No such file or directory"
+	exit 1
+fi
+
+source ${ROOT_DIR}/deploy_utils.sh &> /dev/null
+RES=$?; [ 0 -ne $RES ] && exit 1
 
 # Format: major(.minor(.patch))
 REGEX_VERSION="s/^\([0-9]\{1,\}\)\(\(\.[0-9]\{1,\}\)\{0,2\}\).*$/\1\2/p"
 REGEX_CLANG_FORMAT='s/.*clang-format\sversion\s*\([0-9][0-9]*\.[0-9]*\.[0-9]*\)\s*.*/\1/p'
+
+deploy_alacritty()
+{
+	local RES
+
+	echo "Deploying alacritty configuration -- "
+
+	# Create config directory if does not exist
+	mkdir -p "${HOME}/.config/alacritty"
+	RES=$?; [ 0 -ne $RES ] && exit 1
+
+	# Add alacritty configuration files
+	for FILE in .config/alacritty/*; do
+		[ ! -f "$FILE" ] && continue
+
+		deploy_file $FILE
+		RES=$?; [ 0 -ne $RES ] && exit 1
+	done
+
+	deploy_dir .config/alacritty/base16
+	RES=$?; [ 0 -ne $RES ] && exit 1
+
+	return 0
+}
 
 deploy_bash()
 {
@@ -248,6 +279,10 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 # Deploy multi-files configuration
+deploy_alacritty
+RES=$?; [ 0 -ne $RES ] && exit 1
+echo ""
+
 deploy_bash
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
