@@ -15,8 +15,8 @@ prompt()
 		vi_ins_string="$"
 		vi_cmd_string="*"
 	else
-		local ps1_prefix="$(build_ps1_prefix)"
-		local ps1_suffix="$(build_ps1_suffix)"
+		local ps1_prefix=$(build_ps1_prefix)
+		local ps1_suffix=$(build_ps1_suffix)
 
 		if check_has_cmd __git_ps1; then
 			local gitformat=" -- %s"
@@ -43,42 +43,31 @@ build_ps1_prefix()
 	local user_style
 	local host_style
 
-	# Set user depending if root or not
-	[ "root" != "${USER}" ] && user_style="yellow" || user_style="red"
-	# Set host color according to SSH or not (static)
-	[ -z "$SSH_TTY" ] && host_style="color16" || host_style="green"
+	# Check if user is root
+	[ "root" != "${USER}" ] && user_style="cyan" || user_style="red"
+	# Check if host is local
+	[ -z "$SSH_TTY" ] && host_style="blue" || host_style="yellow"
 
-	set_color ${user_style}
-	echo -n "\u"
-	set_color white
-	echo -n "@"
-	set_color ${host_style}
-	echo -n "\h"
-	set_color reset
-	echo -n " "
-	set_color white
-	echo -n "\w"
-	set_color reset
+	get_color -m ps1 ${user_style} "\u"
+	get_color -m ps1 reset "@"
+	get_color -m ps1 ${host_style} "\h"
+	get_color -m ps1 reset " "
+	get_color -m ps1 color20 "\w"
+	get_color -m ps1 reset
 }
 
 build_ps1_suffix()
 {
 	echo -n "\n$ "
-	set_color reset
+	get_color -m ps1 reset
 }
 
 build_ps2()
 {
 	echo -n "> "
-	set_color reset
-}
-
-set_color()
-{
-	echo -n "\[$(get_color "$@")\]"
+	get_color -m ps1 reset
 }
 
 prompt
 unset -f prompt
 unset -f build_ps1_prefix build_ps1_suffix build_ps2
-unset -f set_color

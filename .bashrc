@@ -54,36 +54,103 @@ check_has_cmd()
 
 get_color()
 {
-	local color=$1
+	# Option parameters
+	local OPTARG OPTIND
+	local OPTERR=0
+	local opts
+	# Color attributes
+	local is_bold=0
+	local is_dim=0
+	local is_underline=0
+	local is_reverse=0
+	local fg_color
+	local bg_color
+	# Output string
+	local mode
+	local color_str
+	local e
+	local msg
 
-	# Return early if colors are barely supported
-	[ "$TERM_COLORS" -lt 256 ] && return 0
+	# Parsing options
+	while getopts "b:deoim:ru" opts $@; do
+		case "$opts" in
+			b) bg_color=$OPTARG;;
+			d) is_dim=1;;
+			e) e=e;;
+			i) is_italic=1;;
+			m) mode=$OPTARG;;
+			o) is_bold=1;;
+			r) is_reverse=1;;
+			u) is_underline=1;;
+			*) return 1;;
+		esac
+	done
+
+	shift $((OPTIND -1))
+	fg_color=$1
+	msg=$2
+
+	# Process color string
+	if [ "reset" = "$fg_color" ]; then
+		color_str=$(get_color_code reset)
+	else
+		local -a colors=$(
+			[ 1 -eq $is_bold ] && get_color_code bold
+			[ 1 -eq $is_dim ] && get_color_code dim;
+			[ 1 -eq $is_reverse ] && get_color_code reverse;
+			[ 1 -eq $is_underline ] && get_color_code underline;
+			[ -n "$fg_color" ] && get_color_code ${fg_color} "fg"
+			[ -n "$bg_color" ] && get_color_code ${bg_color} "bg"
+		)
+
+		color_str=$(join_array ";" ${colors[@]})
+	fi
+
+	# Process string
+	if [ -n "$color_str" -a "raw" != "$mode" ]; then
+		color_str="\e[${color_str}m"
+		[ "ps1" = "$mode" ] && color_str="\[${color_str}\]"
+	fi
+
+	# Print even if empty to have status code
+	echo -n${e-} "${color_str}${msg}"
+}
+
+get_color_code()
+{
+	local color=$1
+	local mode=$2
+
+	[ "bg" != "$mode" ] && mode=38 || mode=48
 
 	case "$color" in
-		normal | reset) echo "\e[0m";;
-		reverse) echo "\e[7m";;
-		color00 | black) echo "\e[38;5;0m";;
-		color01 | red) echo "\e[38;5;1m";;
-		color02 | green) echo "\e[38;5;2m";;
-		color03 | yellow) echo "\e[38;5;3m";;
-		color04 | blue) echo "\e[38;5;4m";;
-		color05 | magenta) echo "\e[38;5;5m";;
-		color06 | cyan) echo "\e[38;5;6m";;
-		color07 | white) echo "\e[38;5;7m";;
-		color08 | brblack) echo "\e[38;5;8m";;
-		color09 | brred) echo "\e[38;5;9m";;
-		color10 | brgreen) echo "\e[38;5;10m";;
-		color11 | bryellow) echo "\e[38;5;11m";;
-		color12 | brblue) echo "\e[38;5;12m";;
-		color13 | brmagenta) echo "\e[38;5;13m";;
-		color14 | brcyan) echo "\e[38;5;14m";;
-		color15 | brwhite) echo "\e[38;5;15m";;
-		color16 ) echo "\e[38;5;16m";;
-		color17 ) echo "\e[38;5;17m";;
-		color18 ) echo "\e[38;5;18m";;
-		color19 ) echo "\e[38;5;19m";;
-		color20 ) echo "\e[38;5;20m";;
-		color21 ) echo "\e[38;5;21m";;
+		reset) echo "0";;
+		bold) echo "1";;
+		dim) echo "2";;
+		underline) echo "4";;
+		reverse) echo "7";;
+		color00 | black) echo "${mode};5;0";;
+		color01 | red) echo "${mode};5;1";;
+		color02 | green) echo "${mode};5;2";;
+		color03 | yellow) echo "${mode};5;3";;
+		color04 | blue) echo "${mode};5;4";;
+		color05 | magenta) echo "${mode};5;5";;
+		color06 | cyan) echo "${mode};5;6";;
+		color07 | white) echo "${mode};5;7";;
+		color08 | brblack) echo "${mode};5;8";;
+		color09 | brred) echo "${mode};5;9";;
+		color10 | brgreen) echo "${mode};5;10";;
+		color11 | bryellow) echo "${mode};5;11";;
+		color12 | brblue) echo "${mode};5;12";;
+		color13 | brmagenta) echo "${mode};5;13";;
+		color14 | brcyan) echo "${mode};5;14";;
+		color15 | brwhite) echo "${mode};5;15";;
+		color16 ) echo "${mode};5;16";;
+		color17 ) echo "${mode};5;17";;
+		color18 ) echo "${mode};5;18";;
+		color19 ) echo "${mode};5;19";;
+		color20 ) echo "${mode};5;20";;
+		color21 ) echo "${mode};5;21";;
 		*) echo "";;
 	esac
 }
@@ -92,7 +159,7 @@ get_ls_version()
 {
 	if ls --color -d . &> /dev/null; then
 		echo "gnuls"
-	elif  ls -G -d . &> /dev/null; then
+	elif ls -G -d . &> /dev/null; then
 		echo "bsdls"
 	else
 		echo "unknown"
@@ -110,7 +177,17 @@ get_os_type()
 	esac
 }
 
+join_array()
+{
+	local delim=$1
+	local first=$2
+
+	shift 2 && printf "%s" "$first" "${@/#/${delim}}"
+}
+
 bashrc
 unset -f bashrc
 unset -f check_and_source check_file check_has_cmd
-unset -f get_color get_ls_version get_os_type
+unset -f get_color get_color_code
+unset -f get_ls_version get_os_type
+unset -f join_array
