@@ -39,11 +39,6 @@ aliases()
 	alias ff="find . -name"
 	alias ft="grep -RI"
 
-	# Change permissions of file
-	alias chdir="chmod u=rwx,g=rx,o=rx"
-	alias chfile="chmod u=rw,g=r,o=r"
-	alias chux="chmod u+x"
-
 	# Check what there is to do in current directory
 	alias todo="grep -RIi TODO --exclude-dir={.git,build,externals}"
 
@@ -74,14 +69,8 @@ aliases()
 	# Search all occurences of command in PATH
 	alias findpath="which -a"
 
-	# Recursively download the contents of a page
-	alias webdump="wget -np -m -k -w 5 -e robots=off"
-	# Download media files from a web page
-	alias webmedia="wget -nd -r -l 1 -H -A png,gif,jpg,svg,jpeg,webm -e robots=off"
-
 	# Normalize open across Linux and OSX
 	! check_has_cmd open && check_has_cmd xdg-open && alias open="xdg-open";
-
 }
 
 aliases

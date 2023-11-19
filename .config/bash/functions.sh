@@ -177,6 +177,12 @@ http()
 	fi
 }
 
+# List duplicated files based on their hash value
+lsdup()
+{
+	find . ! -empty -type f -exec sha256sum {} + | sort | uniq -w64 -dD
+}
+
 # Make directory and cd into it
 mkcd()
 {
