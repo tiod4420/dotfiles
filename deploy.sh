@@ -14,17 +14,19 @@ deploy_file()
 	local OPTARG OPTIND
 	local OPTERR=0
 	local opts
+	local dir
 	local mode
-	local name
+	local file
 	local src
 	local dst
 	local choice
 
 	# Get options
-	while getopts "m:n:" opts; do
+	while getopts "d:f:m:" opts; do
 		case "$opts" in
+			d) dir=$OPTARG;;
+			f) file=$OPTARG;;
 			m) mode=$OPTARG;;
-			n) name=$OPTARG;;
 			\?) echo "Invalid option: -${OPTARG}" && return 1;;
 		esac
 	done
@@ -32,18 +34,25 @@ deploy_file()
 	shift $((OPTIND-1))
 	[ 1 -ne $# ] && echo "No input file provided" && return 1
 
-	# Set source and destination path
-	src=$1
+	# Set source path
+	src="${1}"
 	[ ! -f "$src" ] && echo "${src}: No such file or directory" && return 1
 
-	dst="${HOME}/${1}"
-	if [ -n "$name" ]; then
-		if [ "/" = "${name:0:1}" ]; then
-			dst=$name
-		else
-			dst="$(dirname ${dst})/${name}"
-		fi
+	# Set destination path
+	if [ -z "$dir" ]; then
+		dir="${HOME}/$(dirname ${src})"
+	elif [ "/" != "${dir:0:1}" ]; then
+		dir="${HOME}/${dir}"
 	fi
+
+	if [ -z "$file" ]; then
+		file=$(basename ${src})
+	elif [ "/" == "${file:0:1}" ]; then
+		dir=$(dirname ${file})
+		file=$(basename ${file})
+	fi
+
+	dst=$(realpath "${dir}/${file}")
 
 	# Deploy file
 	if [ ! -f "$dst" ]; then
@@ -279,6 +288,7 @@ version_lt()
 setup_alacritty()
 {
 	local RES
+	local file
 
 	echo "Deploying alacritty configuration"
 
@@ -287,10 +297,10 @@ setup_alacritty()
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	# Add alacritty configuration files
-	for FILE in .config/alacritty/*; do
-		[ ! -f "$FILE" ] && continue
+	for file in .config/alacritty/*; do
+		[ ! -f "$file" ] && continue
 
-		deploy_file $FILE
+		deploy_file $file
 		RES=$?; [ 0 -ne $RES ] && return 1
 	done
 
@@ -356,7 +366,7 @@ setup_clang_format()
 	done
 
 	# Deploy file
-	deploy_file -n .clang-format $file
+	deploy_file -f .clang-format $file
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	return 0
@@ -468,6 +478,7 @@ setup_tmux()
 {
 	local RES
 	local version
+	local dir
 	local file
 
 	echo -n "Deploying tmux configuration -- "
@@ -476,12 +487,9 @@ setup_tmux()
 	version=$(version_get tmux)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Check if tmux version is less than 3.0
+	# Check if tmux version is less than 2.0
 	if version_lt "$version" 2.0; then
 		setup_tmux_1
-		return
-	elif version_lt "$version" 3.0; then
-		setup_tmux_2
 		return
 	fi
 
@@ -489,18 +497,20 @@ setup_tmux()
 	mkdir -p "${CONFIG_DIR_PATH}/tmux"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Check where to deploy main configuration file
+	# Choose configuration directory source
+	version_lt "$version" 3.0 && dir=".config/tmux-2" || dir=".config/tmux"
+	# Choose main configuration file destination
 	version_lt "$version" 3.1 && file=".tmux.conf" || file="${CONFIG_DIR_PATH}/tmux/tmux.conf"
 
 	# Deploy main files in $HOME or .config/tmux
-	deploy_file -n ${file} .tmux.conf
+	deploy_file -f ${file} .tmux.conf
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	# Add other configuration files
-	for file in .config/tmux/*; do
+	for file in ${dir}/*; do
 		[ ! -f "$file" ] && continue
 
-		deploy_file $file
+		deploy_file -d ".config/tmux/" $file
 		RES=$?; [ 0 -ne $RES ] && return 1
 	done
 
@@ -509,13 +519,7 @@ setup_tmux()
 
 setup_tmux_1()
 {
-	deploy_file -n .tmux.conf .tmux-1.conf
-}
-
-setup_tmux_2()
-{
-	# TODO
-	return 0
+	deploy_file -f .tmux.conf .tmux-1.conf
 }
 
 setup_vim()
@@ -583,8 +587,10 @@ command -v git &> /dev/null
 RES=$?; [ 0 -ne $RES ] && echo "git: command not found" && exit 1
 echo "Checking git -- FOUND"
 
+cd ${ROOT_DIR}
+
 git submodule update --init --recursive 2> /dev/null
-RES=$?; [ 0 -ne $RES ] && exit 1
+RES=$?; [ 0 -ne $RES ] && echo "git submodule update: failure" && exit 1
 echo "Updating submodules -- DONE"
 echo ""
 
