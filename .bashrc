@@ -37,25 +37,13 @@ bashrc()
 	# Get number of colors of the terminal
 	term_colors=$(tput colors 2> /dev/null || echo 0)
 
-	# Start ssh-agent if not started
-	if [ -n "$SSH_AUTH_SOCK" ]; then
-		: # Check if already running ssh-agent
-	elif [ -z "$SHELL" ]; then
-		: # Check if SHELL is set
-	else
+	# Start ssh-agent if conditions are met
+	if run_ssh_agent; then
 		check_and_exec /usr/bin/ssh-agent $SHELL
 	fi
 
-	# Start tmux if local shell and not inside tmux
-	if [ -n "$TMUX" ]; then
-		: # Check if already running tmux
-	elif [ -e "${HOME}/.notmux" ] || [ -e "${HOME}/notmux" ]; then
-		: # Check if no short circuit for tmux
-	elif ! is_local_host; then
-		: # Check if session is remote
-	elif [ "macos" != "$os_type" ] && [ -z "$DISPLAY" ]; then
-		: # Check if OS is Linux or BSD, and if we are in graphical session
-	else
+	# Start tmux if conditions are met
+	if run_tmux; then
 		check_and_exec -h /opt/local/bin/ tmux
 	fi
 
@@ -341,6 +329,66 @@ join_array()
 	shift 2 && printf "%s" "$first" "${@/#/${delim}}"
 }
 
+run_tmux()
+{
+	# Check if already running tmux
+	if [ -n "$TMUX" ]; then
+		return 1
+	fi
+
+	# Check if no short circuit for tmux
+	if [ -e "${HOME}/.notmux" ] || [ -e "${HOME}/notmux" ]; then
+		return 1
+	fi
+
+	# Check if session is remote
+	if ! is_local_host; then
+		return 1
+	fi
+
+	# Check if OS is Linux or BSD, and if we are in graphical session
+	if [ "macos" != "$os_type" ] && [ -z "$DISPLAY" ]; then
+		return 1
+	fi
+
+	# Check that we're not running from IntelliJ IDEA
+	if [ -n "$INTELLIJ_ENVIRONMENT_READER" ]; then
+		return 1
+	fi
+
+	# Check that we're not running from Visual Studio Code
+	if [ -n "$VSCODE_PID" ]; then
+		return 1
+	fi
+
+	return 0
+}
+
+run_ssh_agent()
+{
+	# Check if already running ssh-agent
+	if [ -n "$SSH_AUTH_SOCK" ]; then
+		return 1
+	fi
+
+	# Check if SHELL is set
+	if [ -z "$SHELL" ]; then
+		return 1
+	fi
+
+	# Check that we're not running from IntelliJ IDEA
+	if [ -n "$INTELLIJ_ENVIRONMENT_READER" ]; then
+		return 1
+	fi
+
+	# Check that we're not running from Visual Studio Code
+	if [ -n "$VSCODE_PID" ]; then
+		return 1
+	fi
+
+	return 0
+}
+
 bashrc
 unset -f bashrc
 unset -f add_man add_path
@@ -349,3 +397,4 @@ unset -f check_has_cmd check_has_file
 unset -f get_color get_color_code
 unset -f is_local_host is_normal_user
 unset -f join_array
+unset -f run_tmux run_ssh_agent
