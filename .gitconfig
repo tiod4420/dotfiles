@@ -16,6 +16,8 @@
 	lo = log --pretty=oneline -n 30 --graph --abbrev-commit
 	# Update last commit with staged files without editing the message
 	oops = commit --amend --no-edit
+	# Show diff summary
+	summary = diff --compact-summary
 	# Show local author
 	who = "!f() { echo \"$(git config --local user.name)\" " \
 		"\"<$(git config --local user.email)>\"; }; f"
