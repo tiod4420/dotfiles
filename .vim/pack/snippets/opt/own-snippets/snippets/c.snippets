@@ -9,7 +9,7 @@ snippet Inc
 snippet ndef
 	#ifndef $1
 	#define ${1:SYMBOL} ${2:value}
-	#endif /* $1 */
+	#endif /* end $1 */
 # define
 snippet def
 	#define
@@ -17,12 +17,12 @@ snippet def
 snippet ifdef
 	#ifdef ${1:FOO}
 		${2:#define }
-	#endif /* $1 */
+	#endif
 # if
 snippet #if
 	#if ${1:FOO}
 		${0:${VISUAL}}
-	#endif /* $1 */
+	#endif /* end $1 */
 # header include guard
 snippet once
 	#ifndef ${1:`toupper(vim_snippets#Filename('$1_H', 'UNTITLED_H'))`}
@@ -30,18 +30,18 @@ snippet once
 
 	${0}
 
-	#endif /* $1 */
+	#endif /* end $1 */
 # Disable C++ name mangling in C headers
 snippet nocxx
 	#ifdef __cplusplus
 	extern "C" {
-	#endif /* __cplusplus */
+	#endif
 
 	${0}
 
 	#ifdef __cplusplus
 	} /* extern "C" */
-	#endif /* __cplusplus */
+	#endif /* end __cplusplus */
 ##
 ## Control Statements
 # if
@@ -117,11 +117,13 @@ snippet td
 	typedef ${1:int} ${2:MyCustomType};
 # struct
 snippet st
-	struct ${1} {
+	struct ${1}
+	{
 		${0}
 	};
 snippet enum
-	enum ${1:name} {
+	enum ${1:name}
+	{
 		${0}
 	};
 ## Input/Output
@@ -137,9 +139,10 @@ snippet main
 	#include <stdio.h>
 	#include <stdlib.h>
 
-	int main(int argc, char *argv[])
+	int main(int argc, const char *argv[])
 	{
-		${0}return EXIT_SUCCESS;
+		${0}
+		return EXIT_SUCCESS;
 	}
 # main(void)
 snippet mainn
@@ -148,7 +151,8 @@ snippet mainn
 
 	int main(void)
 	{
-		${0}return EXIT_SUCCESS;
+		${0}
+		return EXIT_SUCCESS;
 	}
 # function definition
 snippet fun
@@ -166,33 +170,29 @@ snippet func
 	cleanup:
 		return ret;
 	}
-snippet err
-	if ( SUCCESS != ret ) { goto cleanup; }
+snippet gocl
+	goto cleanup;
 # function definition with Doxygen documentation
 snippet doc
-	/**
-	 * @brief ${1:Brief function description here}
+	/*! \\brief ${1:Brief function description here}
 	 *
 	 *  ${2:Detailed description of the function}
 	 *
-	 * @param $3 ${4:Parameter description}
-	 *
-	 * @return ${5:Return parameter description}
+	 * \\param $3 ${4:Parameter description}
+	 * \\return ${5:Return parameter description}
 	 */
 snippet cmt
 	/*
-	 * ${0:${VISUAL}}
-	 */
+	${0:${VISUAL}}
+	*/
 snippet dump
 	for (size_t i = 0; i < ${1:array}_sz; ++i) {
-		printf("%02x%c", ${1:array}[i], (i && (0 == ((i+1) % 16))) ? '\\n' : ' ');
+		printf("%02x", ${1:array}[i]);
 	}
-	if (0 != ($1 % 16)) {
-		printf("\\n");
-	}
+	printf("\\n");
 snippet array
-	uint8_t *${1:array} = NULL;
-	size_t ${1}_sz = 0;
-snippet arraysz
-	uint8_t ${1:array}[${2:16}];
+	uint8_t *${1:array}[$2];
 	size_t ${1}_sz = sizeof(${1});
+snippet ptr
+	uint8_t *${1:ptr} = NULL;
+	size_t ${1}_sz = 0;

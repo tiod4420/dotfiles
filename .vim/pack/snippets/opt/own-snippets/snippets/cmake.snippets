@@ -1,28 +1,42 @@
 snippet cmake
 	cmake_minimum_required(VERSION 3.10)
-	
-	project(${1:Project} CXX)
-	
-	set(CMAKE_CXX_STANDARD 11)
-	set(CMAKE_CXX_STANDARD_REQUIRED True)
-	
-	set(CMAKE_CXX_FLAGS_RELEASE "")
-	
+	project(${1:Project} C)
+
+	option(ENABLE_TESTING OFF)
+
 	add_compile_options(
 		-Wall -Wextra -W -Wwrite-strings
-		\$<\$<CXX_COMPILER_ID:AppleClang>:-Wimplicit-fallthrough\$<SEMICOLON>-Wpointer-arith>
-		\$<\$<CXX_COMPILER_ID:Clang>:-Wimplicit-fallthrough\$<SEMICOLON>-Wpointer-arith>
-		\$<\$<CONFIG:>:-O2>
-		\$<\$<CONFIG:Release>:-O2>
-		\$<\$<CONFIG:Debug>:-O0>
+		-DMBEDTLS_CONFIG_FILE="config/mbedtls_config.h"
+		$<$<CONFIG:ASan>:-fsanitize=address$<SEMICOLON>-fsanitize=undefined>
+		$<$<CONFIG:Coverage>:--coverage>
+		$<$<C_COMPILER_ID:AppleClang>:-Wimplicit-fallthrough$<SEMICOLON>-Wpointer-arith>
+		$<$<CXX_COMPILER_ID:AppleClang>:-Wimplicit-fallthrough$<SEMICOLON>-Wpointer-arith>
+		$<$<C_COMPILER_ID:Clang>:-Wimplicit-fallthrough$<SEMICOLON>-Wpointer-arith>
+		$<$<CXX_COMPILER_ID:Clang>:-Wimplicit-fallthrough$<SEMICOLON>-Wpointer-arith>
 		)
-	
-	add_subdirectory(src)
-	add_subdirectory(lib)
-	
-	enable_testing()
-	add_subdirectory(tests)
 
+	add_link_options(
+		$<$<CONFIG:ASan>:-fsanitize=address$<SEMICOLON>-fsanitize=undefined>
+		$<$<CONFIG:Coverage>:--coverage>
+		)
+
+	# Set public include directory
+	include_directories(include)
+
+	if(ENABLE_TESTING)
+		enable_testing()
+	endif()
+
+	# Build external dependencies
+	add_subdirectory(externals)
+
+	# Build target
+	add_subdirectory(src)
+
+	# Build tests
+	if(ENABLE_TESTING)
+		add_subdirectory(tests)
+	endif()
 snippet inc
 	include_directories(${${1:include}})
 
@@ -50,7 +64,7 @@ snippet set
 snippet dep
 	add_dependencies(${1:target} ${2:dep})
 
-snippet git 
+snippet git
 	include(ExternalProject)
 
 	ExternalProject_Add(${1:googletest}

@@ -31,7 +31,8 @@ snippet amup
 	auto ${1} = std::make_unique<${2:T}>(${3});
 ## Class
 snippet cl
-	class ${1:`vim_snippets#Filename('$1', 'MyClass')`} {
+	class ${1:`vim_snippets#Filename('$1', 'MyClass')`}
+	{
 	public:
 		${1}(${2});
 		${1}(const ${1}&);
@@ -55,7 +56,7 @@ snippet ns
 	namespace ${1:`vim_snippets#Filename('$1', 'MyNamespace')`}
 	{
 		${0:${VISUAL}}
-	} /* ${1} */
+	} /* namespace ${1} */
 snippet ans
 	namespace
 	{
@@ -100,21 +101,4 @@ snippet try
 	try {
 		${0}
 	} catch(${1}) {
-	}
-## Custom snippets
-# main
-snippet main
-	#include <iostream>
-
-	int main(int argc, char *argv[])
-	{
-		${0}return EXIT_SUCCESS;
-	}
-# main(void)
-snippet mainn
-	#include <iostream>
-
-	int main(void)
-	{
-		${0}return EXIT_SUCCESS;
 	}

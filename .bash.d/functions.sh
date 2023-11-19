@@ -485,9 +485,19 @@ fh()
 ft()
 {
 	# Check if argument is provided
-	[ 0 -eq "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
+	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
 	# Search for text excepted .git directory
-	grep -R --color=always ${@:2} $1 "." 2> /dev/null | less -XRE
+	grep -R --color=always --exclude-dir=".git" "$1" "." 2> /dev/null | \
+		less -XRE
+}
+
+# Search for which file contains a given string
+fw()
+{
+	# Check if argument is provided
+	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
+	# Search for text excepted .git directory
+	grep -R -l --color=always --exclude-dir=".git" "$1" "." 2> /dev/null
 }
 
 }

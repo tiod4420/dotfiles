@@ -33,11 +33,11 @@ if has("autocmd")
 		" Python
 		autocmd Filetype python call DevelopmentEnvironment("indent", "e")
 		" Rust
-		autocmd Filetype rust call DevelopmentEnvironment("syntax", "es", "rustfmt")
+		autocmd Filetype rust call DevelopmentEnvironment("syntax", "est", "rustfmt")
 		" Other C-syntax languages
-		autocmd Filetype java,kotlin,thrift call DevelopmentEnvironment("syntax", "es")
+		autocmd Filetype java,kotlin,thrift call DevelopmentEnvironment("syntax", "est")
 		" Objective-C and derivated
-		autocmd Filetype objc,objcpp call DevelopmentEnvironment("syntax", "es", "clang-format")
+		autocmd Filetype objc,objcpp call DevelopmentEnvironment("syntax", "est", "clang-format")
 
 		" Base64 file detection
 		autocmd BufNewFile,BufRead *.b64,*.base64,*.pem.*.crt setlocal filetype=base64
