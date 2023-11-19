@@ -63,8 +63,6 @@ highlight Visual ctermfg=12 ctermbg=0
 highlight IncSearch ctermfg=15 ctermbg=1
 " Color of search matches
 highlight Search ctermfg=15 ctermbg=2
-" Color of extra whitespaces
-highlight ExtraWhitespace ctermbg=1
 
 " Global function definitions
 
@@ -73,54 +71,15 @@ function! ClearSearch()
 	call setreg("/", "", "v")
 endfunction
 
-" Enable some development mode display
-function! DevelopmentEnvironment(...)
-	" Set default value
-	let l:num_column = "80,100"
-	" Set parameters if exists
-	if a:0 > 0 | let l:ews_flags = a:1 | endif
-	if a:0 > 1 | let l:format_program = a:2 | endif
-
-	" Set auto indentation
-	setlocal autoindent
-	" Set column space
-	execute "setlocal colorcolumn=" . l:num_column
-	" Set formatting program if executable
-	if 1 == executable(expand(l:format_program))
-		execute "setlocal formatprg=" . expand(l:format_program)
-	endif
-endfunction
-
 " Global filetype settings
 
 " Filetype detection
 filetype plugin indent on
 
-" Default extra whitespace highlight
-let g:ews_flags="est"
 " Default TeX syntax
 let g:tex_flavor="latex"
 " Default assembly syntax
 let g:asmsyntax="nasm"
-
-if has("autocmd")
-	augroup Development
-		autocmd!
-
-		" sh
-		autocmd Filetype sh call DevelopmentEnvironment("est")
-		" C and C++
-		autocmd Filetype c,cpp call DevelopmentEnvironment("es", "clang-format")
-		" Assembly
-		autocmd Filetype nasm call DevelopmentEnvironment("esi")
-		" Python
-		autocmd Filetype python call DevelopmentEnvironment("e")
-		" Rust
-		autocmd Filetype rust call DevelopmentEnvironment("est", "rustfmt")
-		" Base64 file detection
-		autocmd BufNewFile,BufRead *.b64,*.base64,*.pem.*.crt setlocal filetype=base64
-	augroup END
-endif
 
 " Global shortcut mappings
 
