@@ -26,7 +26,7 @@ if has('win32') || has('win64')
 endif
 
 " Source all the configuration files
-for file in [ "global.vim", "colors.vim", "functions.vim", "plugins.vim", "filetypes.vim", "mappings.vim" ]
+for file in [ "global.vim", "colors.vim", "functions.vim", "filetypes.vim", "mappings.vim" ]
 	call CheckAndSource(expand(config_path . "/" . file))
 endfor
 unlet file

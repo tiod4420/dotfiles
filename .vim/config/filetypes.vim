@@ -7,45 +7,82 @@ filetype plugin indent on
 let g:asmsyntax="nasm"
 " Default TeX syntax
 let g:tex_flavor="latex"
+" snipMate options
+let g:snipMate = { 'snippet_version': 1 }
 
 if !has("autocmd")
 	finish
 endif
 
-augroup ExtraWhiteSpace
+function s:AddDevelopment(language, comment_str, ...)
+	let l:auft = "autocmd FileType " . a:language . " "
+	let l:options = (a:0 == 1) ? a:1 : {}
+
+	augroup Development
+
+	execute l:auft . "syntax match ExtraWhiteSpace " . '"\s\+$"' . " containedin=ALL"
+	execute l:auft . "let b:comment_str = '" . a:comment_str . "'"
+
+	" Additional file extensions
+	if has_key(l:options, "files")
+		execute "autocmd BufNewFile,BufRead " . l:options["files"] . " setlocal filetype=" . a:language
+	endif
+
+	if has_key(l:options, "colorcolumn")
+		execute l:auft . "setlocal colorcolumn=" . l:options["colorcolumn"]
+	endif
+
+	if has_key(l:options, "expandtab")
+		execute l:auft . "setlocal expandtab shiftwidth=" . l:options["expandtab"] . " tabstop=" . l:options["expandtab"]
+	endif
+
+	if has_key(l:options, "formatprg")
+		execute l:auft . "setlocal formatprg=" . l:options["formatprg"]
+	endif
+
+	if has_key(l:options, "keywordprg")
+		execute l:auft . "setlocal keywordprg=" . l:options["keywordprg"]
+	endif
+
+	" Additional command
+	if has_key(l:options, "extra")
+		execute l:auft . l:options["extra"]
+	endif
+endfunction
+
+" Flush existing rules
+augroup Development
 	autocmd!
-
-	autocmd FileType c,cpp,rust syntax match ExtraWhiteSpace "\s\+$" containedin=ALL
-	autocmd FileType cmake,python,sh syntax match ExtraWhiteSpace "\s\+$" containedin=ALL
-	autocmd FileType asm,nasm syntax match ExtraWhiteSpace "\s\+$" containedin=ALL
-	autocmd FileType java,vim syntax match ExtraWhiteSpace "\s\+$" containedin=ALL
-	autocmd FileType html,css,javascript syntax match ExtraWhiteSpace "\s\+$" containedin=ALL
 augroup end
 
-" Comment string
-augroup CommentString
-	autocmd!
+" Add rules
+call <SID>AddDevelopment("c", '//', {
+			\ "formatprg": "clang-format",
+			\ })
 
-	autocmd FileType c,cpp,rust let b:comment_str = '//'
-	autocmd FileType cmake,python,sh let b:comment_str = '#'
-	autocmd FileType asm,nasm let b:comment_str = ';'
-	autocmd FileType java let b:comment_str = '//'
-	autocmd FileType vim let b:comment_str = '"'
-	autocmd FileType javascript let b:comment_str = '//'
-augroup end
+call <SID>AddDevelopment("cpp", '//', {
+			\ "files": "*.edl",
+			\ "formatprg": "clang-format",
+			\ })
 
-augroup FileTypeRules
-	" C and C++ specific rules
-	autocmd FileType c,cpp setlocal formatprg=clang-format
-	autocmd BufNewFile,BufRead *.edl setlocal filetype=cpp
-	" HTML, CSS and JavaScript specific rules
-	autocmd FileType html,css,javascript setlocal shiftwidth=2 tabstop=2 expandtab
-	" Python specific rules
-	autocmd FileType python setlocal shiftwidth=4 tabstop=4 expandtab keywordprg=pydoc
-	" Rust specific rules
-	autocmd FileType rust setlocal colorcolumn=80,120 formatprg=rustfmt keywordprg=rusty-man
-	autocmd FileType rust nnoremap <Leader>q :RustFmt<CR>
-	autocmd BufNewFile,BufRead *.lalrpop setlocal filetype=rust
-	" Vim specific rules
-	autocmd FileType vim setlocal keywordprg=:help
-augroup end
+call <SID>AddDevelopment("rust", '//', {
+			\ "files": "*.lalrpop",
+			\ "colorcolumn":"80,120",
+			\ "formatprg": "rustfmt",
+			\ "keywordprg": "rusty-man",
+			\ "extra": "nnoremap <Leader>q :RustFmt<CR>",
+			\ })
+
+call <SID>AddDevelopment("python", '#', {
+			\ "expandtab": 4,
+			\ "keywordprg": "pydoc",
+			\ })
+
+call <SID>AddDevelopment("html,css,javascript", '//', {
+			\ "expandtab": 2,
+			\ })
+
+call <SID>AddDevelopment("asm,nasm", ';')
+call <SID>AddDevelopment("cmake,sh", '#')
+call <SID>AddDevelopment("java,kotlin", '//')
+call <SID>AddDevelopment("vim", '"')
