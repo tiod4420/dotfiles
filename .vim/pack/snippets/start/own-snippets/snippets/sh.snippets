@@ -2,57 +2,48 @@ snippet #!
 	#!/usr/bin/env bash
 
 	${0:$VISUAL}
+snippet pr
+	echo "${1}"
+snippet fpr
+	echo "${1}" >&${2:2}
 snippet if
-	if [ ${1:condition} ]; then
+	if ${1:condition}; then
 		${0:$VISUAL}
 	fi
 snippet elif
-	elif [ ${1:condition} ]; then
-		${0:$VISUAL}
-snippet else
-	else
+	elif ${1:condition}; then
 		${0:$VISUAL}
 snippet for
 	for ${1:needle} in ${2:haystack}; do
 		${0:$VISUAL}
 	done
-snippet wh
-	while [ ${1:condition} ]; do
-		${0:$VISUAL}
-	done
-snippet until
-	until [ ${1:condition} ]; do
+snippet while
+	while ${1:condition}; do
 		${0:$VISUAL}
 	done
 snippet case
 	case ${1:word} in
-		${2:pattern})
-			${0}
-			;;
-		*)
-			;;
+		${0});;
+		*);;
 	esac
-snippet fun
+snippet func
 	${1:function_name}()
 	{
-		${0:$VISUAL}
+		${0}
+		return 0
 	}
 snippet check
-	${2:RES}=\$?; [ 0 -ne \$${2} ] && ${1:exit} 1
+	RES=\$?; [ 0 -ne \$RES ] && ${1:exit} 1
 snippet getopts
-	local OPTARG OPTIND
-	local OPTERR=0
-	local ${2:opts}
+	local OPTARG
+	local OPTIND
+	local opts
 
-	while getopts "${1:o}" ${2} \$@; do
-		case "\$${2}" in
-			${0:pat})
-				;;
-			\\?)
-				echo "Invalid option: -\${OPTARG}"
-				exit 1
-				;;
+	while getopts ":${1:o}" opts; do
+		case "\$opts" in
+			${2:o})${0};;
+			\\?) echo "Invalid option: -\${OPTARG}" && exit 1;;
 		esac
 	done
 
-	shift $((OPTIND -1 ))
+	shift \$((OPTIND - 1))

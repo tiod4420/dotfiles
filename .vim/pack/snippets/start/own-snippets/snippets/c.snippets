@@ -43,6 +43,8 @@ snippet cast
 	((${1:const uint8_t *})${0:$VISUAL})
 snippet pr
 	printf("${1:%s}${2:\\n}");
+snippet fpr
+	fprintf(${1:stderr}, "${2:%s}${3:\\n}");
 snippet dump
 	for (size_t i = 0; i < ${1:${VISUAL:ptr}}_sz; ++i) {
 		printf("%02x", ${0:$1}[i]);
@@ -58,13 +60,9 @@ snippet inc
 	#include <${1:stdio}.h>
 snippet Inc
 	#include "${1:`vim_snippets#Filename("$1.h")`}"
-snippet ifdef
-	#ifdef ${1:FOO}
-	${0:#define}
-	#endif /* end ${1} */
-snippet ifndef
+snippet ifn
 	#ifndef ${1:FOO}
-	${0:#define}
+	#define ${1} "${0}"
 	#endif /* end ${1} */
 snippet for
 	for (size_t ${2:i} = 0; ${2} < ${1:count}; ${3:++}${2}) {

@@ -19,6 +19,12 @@ snippet cmake
 
 	add_subdirectory(externals)
 	add_subdirectory(tests)
+snippet subd
+	add_subdirectory(${1:${VISUAL:src}})
+snippet pr
+	message("${0}")
+snippet fpr
+	message(${1:FATAL_ERROR} "${0}")
 snippet exe
 	set(TARGET_NAME ${1:${VISUAL:target}})
 
@@ -28,21 +34,9 @@ snippet exe
 	add_executable(\${TARGET_NAME} \${SOURCES} \${HEADERS})
 	set_target_properties(\${TARGET_NAME} PROPERTIES C_STANDARD 11)
 
-	target_compile_options(\${TARGET_NAME}
-		PUBLIC ${2:option}
-		)
-
 	target_include_directories(\${TARGET_NAME}
 		PUBLIC include
 		PRIVATE src
-		)
-
-	target_link_options(\${TARGET_NAME}
-		PUBLIC ${3:option}
-		)
-
-	target_link_libraries(\${TARGET_NAME}
-		PUBLIC ${4:library}
 		)
 snippet lib
 	set(TARGET_NAME ${1:${VISUAL:target}})
@@ -53,30 +47,30 @@ snippet lib
 	add_library(\${TARGET_NAME} ${2:STATIC} \${SOURCES} \${HEADERS})
 	set_target_properties(\${TARGET_NAME} PROPERTIES C_STANDARD 11)
 
-	target_compile_options(\${TARGET_NAME}
-		PUBLIC ${3:option}
-		)
-
 	target_include_directories(\${TARGET_NAME}
 		PUBLIC include
 		PRIVATE src
 		)
-
+snippet copt
+	target_compile_options(\${TARGET_NAME}
+		${1:PUBLIC ${2}}
+		)
+snippet cdef
+	target_compile_definitions(\${TARGET_NAME}
+		${1:PUBLIC ${2}}
+		)
+snippet lopt
 	target_link_options(\${TARGET_NAME}
-		PUBLIC ${4:option}
+		${1:PUBLIC ${2}}
 		)
-
+snippet llib
 	target_link_libraries(\${TARGET_NAME}
-		PUBLIC ${5:option}
+		${1:PUBLIC ${2}}
 		)
-snippet add
-	add_subdirectory(${1:${VISUAL:src}})
 snippet dep
 	add_dependencies(${1:target} ${2:dep})
-snippet props
-	set_target_properties(${1:target} PROPERTIES
-		${0}
-		)
+snippet prop
+	set_target_properties(${1:target} PROPERTIES ${2:C_STANDARD} ${3:11})
 snippet test
 	add_test(NAME ${1:test}
 		COMMAND ${2:\$<TARGET_FILE:target>}
