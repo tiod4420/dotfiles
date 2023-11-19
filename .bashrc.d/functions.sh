@@ -10,11 +10,11 @@ if [ "linux" = "$OS" ]; then
 	update_all()
 	{
 		# Upgrade on Linux systems with apt
-		command -v apt &> /dev/null && apt update && apt upgrade
+		command -v apt &> /dev/null && sudo apt update && sudo apt upgrade
 		# Upgrade pip2
-		command -v pip2 &> /dev/null && pip2 install --upgrade pip
+		command -v pip2 &> /dev/null && sudo pip2 install --upgrade pip
 		# Upgrade pip3
-		command -v pip3 &> /dev/null && pip3 install --upgrade pip
+		command -v pip3 &> /dev/null && sudo pip3 install --upgrade pip
 		# Update dotfiles
 		pushd ~ && git pull && source ~/.bashrc ; popd
 	}
@@ -27,9 +27,9 @@ elif [ "osx" = "$OS" ]; then
 		command -v brew &> /dev/null &&
 			brew update && brew upgrade && brew cleanup
 		# Upgrade pip2
-		command -v pip2 &> /dev/null && pip2 install --upgrade pip
+		sudo command -v pip2 &> /dev/null && pip2 install --upgrade pip
 		# Upgrade pip3
-		command -v pip3 &> /dev/null && pip3 install --upgrade pip
+		sudo command -v pip3 &> /dev/null && pip3 install --upgrade pip
 		# Update dotfiles
 		pushd ~ && git pull && source ~/.bashrc ; popd
 	}
@@ -52,6 +52,7 @@ cleanup()
 # Decryption function (Encrypt-then-MAC)
 decrypt()
 {
+	local OPTIND
 	local ARG="" OPTIONS=""
 	local FILE_IN="" FILE_OUT=""
 	local PASSWORD="" PASSWORD_FILE=""
@@ -140,7 +141,8 @@ decrypt()
 
 	# Decrypt input data
 	[ -n "$FILE_OUT" ] && OPTIONS="-out $FILE_OUT"
-	openssl enc -aes-256-cbc -d -k $PASSWORD_ENC -in $FILE_TMP_ENC $OPTIONS
+	openssl enc -aes-256-cbc -d -k $PASSWORD_ENC -md sha256 \
+		-pbkdf2 -in $FILE_TMP_ENC $OPTIONS
 	RES=$?; [ 0 -ne "$RES" ] && return $RES
 
 	return 0
@@ -149,6 +151,7 @@ decrypt()
 # Encryption function (Encrypt-then-MAC)
 encrypt()
 {
+	local OPTIND
 	local ARG="" OPTIONS=""
 	local FILE_IN="" FILE_OUT=""
 	local PASSWORD="" PASSWORD_FILE=""
@@ -231,8 +234,8 @@ encrypt()
 	FILE_TMP_ENC=$(mktemp -p .)
 	RES=$?; [ 0 -ne "$RES" ] && return $RES
 	[ -n "$FILE_IN" ] && OPTIONS="-in $FILE_IN"
-	openssl enc -aes-256-cbc -e -k $PASSWORD_ENC -S $SALT \
-		$OPTIONS -out $FILE_TMP_ENC
+	openssl enc -aes-256-cbc -e -k $PASSWORD_ENC -S $SALT -md sha256 \
+		-pbkdf2 -iter 10000 $OPTIONS -out $FILE_TMP_ENC
 	RES=$?; [ 0 -ne "$RES" ] && return $RES
 
 	# Compute digest
@@ -252,7 +255,7 @@ encrypt()
 }
 
 # Kindof universal extractor
-extract()
+extractor()
 {
 	local file
 	local dir
@@ -264,25 +267,25 @@ extract()
 	dir=$([ -n "$2" ] && echo $2 || echo '.')
 
 	case $file in
-		"*.7z")
+		*.7z)
 			7z e $file -o $dir
 			;;
-		"*.jar")
+		*.jar)
 			unzip $file -d $dir
 			;;
-		"*.rar")
+		*.rar)
 			unrar x $file $dir
 			;;
-		"*.tar.bz2" | "*.tbz2")
+		*.tar.bz2 | *.tbz2)
 			tar xjvf $file -C $dir
 			;;
-		"*.tar.gz" | "*.tgz")
+		*.tar.gz | *.tgz)
 			tar xzvf $file -C $dir
 			;;
-		"*.tar.xz" | "*.txz")
+		*.tar.xz | *.txz)
 			tar xJvf $file -C $dir
 			;;
-		"*.zip")
+		*.zip)
 			unzip $file -d $dir
 			;;
 		*)
@@ -312,7 +315,8 @@ epoch()
 		else
 			date -u -j -f "%F %T" +%s
 		fi
-	elif [ 2 -eq "$#" ]; then # Reverse epoch of given time
+	elif [ "-r" = "$1" ]; then # Reverse epoch of given time
+		shift
 		if [ "gnudate" = "$date_version" ]; then
 			date -u --date="@${1}" +"%F %T"
 		else
@@ -403,7 +407,7 @@ cloc()
 		(find $arg -type f -print0 | xargs -0 cat) | wc -l
 	elif [ -f "$arg" ]; then
 		# Count the number of files of the argument
-		wc -l $arg
+		wc -l < $arg
 	fi
 }
 

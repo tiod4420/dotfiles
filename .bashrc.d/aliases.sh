@@ -6,9 +6,6 @@ aliases()
 {
 	local COLOR_FLAG=""
 
-	# Enable aliases to be sudo’ed
-	alias sudo="sudo "
-
 	# Easier navigation
 	alias ..="cd .."
 	alias ...="cd ../.."
@@ -20,7 +17,7 @@ aliases()
 	alias pws="pushd ~/Workspace"
 
 	# Get color flag for ls, according to the current ls version
-	if [ "$TERM_COLORS" -gt 256 ]; then
+	if [ "$TERM_COLORS" -ge 256 ]; then
 		# Set color for dir
 		alias dir="ls --color=auto"
 		# Set colors for grep
