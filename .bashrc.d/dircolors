@@ -59,7 +59,7 @@ OTHER_WRITABLE        00;48;5;3
 # Dir with the sticky bit set (+t) and not other-writable
 STICKY                00;48;5;5
 # This is for files with execute permission:
-EXEC                  00;38;5;34
+EXEC                  00;38;5;10
 # unimportant files as logs and backups
 *~                    00;38;5;8
 *#                    00;38;5;8

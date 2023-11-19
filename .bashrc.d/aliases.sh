@@ -41,6 +41,23 @@ alias fgrep='fgrep --color=auto'
 # Set colors for egrep
 alias egrep='egrep --color=auto'
 
+# Allow display of raw characters (only ANSI colors) with less
+alias less='less -R'
+
+# Redefine man to use colors with less as a pager
+man()
+{
+	env \
+		LESS_TERMCAP_mb=${_MAN_COLOR_mb} \
+		LESS_TERMCAP_md=${_MAN_COLOR_md} \
+		LESS_TERMCAP_me=${_MAN_COLOR_me} \
+		LESS_TERMCAP_so=${_MAN_COLOR_so} \
+		LESS_TERMCAP_se=${_MAN_COLOR_se} \
+		LESS_TERMCAP_us=${_MAN_COLOR_us} \
+		LESS_TERMCAP_ue=${_MAN_COLOR_ue} \
+		man "$@"
+}
+
 ## Use Git’s colored diff when available
 if command -v git; then
 	diff()
