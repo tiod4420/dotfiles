@@ -47,8 +47,9 @@ aliases()
 		}
 	fi
 
-	# Search for file in current directory
+	# Search for file or text in current directory
 	alias ff="find . -name"
+	alias ft="grep -R"
 
 	# Convert hex to binary and reverse
 	alias tobin="xxd -p -r"
