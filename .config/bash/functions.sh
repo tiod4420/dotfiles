@@ -134,26 +134,45 @@ epoch()
 			date -u -j -r $1 +"%F %T"
 		fi
 	else # Unknown parameters
-		(1>&2 echo "${FUNCNAME}: too many operands") && return 1
+		echo "${FUNCNAME}: too many operands" >&2
+		return 1
 	fi
+}
+
+# Extract usual archive formats
+extr()
+{
+	if [ ! -f "$1" ]; then
+		echo "${FUNCNAME}: '${1}' is not a regular file" >&2
+		return 1
+	fi
+
+	case $1 in
+		*.tar.gz)  tar xzvf $1;;
+		*.tgz)     tar xzvf $1;;
+		*.tar.bz2) tar xjvf $1;;
+		*.tbz2)    tar xjvf $1;;
+		*.tar)     tar xvf $1;;
+		*.bz2)     bunzip2 $1;;
+		*.gz)      gunzip $1;;
+		*.Z)       uncompress $1;;
+		*.rar)     unrar e $1;;
+		*.zip)     unzip $1;;
+		*.7z)      7z x $1;;
+		*)         (1>&2 echo "${FUNCNAME}: '${1}' has unknown extraction method") && return 1;;
+	esac
 }
 
 # Jump to .git root working tree
 gitroot()
 {
-	local dir=$PWD
-	local found=0
+	local dir
+	local res
 
-	while [ "/" != "$dir" ]; do
-		if [ -d "${dir}/.git" ]; then
-			found=1
-			break
-		fi
+	dir=$(git rev-parse --show-toplevel 2> /dev/null)
+	res=$?
 
-		dir=$(dirname "$dir")
-	done
-
-	if [ 0 -eq "$found" ]; then
+	if [ 0 -ne $res ]; then
 		(1>&2 echo "${FUNCNAME}: root working tree not found")
 		return 1
 	fi
@@ -169,8 +188,29 @@ http()
 	elif command -v python2 &> /dev/null; then
 		python2 -m SimpleHTTPServer $1
 	else
-		echo "python2 or python3 is missing"
+		echo "${FUNCNAME}: python2 or python3 is missing" >&2
+		return 1
 	fi
+}
+
+# Make a tar archive
+mktar()
+{
+	local dst
+
+	if [ ! -f "$1" -a ! -d "$1" ]; then
+		echo "${FUNCNAME}: '${1}' is not a regular file or directory" >&2
+		return 1
+	fi
+
+	dst=$(basename $1)
+
+	# Strip file extensions if regular file
+	if [ -f "$1" ]; then
+		dst=${dst%%.*}
+	fi
+
+	tar czvf "${dst}.tar.gz" $1
 }
 
 # Remove dupplicate lines, without sorting
