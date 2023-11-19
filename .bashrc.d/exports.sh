@@ -60,9 +60,9 @@ exports()
 			# Set GNU ls colors
 			DIR_COLORS="${CONFIG_DIR_PATH}/dircolors"
 			if [ -f "$DIR_COLORS" ] && [ -r "$DIR_COLORS" ]; then
-				eval `dircolors -b $DIR_COLORS`
+				eval $(dircolors -b $DIR_COLORS)
 			else
-				eval `dircolors`
+				eval $(dircolors)
 			fi
 		elif [ "bsdls" = "${LS_VERSION}" ]; then
 			# Turn on colors
