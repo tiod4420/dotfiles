@@ -104,6 +104,6 @@ call <SID>AddDevelopment("groovy", '//', {
 			\ })
 
 call <SID>AddDevelopment("asm,nasm", ';')
-call <SID>AddDevelopment("cmake,sh", '#')
-call <SID>AddDevelopment("tmux", '#')
+call <SID>AddDevelopment("sh,bash", '#')
 call <SID>AddDevelopment("vim", '"')
+call <SID>AddDevelopment("cmake,tmux,toml", '#')
