@@ -78,6 +78,8 @@ snippet dump
 	println!("{:#?}", ${1:$VISUAL});
 snippet cargo
 	println!("cargo:${1}={}", ${2});
+snippet panic
+	panic!("${1}")
 snippet todo
 	todo!()
 snippet unimplemented
@@ -88,6 +90,8 @@ snippet #[
 	#[${1:derive(${2:Debug})}]
 snippet cfg
 	#[cfg(${1:target_os = "${2:linux}"})]
+snippet no_mangle
+	#[no_mangle]
 snippet main
 	pub fn main() {
 	    ${0:$VISUAL}
