@@ -31,7 +31,7 @@ snippet once
 
 	${0:$VISUAL}
 
-	#endif /* end ${1} */
+	#endif /* ${1} */
 snippet struct
 	struct ${1:my_struct} {
 		${0}
@@ -63,7 +63,7 @@ snippet Inc
 snippet ifn
 	#ifndef ${1:FOO}
 	#define ${1} "${0}"
-	#endif /* end ${1} */
+	#endif /* ${1} */
 snippet for
 	for (size_t ${2:i} = 0; ${2} < ${1:count}; ${3:++}${2}) {
 		${0}
@@ -73,15 +73,15 @@ snippet check
 		ret = ${2:1};
 		goto cleanup;
 	}
-snippet nocxx
+snippet cpp
 	#ifdef __cplusplus
 	extern "C" {
-	#endif
+	#endif /* __cplusplus */
 
 	${0:$VISUAL}
 
 	#ifdef __cplusplus
-	} /* end extern "C" */
-	#endif
+	}
+	#endif /* __cplusplus */
 snippet todo
 	// TODO
