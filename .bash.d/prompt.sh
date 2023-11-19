@@ -78,7 +78,7 @@ prompt()
 		user_style+="&& echo \"${yellow}\" || echo \"${red}\""
 
 		# Set host color according to SSH or not (static)
-		[ -z "$SSH_TTY" ] && host_style="$green" || host_style="$blue"
+		[ -z "$SSH_TTY" ] && host_style="$green" || host_style="$purple"
 
 		# vi edition mode strings
 		vi_ins_string="\1${white}\2"
@@ -102,7 +102,7 @@ prompt()
 	PS1+="\[${white}\]\w"
 	if [ 0 -ne "$PROMPT_GIT_STATUS" ]; then
 		PS1+=" \$(command -v __prompt_git_details &> /dev/null &&"
-		PS1+="__prompt_git_details \"${cyan}\" \"${purple}\")"
+		PS1+="__prompt_git_details \"${cyan}\" \"${blue}\")"
 	fi
 	[ "$TERM_COLORS" -ge 256 ] && PS1+="\n\$ \[${reset}\]" || PS1+="\n "
 

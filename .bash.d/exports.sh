@@ -126,7 +126,7 @@ exports()
 
 		# Set colors for man pages (no export to keep env clean)
 		# Start bold mode
-		MAN_COLOR_md=$'\e[0;38;5;1m'
+		MAN_COLOR_md=$'\e[0;38;5;3m'
 		# End all mode like so, us, mb, md and mr
 		MAN_COLOR_me=$'\e[0m'
 		# Start standout mode
