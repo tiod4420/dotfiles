@@ -51,6 +51,9 @@ aliases()
 	alias ff="find . -name"
 	alias ft="grep -R"
 
+	# OpenSSL asn1parse fast command
+	alias asn1parse="openssl asn1parse -i -dump"
+
 	# Convert hex to binary and reverse
 	alias tobin="xxd -p -r"
 	alias tohex="xxd -p"
