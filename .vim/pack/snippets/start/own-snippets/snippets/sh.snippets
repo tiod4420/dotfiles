@@ -29,7 +29,7 @@ snippet func
 		return 0
 	}
 snippet check
-	RES=\$?; [ 0 -ne \$RES ] && ${1:exit} 1
+	RES=\$?; [ 0 -ne \$RES ] && return 1
 snippet getopts
 	local OPTARG
 	local OPTIND
@@ -38,7 +38,7 @@ snippet getopts
 	while getopts ":${1:o}" opts; do
 		case "\$opts" in
 			${2:o})${0};;
-			\\?) echo "Invalid option: -\${OPTARG}" && exit 1;;
+			\\?) echo "Invalid option: -\${OPTARG}" && return 1;;
 		esac
 	done
 
