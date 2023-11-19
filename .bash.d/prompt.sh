@@ -78,7 +78,7 @@ prompt()
 		user_style+="&& echo \"${yellow}\" || echo \"${red}\""
 
 		# Set host color according to SSH or not (static)
-		[ -z "$SSH_TTY" ] && host_style="$green" || host_style="$purple"
+		[ -z "$SSH_TTY" ] && host_style="$orange" || host_style="$green"
 
 		# vi edition mode strings
 		vi_ins_string="\1${white}\2"
