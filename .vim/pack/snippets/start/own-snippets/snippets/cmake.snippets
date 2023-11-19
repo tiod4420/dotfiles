@@ -146,3 +146,25 @@ snippet extern
 		)
 
 	add_dependencies(${1} ${1}_dl)
+snippet generated
+	add_custom_command(
+		COMMENT "${1:comment}"
+		OUTPUT ${2:output}
+		DEPENDS ${3:depends}
+		COMMAND ${0:command}
+		WORKING_DIRECTORY \${CMAKE_CURRENT_SOURCE_DIR}
+		)
+
+	add_custom_target(build_${4:target}
+		DEPENDS ${2}
+		)
+
+	add_library(${4} STATIC IMPORTED GLOBAL)
+	add_dependencies(${4} build_${4})
+	set_target_properties(${4} PROPERTIES IMPORTED_LOCATION ${2})
+
+	install(
+		FILES ${2}
+		DESTINATION lib
+		PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+		)
