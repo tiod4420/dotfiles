@@ -47,14 +47,18 @@ aliases()
 	# Allow display of raw characters (only ANSI colors) with less
 	alias less="less -F -R -X"
 
+	# Print each MANPATH entry on a separate line
+	alias manpath='man --path | tr ":" "\n"'
 	# Map command to one argument
 	alias map='xargs -n1'
 	# Print each PATH entry on a separate line
-	alias path='echo -e ${PATH//:/\\n}'
+	alias path='echo $PATH | tr ":" "\n"'
 	# Check what there is to do in current directory
 	alias todo="grep -RI TODO --exclude-dir={.git,build,externals}"
 	# Edit todo file
 	alias todolist="vim \$TODO_FILE"
+	# which seems deprecated in some OS
+	alias which="command -v"
 
 	# Use Git’s colored diff when available
 	check_has_cmd git && alias gdiff="git diff --no-index"
