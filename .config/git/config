@@ -22,8 +22,6 @@
 	reauthor = commit --amend --no-edit --reset-author
 	# List remotes
 	remotes = remote --verbose
-	# Short alias for status
-	st = status
 	# Show commit log stats
 	stat = log --compact-summary
 	# Show diff summary
