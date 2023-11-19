@@ -26,7 +26,7 @@ snippet exe
 	file(GLOB HEADERS include/*.h)
 
 	add_executable(\${TARGET_NAME} \${SOURCES} \${HEADERS})
-	set_property(TARGET \${TARGET_NAME} PROPERTY C_STANDARD 99)
+	set_target_properties(\${TARGET_NAME} PROPERTIES C_STANDARD 99)
 
 	target_compile_options(\${TARGET_NAME}
 		PUBLIC ${2:option}
@@ -51,7 +51,7 @@ snippet lib
 	file(GLOB HEADERS include/*.h)
 
 	add_library(\${TARGET_NAME} ${2:STATIC} \${SOURCES} \${HEADERS})
-	set_property(TARGET \${TARGET_NAME} PROPERTY C_STANDARD 99)
+	set_target_properties(\${TARGET_NAME} PROPERTIES C_STANDARD 99)
 
 	target_compile_options(\${TARGET_NAME}
 		PUBLIC ${3:option}
@@ -73,6 +73,10 @@ snippet add
 	add_subdirectory(${1:${VISUAL:src}})
 snippet dep
 	add_dependencies(${1:target} ${2:dep})
+snippet props
+	set_target_properties(${1:target} PROPERTIES
+		${0}
+		)
 snippet test
 	add_test(NAME ${1:test}
 		COMMAND ${2:\$<TARGET_FILE:target>}
@@ -81,11 +85,50 @@ snippet command
 	add_custom_command(
 		COMMENT "${1:comment}"
 		OUTPUT ${2:output}
-		${0:COMMAND}
+		DEPENDS ${3:depends}
+		COMMAND ${0:command}
 		)
-snippet custom
-	add_custom_target(${1:target} ${2:ALL}
-		${0:DEPENDS}
+snippet target
+	add_custom_target(${1:target} ${2:ALL} DEPENDS ${0:dependency})
+snippet func
+	function(${1:function} target)
+		set(FUNCTION_NAME ${1})
+		# Parse arguments
+		set(options "")
+		set(one_value_keywords "")
+		set(multi_value_keywords "")
+		cmake_parse_arguments(${2:PREFIX} "\${options}" "\${one_value_keywords}" "\${multi_value_keywords}" \${ARGN})
+
+		# Check arguments
+		if(NOT TARGET "\${target}")
+			message(FATAL_ERROR "\${FUNCTION_NAME} '\${target}' is not a TARGET")
+		endif()
+
+		${0:# TODO}
+	endfunction()
+snippet binary
+	set(TARGET_NAME ${1:target})
+	set(INPUT_OBJECT ${2:input_file})
+	set(OUTPUT_OBJECT ${3:output_file})
+
+	if(4 EQUAL CMAKE_SIZEOF_VOID_P)
+		set(LINKER_ARCH "elf_i386")
+	elseif(8 EQUAL CMAKE_SIZEOF_VOID_P)
+		set(LINKER_ARCH "elf_x86_64")
+	endif()
+
+	add_custom_command(
+		COMMENT "Generating binary object for \${INPUT_OBJECT} (arch: \${LINKER_ARCH})"
+		OUTPUT \${OUTPUT_OBJECT}
+		DEPENDS \${INPUT_OBJECT}
+		COMMAND \${CMAKE_LINKER} -m \${LINKER_ARCH} -r -b binary \${INPUT_OBJECT} -o \${OUTPUT_OBJECT}
+		)
+
+	add_library(\${TARGET_NAME} STATIC \${OUTPUT_OBJECT})
+
+	set_target_properties(\${TARGET_NAME} PROPERTIES
+		EXCLUDE_FROM_ALL 1
+		LINKER_LANGUAGE C
 		)
 snippet extern
 	include(ExternalProject)
