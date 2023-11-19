@@ -15,14 +15,6 @@ global()
 
 	[ -f "$BASH_CPT" ] && [ -r "$BASH_CPT" ] && source $BASH_CPT
 
-	# Setup ssh-agent
-	if [ -z "$SSH_AUTH_SOCK" ]; then
-		# Init SSH agent
-		eval $(/usr/bin/ssh-agent 2> /dev/null)
-		# Kill SSH agent
-		trap "[ -n \"\$SSH_AGENT_PID\" ] && eval \$(/usr/bin/ssh-agent -k &> /dev/null)" EXIT
-	fi
-
 	# Append to the Bash history file, rather than overwriting it
 	shopt -s histappend 2> /dev/null
 	# Set VI command line editing mode
