@@ -16,12 +16,12 @@ snippet struct
 	}
 snippet obj
 	pub struct ${1:Struct} {
-	    ${0}
+	    ${2}
 	}
 
-	impl${2} ${1} {
-	    pub fn new(${3}) -> Self {
-	        Self { ${4} }
+	impl${3} ${1} {
+	    pub fn new(${4}) -> Self {
+	        Self { ${0} }
 	    }
 	}
 snippet enum
