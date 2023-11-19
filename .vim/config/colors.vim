@@ -19,6 +19,7 @@ catch
 	highlight IncSearch ctermfg=15 ctermbg=1
 	" Color of search matches
 	highlight Search ctermfg=15 ctermbg=2
-	" Color of extra whitespaces
-	highlight ExtraWhitespace ctermbg=1
 endtry
+
+" Color of extra whitespaces
+highlight link ExtraWhitespace IncSearch
