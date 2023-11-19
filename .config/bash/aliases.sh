@@ -44,9 +44,6 @@ aliases()
 	alias tobin="xxd -p -r"
 	alias tohex="xxd -p -c 32"
 
-	# Allow display of raw characters (only ANSI colors) with less
-	alias less="less -F -R -X"
-
 	# Print each MANPATH entry on a separate line
 	alias manpath='man --path | tr ":" "\n"'
 	# Print each PATH entry on a separate line
