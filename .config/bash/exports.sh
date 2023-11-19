@@ -38,21 +38,8 @@ exports()
 		# Set GTest colors
 		export GTEST_COLOR=1
 
-		# Export less color codes, for colored manpages
-		# Start blink -- unused
-		export LESS_TERMCAP_mb=$(get_color -m less reset)
-		# Start bold -- section titles
-		export LESS_TERMCAP_md=$(get_color -m less blue)
-		# End blink, bold, and underline
-		export LESS_TERMCAP_me=$(get_color -m less reset)
-		# End standout
-		export LESS_TERMCAP_se=$(get_color -m less reset)
-		# Start standout -- bottom bar
-		export LESS_TERMCAP_so=$(get_color -m less reverse)
-		# End underline
-		export LESS_TERMCAP_ue=$(get_color -m less reset)
-		# Start underline -- parameters, keywords
-		export LESS_TERMCAP_us=$(get_color -m less yellow)
+		# Set man colors
+		export MANPAGER="less -R --use-color -Ddb -Duy -DSkw -DPkw"
 	fi
 }
 

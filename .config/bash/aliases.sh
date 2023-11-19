@@ -29,6 +29,11 @@ aliases()
 	# Set colors for egrep
 	alias egrep="egrep --color=auto"
 
+	# Set colors for diff
+	alias diff="diff --color=auto"
+	# Set colors for ip
+	alias ip="ip --color=auto"
+
 	# Search for file or text in current directory
 	alias ff="find . -name"
 	alias ft="grep -RI"
@@ -51,11 +56,8 @@ aliases()
 	# Check what there is to do in current directory
 	alias todo="grep -RI TODO --exclude-dir={.git,build,externals}"
 
-	# Use Git’s colored diff when available
-	check_has_cmd git && alias gdiff="git diff --no-index"
-
 	# Normalize open across Linux and OSX
-	[ "linux" = "$OS" ] && alias open="xdg-open";
+	! check_has_cmd open && check_has_cmd xdg-open && alias open="xdg-open";
 }
 
 aliases
