@@ -201,6 +201,17 @@ file_status()
 	echo "    ${1} ... ${2}"
 }
 
+os_type_get ()
+{
+	case "$(uname | tr "[:upper:]" "[:lower:]")os_type" in
+		linux*) echo "linux" ;;
+		darwin*) echo "osx" ;;
+		freebsd*) echo "freebsd" ;;
+		msys*) echo "windows" ;;
+		*) echo "unknown" ;;
+	esac
+}
+
 read_choice()
 {
 	local RES
@@ -458,8 +469,12 @@ setup_git()
 setup_rust()
 {
 	local RES
+	local os
 
 	echo "Deploying rust configuration"
+
+	# Get OS type
+	os=$(os_type_get)
 
 	# Create cargo directory if does not exist
 	mkdir -p "${HOME}/.cargo"
@@ -470,8 +485,17 @@ setup_rust()
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	# Add rustfmt configuration
-	deploy_file .rustfmt.toml
-	RES=$?; [ 0 -ne $RES ] && return 1
+	if [ "linux" != "$os" ]; then
+		deploy_file -d $HOME -f .rustfmt.toml .config/rustfmt/rustfmt.toml
+		RES=$?; [ 0 -ne $RES ] && return 1
+	else
+		# Create directory if does not exist
+		mkdir -p "${CONFIG_DIR_PATH}/rustfmt"
+		RES=$?; [ 0 -ne $RES ] && return 1
+
+		deploy_file .config/rustfmt/rustfmt.toml
+		RES=$?; [ 0 -ne $RES ] && return 1
+	fi
 
 	return 0
 }
