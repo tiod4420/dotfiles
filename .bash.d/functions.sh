@@ -478,7 +478,7 @@ fh()
 	# Check if argument is provided
 	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
 	# Search for text in history file
-	(cat $HISTFILE ; history) | grep --color=always "$1" | less -XR
+	(cat $HISTFILE ; history) | grep --color=always "$1" | less -XRE
 }
 
 # Search for text within the current directory
@@ -488,7 +488,7 @@ ft()
 	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
 	# Search for text excepted .git directory
 	grep -R --color=always --exclude-dir=".git" "$1" "." 2> /dev/null | \
-		less -XR
+		less -XRE
 }
 
 # Search for which file contains a given string
