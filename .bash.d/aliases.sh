@@ -73,10 +73,10 @@ aliases()
 	alias map='xargs -n1'
 	# Print each PATH entry on a separate line
 	alias path='echo -e ${PATH//:/\\n}'
-	# Python one-liners
-	alias pol="python -c"
+	# Check what there is to do in current directory
+	alias todo="grep -R TODO --exclude-dir={.git,build,externals}"
 	# Edit todo file
-	alias todo="vim \$TODO_FILE"
+	alias todolist="vim \$TODO_FILE"
 
 	# Use Git’s colored diff when available
 	command -v git &> /dev/null && alias gdiff="git diff --no-index"
