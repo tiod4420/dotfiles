@@ -15,7 +15,7 @@
 	# Log last commit
 	last = log --stat -n 1
 	# List commits logs
-	lo = log --graph --pretty=oneline --abbrev-commit -n 30
+	lo = log --oneline --graph -n 30
 	# Update last commit with staged files without editing the message
 	oops = commit --amend --no-edit
 	# Edit author of the current commit
