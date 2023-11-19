@@ -46,7 +46,7 @@ build_ps1_prefix()
 	# Check if user is root
 	is_normal_user && user_style=cyan || user_style=red
 	# Check if host is local
-	is_local_host && host_style=yellow || host_style=orange
+	is_local_host && host_style=blue || host_style=yellow
 
 	get_color -m ps1 ${user_style} "\u"
 	get_color -m ps1 reset "@"
