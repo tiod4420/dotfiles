@@ -7,44 +7,24 @@ snippet fn
 	    ${0}
 	}
 snippet struct
-	pub struct ${1:Struct} {
+	struct ${1:Struct} {
 	    ${2}
 	}
-
-	impl ${1} {
-	    pub fn new(${3}) -> Self {
-	        ${1} {
-	            ${0}
-	        }
-	    }
-	}
 snippet new
-	pub fn new(${2}) -> ${1:Self} {
-	    $1 {
+	fn new(${1}) -> ${2:Self} {
+	    ${2} {
 	        ${0}
 	    }
 	}
-snippet asref
-	impl AsRef<${1:Ref}> for ${2:Type} {
-	    fn as_ref(&self) -> &${3:$1} {
-	        &self.${0:field}
-	    }
-	}
-snippet asmut
-	impl AsMut<${1:Ref}> for ${2:Type} {
-	    fn as_mut(&mut self) -> &mut ${3:$1} {
-	        &mut self.${0:field}
-	    }
+snippet impl
+	impl ${1} {
+	    ${0}
 	}
 snippet drop
 	impl Drop for ${1:Struct} {
 	    fn drop(&mut self) {
 	        ${0}
 	    }
-	}
-snippet impl
-	impl ${1}${2: for $3} {
-	    ${0}
 	}
 snippet enum
 	enum ${1:Enum} {
@@ -59,11 +39,11 @@ snippet trait
 	    ${0:$VISUAL}
 	}
 snippet for
-	for ${1:i} in ${2:$3..$4} {
+	for ${1:i} in ${2} {
 	    ${0}
 	}
 snippet foreach
-	for ${1:(i, &item)} in ${2:iter${3:.enumerate()}} {
+	for ${1:(i, &item)} in ${2:iter}.enumerate() {
 	    ${0}
 	}
 snippet iflet
