@@ -65,7 +65,7 @@ deploy_file()
 		file_status "$dst" "DIFF"
 
 		# Get user choice
-		read_choice choice "$src" "$dst"
+		read_choice "$src" "$dst"
 		RES=$?; [ 0 -ne $RES ] && echo "" && return 1
 
 		if [ "yes" = "$choice" ]; then
@@ -136,7 +136,7 @@ deploy_dir()
 		file_status "$dst" "DIFF"
 
 		# Get user choice
-		read_choice choice "$src" "$dst"
+		read_choice "$src" "$dst"
 		RES=$?; [ 0 -ne $RES ] && echo "" && return 1
 
 		if [ "yes" = "$choice" ]; then
@@ -197,25 +197,26 @@ read_choice()
 	local RES
 	local REPLY
 	local prompt
-	local -n output=$1
-	local src=$2
-	local dst=$3
+	local src=$1
+	local dst=$2
 
 	[ -f "$src" ] && prompt="overwrite file" || prompt="replace directory"
 
-	while [ -z "$output" ]; do
+	choice=""
+
+	while [ -z "$choice" ]; do
 		# Default choice to no
 		read -p "Do you want to ${prompt} '$(basename ${dst})'? [y/N/d/q] "
 		RES=$?; [ 0 -ne $RES ] && echo "" && return 1
 		[ -n "$REPLY" ] && REPLY=${REPLY,,} || REPLY="no"
 
 		case "$REPLY" in
-			y?(es)) output="yes";;
-			n?(o)) output="no";;
+			y?(es)) choice="yes";;
+			n?(o)) choice="no";;
 			d?(iff))
 				# Display diff and retry
 				git diff --no-index $dst $src
-				output=""
+				choice=""
 				;;
 			q?(uit))
 				# Quit deployment
@@ -224,7 +225,7 @@ read_choice()
 			*)
 				# Invalid choice and retry
 				echo "Choices are: yes|no|diff|quit"
-				output=""
+				choice=""
 				;;
 		esac
 	done
@@ -582,7 +583,7 @@ command -v git &> /dev/null
 RES=$?; [ 0 -ne $RES ] && echo "git: command not found" && exit 1
 echo "Checking git -- FOUND"
 
-git submodule update --init --recursive
+git submodule update --init --recursive 2> /dev/null
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo "Updating submodules -- DONE"
 echo ""
