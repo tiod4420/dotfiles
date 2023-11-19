@@ -74,10 +74,6 @@ aliases()
 	# Search all occurences of command in PATH
 	alias findpath="which -a"
 
-	# Start a VirtualBox VM in headless mode
-	alias vmstart="VBoxManage startvm --type headless"
-	alias vmls="VBoxManage list vms"
-
 	# Recursively download the contents of a page
 	alias webdump="wget -np -m -k -w 5 -e robots=off"
 	# Download media files from a web page
