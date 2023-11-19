@@ -148,7 +148,7 @@ snippet deref
 	impl ops::Deref for ${1:${VISUAL:Struct}} {
 	    type Target = ${2:T};
 
-	    fn deref(&self) -> &${2} {
+	    fn deref(&self) -> &Self::Target {
 	        ${0}
 	    }
 	}
