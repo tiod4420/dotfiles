@@ -475,13 +475,23 @@ setup_tmux()
 	version=$(version_get tmux)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
+	# Check if tmux version is less than 3.0
+	if version_lt "$version" 2.0; then
+		setup_tmux_1
+		return
+	elif version_lt "$version" 3.0; then
+		setup_tmux_2
+		return
+	fi
+
 	# Create config directory if does not exist
 	mkdir -p "${CONFIG_DIR_PATH}/tmux"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Deploy main files in $HOME or .config/tmux
+	# Check where to deploy main configuration file
 	version_lt "$version" 3.1 && file=".tmux.conf" || file="${CONFIG_DIR_PATH}/tmux/tmux.conf"
 
+	# Deploy main files in $HOME or .config/tmux
 	deploy_file -n ${file} .tmux.conf
 	RES=$?; [ 0 -ne $RES ] && return 1
 
@@ -493,6 +503,17 @@ setup_tmux()
 		RES=$?; [ 0 -ne $RES ] && return 1
 	done
 
+	return 0
+}
+
+setup_tmux_1()
+{
+	deploy_file -n .tmux.conf .tmux-1.conf
+}
+
+setup_tmux_2()
+{
+	# TODO
 	return 0
 }
 
@@ -510,7 +531,7 @@ setup_vim()
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
 	# Check if vim version is less than 8.0
-	if version_lt "$version" "8.0"; then
+	if version_lt "$version" 8.0; then
 		setup_vim_7
 		return
 	fi
