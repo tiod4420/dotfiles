@@ -205,6 +205,38 @@ snippet iter
 	        ${0}
 	    }
 	}
+snippet bitand
+	impl ops::BitAnd for ${1:${VISUAL:Struct}} {
+	    type Output = ${2:Self};
+
+	    fn bitand(self, rhs: ${3:Self}) -> Self::Output {
+	        ${0}
+	    }
+	}
+snippet bitor
+	impl ops::BitOr for ${1:${VISUAL:Struct}} {
+	    type Output = ${2:Self};
+
+	    fn bitor(self, rhs: ${3:Self}) -> Self::Output {
+	        ${0}
+	    }
+	}
+snippet bitxor
+	impl ops::BitXor for ${1:${VISUAL:Struct}} {
+	    type Output = ${2:Self};
+
+	    fn bitxor(self, rhs: ${3:Self}) -> Self::Output {
+	        ${0}
+	    }
+	}
+snippet neg
+	impl ops::Neg for ${1:${VISUAL:Struct}} {
+	    type Output = ${2:Self};
+
+	    fn neg(self) -> Self::Output {
+	        ${0}
+	    }
+	}
 snippet not
 	impl ops::Not for ${1:${VISUAL:Struct}} {
 	    type Output = ${2:Self};
