@@ -213,17 +213,11 @@ deploy_vim()
 	MAJOR=$(echo $VERSION | cut -d '.' -f 1)
 
 	if [ 8 -lt "$MAJOR" ]; then
-		deploy_file -n .vimrc-7.0 .vimrc
-		RES=$?; [ 0 -ne $RES ] && exit 1
-
 		deploy_dir -n .vim-7.0 .vim
 		RES=$?; [ 0 -ne $RES ] && exit 1
 
 		return 0
 	fi
-
-	deploy_file .vimrc
-	RES=$?; [ 0 -ne $RES ] && exit 1
 
 	# Create .vim directory if does not exist
 	mkdir -p "${HOME}/.vim"
@@ -235,7 +229,11 @@ deploy_vim()
 	mkdir -p "${HOME}/.vim/pack"
 	RES=$?; [ 0 -ne $RES ] && exit 1
 
+
 	# Add vim configuration files
+	deploy_file .vim/vimrc
+	RES=$?; [ 0 -ne $RES ] && exit 1
+
 	for FILE in .vim/config/*; do
 		[ ! -f "$FILE" ] && continue
 

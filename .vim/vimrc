@@ -6,7 +6,7 @@ function! CheckAndSource(file_path)
 	endif
 endfunction
 
-let config_path = $HOME . "/.vim/config"
+let config_path=fnamemodify(expand($MYVIMRC), ':p:h') . '/config'
 
 " For Windows version only
 if has('win32') || has('win64')
@@ -27,7 +27,7 @@ endif
 
 " Source all the configuration files
 for file in [ "global.vim", "colors.vim", "functions.vim", "filetypes.vim", "mappings.vim" ]
-	call CheckAndSource(expand(config_path . "/" . file))
+	call CheckAndSource(config_path . "/" . file)
 endfor
 unlet file
 
