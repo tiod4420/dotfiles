@@ -54,7 +54,7 @@ aliases()
 	# Print each PATH entry on a separate line
 	alias path='echo $PATH | tr ":" "\n"'
 	# Check what there is to do in current directory
-	alias todo="grep -RI TODO --exclude-dir={.git,build,externals}"
+	alias todo="grep -RIi TODO --exclude-dir={.git,build,externals}"
 
 	# Normalize open across Linux and OSX
 	! check_has_cmd open && check_has_cmd xdg-open && alias open="xdg-open";
