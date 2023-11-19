@@ -8,6 +8,8 @@
 	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
 		"git config --local user.name \"$1\" && " \
 		"git config --local user.email \"$2\"; }; f"
+	# List all branches
+	branches = branch -vva
 	# List contributors
 	contributors = shortlog --email --numbered --summary
 	# Allow git git git...
