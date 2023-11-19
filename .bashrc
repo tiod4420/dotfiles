@@ -11,14 +11,14 @@ bashrc()
 	fi
 
 	local CONFIG_DIR_PATH="$(dirname ${BASH_SOURCE[0]})/.bash.d"
-	declare -r -a SOURCE_FILES=(
+	local -r -a SOURCE_FILES=(
 		"${CONFIG_DIR_PATH}/global.sh"
 		"${CONFIG_DIR_PATH}/exports.sh"
 		"${CONFIG_DIR_PATH}/functions.sh"
 		"${CONFIG_DIR_PATH}/aliases.sh"
 		"${CONFIG_DIR_PATH}/prompt.sh"
 	)
-	declare -r -a BREW_FORMULAS=(
+	local -r -a BREW_FORMULAS=(
 		"bison"
 		"coreutils"
 		"findutils"
