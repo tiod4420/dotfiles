@@ -205,7 +205,7 @@ os_type_get ()
 {
 	case "$(uname | tr "[:upper:]" "[:lower:]")os_type" in
 		linux*) echo "linux" ;;
-		darwin*) echo "osx" ;;
+		darwin*) echo "macos" ;;
 		freebsd*) echo "freebsd" ;;
 		msys*) echo "windows" ;;
 		*) echo "unknown" ;;

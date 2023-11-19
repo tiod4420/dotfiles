@@ -5,7 +5,7 @@
 global()
 {
 	# Set Homebrew formulas to PATH and MANPATH
-	[ "osx" = "$OS" ] && setup_osx
+	[ "macos" = "$OS" ] && setup_macos
 	# Set Bash auto completion script
 	[ "linux" = "$OS" ] && setup_linux
 
@@ -51,7 +51,7 @@ setup_linux()
 	check_has_cmd __git_ps1 || check_and_source "/usr/share/git/completion/git-prompt.sh"
 }
 
-setup_osx()
+setup_macos()
 {
 	local brew_prefix
 	local brew_path
@@ -96,4 +96,4 @@ setup_osx()
 global
 unset -f global
 unset -f add_man add_path
-unset -f setup_linux setup_osx
+unset -f setup_linux setup_macos

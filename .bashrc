@@ -170,7 +170,7 @@ get_os_type()
 {
 	case "$(uname | tr "[:upper:]" "[:lower:]")os_type" in
 		linux*) echo "linux" ;;
-		darwin*) echo "osx" ;;
+		darwin*) echo "macos" ;;
 		freebsd*) echo "freebsd" ;;
 		msys*) echo "windows" ;;
 		*) echo "unknown" ;;
@@ -207,7 +207,7 @@ run_tmux()
 	! is_local_host && return 1
 
 	# Check if Linux or BSD, and we are in graphical session
-	[ "osx" != "$(get_os_type)" ] && [ -z "$DISPLAY" ] && return 1
+	[ "macos" != "$(get_os_type)" ] && [ -z "$DISPLAY" ] && return 1
 
 	return 0
 }
