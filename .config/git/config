@@ -26,8 +26,6 @@
 	st = status
 	# Show commit log stats
 	stat = log --compact-summary
-	# Initialize submodules
-	subinit = submodule update --init --recursive
 	# Show diff summary
 	summary = diff --compact-summary
 	# List tags
