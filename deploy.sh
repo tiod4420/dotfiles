@@ -224,9 +224,9 @@ echo ""
 echo "Deploying dotfiles"
 deploy_file .gdbinit
 RES=$?; [ 0 -ne $RES ] && exit 1
-mkdir -p "${HOME}/.cargo"
+deploy_file .rustfmt.toml
 RES=$?; [ 0 -ne $RES ] && exit 1
-deploy_file .cargo/config.toml
+deploy_dir .cargo
 RES=$?; [ 0 -ne $RES ] && exit 1
 
 echo ""
