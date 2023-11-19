@@ -201,7 +201,7 @@ function! DevelopmentEnvironment(...)
 	" Set default value
 	let l:fold_method = "manual"
 	let l:ews_flags = ExtraWhiteSpaceGetFlags("est")
-	let l:num_column = 81
+	let l:num_column = 80
 	let l:format_program = ""
 	" Set parameters if exists
 	if a:0 > 0 | let l:fold_method = a:1 | endif
