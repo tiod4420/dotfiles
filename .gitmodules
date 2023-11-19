@@ -19,9 +19,6 @@
 [submodule ".vim/pack/syntax/start/kotlin-vim"]
 	path = .vim/pack/filetypes/start/kotlin-vim
 	url = https://github.com/udalov/kotlin-vim.git
-[submodule ".vim/pack/themes/opt/solarized8"]
-	path = .vim/pack/themes/opt/solarized8
-	url = https://github.com/lifepillar/vim-solarized8.git
 [submodule ".vim/pack/syntax/start/vim-toml"]
 	path = .vim/pack/filetypes/start/vim-toml
 	url = https://github.com/cespare/vim-toml
@@ -34,3 +31,6 @@
 [submodule ".vim/pack/textobj/start/vim-textobj-parameter"]
 	path = .vim/pack/textobj/start/vim-textobj-parameter
 	url = https://github.com/sgur/vim-textobj-parameter
+[submodule ".vim/pack/themes/opt/gruvbox"]
+	path = .vim/pack/themes/opt/gruvbox
+	url = https://github.com/morhetz/gruvbox

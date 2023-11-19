@@ -2,6 +2,8 @@
 
 " Works only for Vim
 set nocompatible
+" Disable modeline
+set nomodeline
 " UTF8 encoding, without BOMB
 set encoding=utf-8 nobomb
 

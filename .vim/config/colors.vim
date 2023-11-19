@@ -7,7 +7,8 @@ syntax on
 
 " Color scheme style
 try
-	colorscheme solarized8
+	let g:gruvbox_contrast_dark="hard"
+	colorscheme gruvbox
 catch
 	colorscheme desert
 
