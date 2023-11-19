@@ -50,7 +50,7 @@ aliases()
 	alias tohex="xxd -p -c 32"
 
 	# Print each MANPATH entry on a separate line
-	alias manpath='man --path | tr ":" "\n"'
+	alias pathman='man --path | tr ":" "\n"'
 	# Print each PATH entry on a separate line
 	alias path='echo $PATH | tr ":" "\n"'
 	# Check what there is to do in current directory
