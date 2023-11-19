@@ -9,7 +9,7 @@ set background=dark
 syntax on
 
 " Color of max column size indicator
-highlight ColorColumn ctermbg=8
+highlight ColorColumn ctermbg=1
 " Color in visual selection
 highlight Visual ctermfg=12 ctermbg=0
 " Color of search matches while typing

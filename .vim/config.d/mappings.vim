@@ -34,6 +34,8 @@ nmap <Leader>n <plug>NERDTreeTabsToggle<CR>
 nnoremap <Leader>x :call HexToggle()<CR>
 " Toggle base64
 nnoremap <Leader>b :call Base64Toggle()<CR>
+" Formatting program
+nmap <Leader>= gq
 
 " User command to encode the buffer to hex
 command -nargs=0 HexEnc :call HexEnc()

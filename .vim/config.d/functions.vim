@@ -201,14 +201,15 @@ function! DevelopmentEnvironment(...)
 	" Set default value
 	let l:fold_method = "manual"
 	let l:ews_flags = ExtraWhiteSpaceGetFlags("est")
-	let l:num_column = 80
+	let l:num_column = 81
+	let l:format_program = ""
 	" Set parameters if exists
 	if a:0 > 0 | let l:fold_method = a:1 | endif
 	if a:0 > 1 | let l:ews_flags = a:2 | endif
-	if a:0 > 2 | let l:num_columns = a:3 | endif
+	if a:0 > 2 | let l:format_program = a:3 | endif
 
 	" Set auto indentation
-	set autoindent
+	setlocal autoindent
 	" Set column space
 	execute "setlocal colorcolumn=" . l:num_column
 	" Show extra white spaces
@@ -216,5 +217,9 @@ function! DevelopmentEnvironment(...)
 	call ExtraWhiteSpaceShowToggle()
 	" Set folding method
 	execute "setlocal foldmethod=" . l:fold_method
-	set nofoldenable
+	setlocal nofoldenable
+	" Set formatting program if executable
+	if 1 == executable(expand(l:format_program))
+		execute "setlocal formatprg=" . expand(l:format_program)
+	endif
 endfunction
