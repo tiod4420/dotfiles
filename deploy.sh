@@ -431,22 +431,12 @@ setup_rust()
 	# Get OS type
 	os=$(os_type_get)
 
-	# Create cargo directory if does not exist
+	# Deploy cargo configuration
 	mkdir -p "${HOME}/.cargo"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Add cargo configuration
 	deploy_target .cargo/config.toml
 	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Deploy configuration
-	if [ "linux" != "$os" ]; then
-		deploy_target .config/rustfmt/rustfmt.toml "${HOME}/.rustfmt.toml"
-		RES=$?; [ 0 -ne $RES ] && return 1
-	else
-		deploy -c rustfmt
-		RES=$?; [ 0 -ne $RES ] && exit 1
-	fi
 
 	return 0
 }
