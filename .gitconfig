@@ -90,6 +90,10 @@
 	# Use hexdump to diff binary files
 	textconv = hexdump -v -C
 
+[fetch]
+	# Update remote branches as well
+	prune = true
+
 [pull]
 	# Fast-forward merges only
 	ff = only
