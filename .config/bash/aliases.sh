@@ -44,6 +44,9 @@ aliases()
 	alias chfile="chmod u=rw,g=r,o=r"
 	alias chux="chmod u+x"
 
+	# Check what there is to do in current directory
+	alias todo="grep -RIi TODO --exclude-dir={.git,build,externals}"
+
 	# Make tarball with automatic compression algorithm
 	alias mktar="tar caf"
 	# List content of tarball
@@ -62,15 +65,18 @@ aliases()
 	alias tobin="xxd -p -r"
 	alias tohex="xxd -p -c 32"
 
+	# Search all occurences of info in MANPATH
+	alias findman="lsman | xargs -I{} find {} -name"
+	# Search all occurences of command in PATH
+	alias findpath="lspath | xargs -I{} find {} -maxdepth 1 -name"
 	# Print each MANPATH entry on a separate line
-	alias pathman='man --path | tr ":" "\n"'
+	alias lsman="man --path | tr ':' '\n'"
 	# Print each PATH entry on a separate line
-	alias path='echo $PATH | tr ":" "\n"'
-	# Check what there is to do in current directory
-	alias todo="grep -RIi TODO --exclude-dir={.git,build,externals}"
+	alias lspath="echo \$PATH | tr ':' '\n'"
 
 	# Start a VirtualBox VM in headless mode
 	alias vmstart="VBoxManage startvm --type headless"
+	alias vmls="VBoxManage list vms"
 
 	# Recursively download the contents of a page
 	alias webdump="wget -np -m -k -w 5 -e robots=off"
@@ -79,6 +85,7 @@ aliases()
 
 	# Normalize open across Linux and OSX
 	! check_has_cmd open && check_has_cmd xdg-open && alias open="xdg-open";
+
 }
 
 aliases
