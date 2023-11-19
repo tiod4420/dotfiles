@@ -75,7 +75,7 @@ setup_macos()
 	check_has_cmd __git_ps1 || check_and_source "${brew_prefix}/etc/bash_completion.d/git-prompt.sh"
 
 	local formula
-	for formula in "bison" "coreutils" "findutils" "gnu-sed" "grep" "openssl"; do
+	for formula in "coreutils" "findutils" "gnu-sed" "grep" "openssl"; do
 		brew_path="${brew_prefix}/opt/${formula}"
 
 		# Skip if path doesn't exist
