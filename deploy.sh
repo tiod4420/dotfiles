@@ -8,7 +8,7 @@ RES=$?; [ 0 -ne $RES ] && "deploy_utils.sh: No such file or directory" && exit 1
 
 # Format: major(.minor(.patch))
 REGEX_VERSION="s/^\([0-9]\{1,\}\)\(\(\.[0-9]\{1,\}\)\{0,2\}\).*$/\1\2/p"
-REGEX_CLANG_FORMAT="s/^.*[^0-9]\([0-9]\{1,\}\.[0-9]\{1,\}\.[0-9]\{1,\}\).*$/\1/p"
+REGEX_CLANG_FORMAT='s/.*clang-format\sversion\s*\([0-9][0-9]*\.[0-9]*\.[0-9]*\)\s*.*/\1/p'
 
 deploy_bash()
 {
@@ -215,7 +215,7 @@ command -v git &> /dev/null
 RES=$?; [ 0 -ne $RES ] && echo "git: command not found" && exit 1
 echo "Checking git -- FOUND"
 
-git submodule update --init --recursive
+git submodule update --init --recursive --remote
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo "Updating submodules -- DONE"
 echo ""
