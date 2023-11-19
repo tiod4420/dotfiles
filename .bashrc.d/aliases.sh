@@ -13,12 +13,16 @@ aliases()
 	alias ..="cd .."
 	alias ...="cd ../.."
 
-	## Shortcuts
+	# Shortcuts for usual directories
+	alias cdl="cd ~/Downloads"
 	alias pdl="pushd ~/Downloads"
+	alias cws="cd ~/Workspace"
 	alias pws="pushd ~/Workspace"
 
 	# Get color flag for ls, according to the current ls version
 	if [ "$TERM_COLORS" -gt 256 ]; then
+		# Set color for dir
+		alias dir="ls --color=auto"
 		# Set colors for grep
 		alias grep="grep --color=auto"
 		# Set colors for fgrep

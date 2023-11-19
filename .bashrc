@@ -14,15 +14,28 @@ bashrc()
 		"${CONFIG_DIR_PATH}/aliases.sh"
 		"${CONFIG_DIR_PATH}/prompt.sh"
 	)
-	local BREW_PREFIX=""
-	local TERM_COLORS=0
+	declare -r -a BREW_FORMULAS=(
+		"bash-completion"
+		"coreutils"
+		"findutils"
+		"gnu-sed"
+		"grep"
+	)
+	declare -A BREW_PATHS
 	local LS_VERSION=""
 	local OS=""
-	local file=""
+	local TERM_COLORS=0
+	declare -a BREW_FORMULAS_PATH
+	local file
+	local i
 
 	# Get Homebrew's installation path, or empty string if not existing
 	if command -v brew > /dev/null 2>&1; then
-		BREW_PREFIX=$(brew --prefix)
+		BREW_FORMULAS_PATH=($(brew --prefix ${BREW_FORMULAS[*]}))
+
+		for i in ${!BREW_FORMULAS[@]}; do
+			BREW_PATHS[${BREW_FORMULAS[$i]}]=${BREW_FORMULAS_PATH[$i]}
+		done
 	fi
 
 	# Get number of colors of the terminal

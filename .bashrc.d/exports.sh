@@ -5,17 +5,23 @@
 exports()
 {
 	local DIR_COLORS=""
+	declare -r -a BREW_UTILS=(
+		"coreutils"
+		"findutils"
+		"gnu-sed"
+		"grep"
+	)
+	local i
 
 	# Set Homebrew bin and man to PATH and MANPATH
-	if [ "osx" = "$OS" ] && [ -n "$BREW_PREFIX" ]; then
-		# GNU coreutils
-		# TODO: use actual --prefix coreutils
-		PATH="${BREW_PREFIX}/opt/coreutils/libexec/gnubin:${PATH}"
-		MANPATH="${BREW_PREFIX}/opt/coreutils/libexec/gnuman:${MANPATH}"
-		# GNU grep
-		# TODO: use actual --prefix grep
-		PATH="${BREW_PREFIX}/opt/grep/libexec/gnubin:${PATH}"
-		MANPATH="${BREW_PREFIX}/opt/grep/libexec/gnuman:${MANPATH}"
+	if [ "osx" = "$OS" ]; then
+		# Loop over all brew utils that we want into our PATH
+		for i in ${BREW_UTILS[@]}; do
+			if [ -n "${BREW_PATHS[$i]}" ]; then
+				PATH="${BREW_PATHS[$i]}/libexec/gnubin:${PATH}"
+				MANPATH="${BREW_PATHS[$i]}/libexec/gnuman:${PATH}"
+			fi
+		done
 	fi
 
 	# Set language preferences

@@ -7,8 +7,8 @@ global()
 	local BASH_CPT=""
 
 	# Set Bash auto completion script
-	if [ "osx" = "$OS" ] && [ -n "$BREW_PREFIX" ]; then
-		BASH_CPT="${BREW_PREFIX}/opt/bash-completion"
+	if [ "osx" = "$OS" ]; then
+		BASH_CPT=${BREW_PATHS["bash-completion"]}
 		BASH_CPT+="/etc/profile.d/bash_completion.sh"
 	elif [ "linux" = "$OS" ]; then
 		BASH_CPT="/etc/bash_completion"
