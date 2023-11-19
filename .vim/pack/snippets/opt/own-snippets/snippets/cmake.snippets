@@ -121,9 +121,9 @@ snippet binary
 	endif()
 
 	add_custom_command(
-		COMMENT "Generating binary object for \${INPUT_OBJECT} (arch: \${LINKER_ARCH})"
+		COMMENT "Generating binary object for \${INPUT_FILE} (arch: \${LINKER_ARCH})"
 		OUTPUT \${OUTPUT_FILE}
-		DEPENDS \${INPUT_OBJECT}
+		DEPENDS \${INPUT_FILE}
 		COMMAND \${CMAKE_LINKER} -m \${LINKER_ARCH} -r -b binary \${INPUT_FILE_NAME} -o "\${CMAKE_CURRENT_BINARY_DIR}/\${OUTPUT_FILE}"
 		WORKING_DIRECTORY \${INPUT_FILE_DIR}
 		)
