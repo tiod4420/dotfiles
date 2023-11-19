@@ -53,7 +53,7 @@ deploy_file()
 	fi
 
 	# Check diff of the two files
-	git diff --no-index --quiet $DST $SRC
+	git diff --no-index --quiet $DST $SRC &> /dev/null
 	RES=$?; [ 0 -eq $RES ] && echo "SAME" && return 0
 
 	echo "DIFF"
@@ -136,7 +136,7 @@ deploy_dir()
 	fi
 
 	# Check diff of the two files
-	git diff --quiet $DST $SRC 2> /dev/null
+	git diff --no-index --quiet $DST $SRC &> /dev/null
 	RES=$?; [ 0 -eq $RES ] && echo "SAME" && return 0
 
 	echo "DIFF"
