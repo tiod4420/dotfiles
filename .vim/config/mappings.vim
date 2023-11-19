@@ -30,6 +30,3 @@ nnoremap <Leader>/ :call ClearSearch()<CR>
 nnoremap <Leader>e //e<CR>
 " Toogle extra whitespaces
 nnoremap <Leader>w :call ExtraWhiteSpaceSearch()<CR>
-" SnipMate trigger key
-imap <Leader><Tab> <Plug>snipMateNextOrTrigger
-smap <Leader><Tab> <Plug>snipMateNextOrTrigger

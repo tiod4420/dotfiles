@@ -24,14 +24,14 @@ if has("autocmd")
 
 		" C and C++
 		autocmd Filetype c,cpp call DevelopmentEnvironment()
-		autocmd Filetype c,cpp setlocal formatprg="clang-format"
+		autocmd Filetype c,cpp setlocal formatprg=clang-format
 		" CMake
 		autocmd Filetype cmake call DevelopmentEnvironment()
 		" Assembly
 		autocmd Filetype asm,nasm call DevelopmentEnvironment()
 		" Rust
 		autocmd Filetype rust call DevelopmentEnvironment()
-		autocmd Filetype rust setlocal formatprg="rustfmt"
+		autocmd Filetype rust setlocal formatprg=rustfmt
 		autocmd FileType rust nnoremap <Leader>q :RustFmt<CR>
 		autocmd FileType rust nnoremap <Leader>r :RustRun<CR>
 		autocmd FileType rust nnoremap <Leader>t :RustTest<CR>
