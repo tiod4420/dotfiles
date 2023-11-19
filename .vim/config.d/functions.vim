@@ -189,7 +189,7 @@ function! Base64Toggle()
 endfunction
 
 " Enable some development mode display
-function! EnableProgrammingMode(...)
+function! DevelopmentEnvironment(...)
 	" Set default value
 	let l:fold_method = "manual"
 	let l:ews_flags = ExtraWhiteSpaceGetFlags("est")

@@ -21,21 +21,21 @@ packadd own-snippets
 packadd vim-snippets
 
 if has("autocmd")
-	augroup Programming
+	augroup Development
 		autocmd!
 
 		" sh
-		autocmd Filetype sh call EnableProgrammingMode("syntax", "est")
+		autocmd Filetype sh call DevelopmentEnvironment("syntax", "est")
 		" C and C++
-		autocmd Filetype c,cpp call EnableProgrammingMode("syntax", "est")
+		autocmd Filetype c,cpp call DevelopmentEnvironment("syntax", "est")
 		" Assembly
-		autocmd Filetype nasm call EnableProgrammingMode("manual", "esi")
+		autocmd Filetype nasm call DevelopmentEnvironment("manual", "esi")
 		" Python
-		autocmd Filetype python call EnableProgrammingMode("indent", "e", 100)
+		autocmd Filetype python call DevelopmentEnvironment("indent", "e", 100)
 		" Other C-syntax languages
-		autocmd Filetype java,rust,thrift call EnableProgrammingMode("syntax", "est", 100)
+		autocmd Filetype java,rust,thrift call DevelopmentEnvironment("syntax", "est", 100)
 		" Objective-C and derivated
-		autocmd Filetype objc,objcpp call EnableProgrammingMode("syntax", "est", 100)
+		autocmd Filetype objc,objcpp call DevelopmentEnvironment("syntax", "est", 100)
 
 		" Base64 file detection
 		autocmd BufNewFile,BufRead *.b64,*.base64,*.pem.*.crt setlocal filetype=base64

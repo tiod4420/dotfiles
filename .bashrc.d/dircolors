@@ -31,7 +31,7 @@ DIR                   00;38;5;4
 # Symbolic link. (set this to 'target' for the color of the file pointed to.)
 LINK                  00;38;5;14
 # Regular file with more than one link
-MULTIHARDLINK         00 # TODO
+MULTIHARDLINK         00;48;5;4
 # Pipe
 FIFO                  00;38;5;11
 # Socket
