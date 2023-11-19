@@ -27,10 +27,6 @@ global()
 
 	# Append to the Bash history file, rather than overwriting it
 	shopt -s histappend 2> /dev/null
-	# e.g. **/qux will enter ./foo/bar/baz/qux
-	shopt -s autocd 2> /dev/null
-	# Recursive globbing, e.g. echo **/*.txt
-	shopt -s globstar 2> /dev/null
 	# Set VI command line editing mode
 	set -o vi
 	# Set the binding to vi mode
