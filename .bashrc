@@ -8,11 +8,7 @@
 bashrc()
 {
 	# Setup CONFIG_DIR_PATH
-	if [ -n "$XDG_CONFIG_HOME" ]; then
-		local CONFIG_DIR_PATH="${$XDG_CONFIG_HOME}/bash"
-	else
-		local CONFIG_DIR_PATH="${HOME}/.config/bash"
-	fi
+	local CONFIG_DIR_PATH=${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash
 
 	# Get OS type
 	local OS=$(get_os_type)
