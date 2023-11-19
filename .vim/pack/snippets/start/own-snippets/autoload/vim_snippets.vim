@@ -1,0 +1,1 @@
+../../../opt/vim-snippets/autoload/vim_snippets.vim
