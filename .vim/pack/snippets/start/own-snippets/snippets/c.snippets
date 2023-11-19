@@ -14,14 +14,14 @@ snippet main
 		return ret;
 	}
 snippet func
-	int ${1:function_name}(${2})
 	{
-		int ret = ${3:STATUS}_FAILURE;
+		int ret = ${1:STATUS}_FAILURE;
 		int res;
 
+		// TODO
 		${0:$VISUAL}
 
-		ret = ${3}_SUCCESS;
+		ret = ${1}_SUCCESS;
 	cleanup:
 		return ret;
 	}

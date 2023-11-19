@@ -13,14 +13,17 @@ snippet! main
 		return ret;
 	}
 snippet! func
-	int ret = ${1}FAILURE;
-	int res;
+	{
+		int ret = ${1:STATUS}_FAILURE;
+		int res;
 
-	${0:$VISUAL}
+		// TODO
+		${0:$VISUAL}
 
-	ret = ${1}SUCCESS;
+		ret = ${1}_SUCCESS;
 	cleanup:
-	return ret;
+		return ret;
+	}
 snippet! once
 	#ifndef ${1:`toupper(vim_snippets#Filename('$1_H', 'UNTITLED_H'))`}
 	#define ${1}
