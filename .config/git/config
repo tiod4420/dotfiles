@@ -26,6 +26,8 @@
 	stat = log --compact-summary
 	# Show diff summary
 	summary = diff --compact-summary
+	# Show tags with message
+	tags = tag --list -n 1
 	# Show local author
 	who = "!f() { echo \"$(git config --local user.name)\" " \
 		"\"<$(git config --local user.email)>\"; }; f"
