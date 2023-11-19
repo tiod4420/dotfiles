@@ -16,6 +16,10 @@ aliases()
 	alias cws="cd ~/Workspace"
 	alias pws="pushd ~/Workspace"
 
+	# Safe cp and mv
+	alias cp="cp -i"
+	alias mv="mv -i"
+
 	# Get color flag for ls, according to the current ls version
 	if [ "$TERM_COLORS" -ge 256 ]; then
 		# Set colors for grep

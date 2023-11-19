@@ -411,8 +411,17 @@ cloc()
 	fi
 }
 
+# Search for file in current directory
+ff()
+{
+	# Check if argument is provided
+	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
+	# Search for file execpted .git directory
+	find . -name "$1" -not -path "*/.git/*" 2> /dev/null
+}
+
 # Search for text within history file
-qh()
+fh()
 {
 	# Check if argument is provided
 	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
@@ -421,12 +430,22 @@ qh()
 }
 
 # Search for text within the current directory
-qt()
+ft()
 {
 	# Check if argument is provided
 	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
 	# Search for text excepted .git directory
-	grep -R --color=always --exclude-dir=".git" "$1" "." | less -XR
+	grep -R --color=always --exclude-dir=".git" "$1" "." 2> /dev/null | \
+		less -XR
+}
+
+# Search for which file contains a given string
+fw()
+{
+	# Check if argument is provided
+	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
+	# Search for text excepted .git directory
+	grep -R -l --color=always --exclude-dir=".git" "$1" "." 2> /dev/null
 }
 
 # Vim-like exit
