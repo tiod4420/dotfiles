@@ -2,7 +2,6 @@
 
 " Works only for Vim
 set nocompatible
-
 " Disable modeline
 set nomodeline
 " UTF8 encoding, without BOMB
@@ -15,21 +14,22 @@ if has ("title") | set title | endif
 
 " Set auto indentation
 set autoindent
+" Backspace behaviour
+set backspace=indent,eol,start
 " Set column space
 set colorcolumn=80,100
 " Show line number
 set number
+" Search path for find and related
+set path+=**
 " Show ruler at the bottom right
 set ruler
+" Scrolls some lines before the bottom
+set scrolloff=2
 " Show current typed command
 set showcmd
 " Show current mode
 set showmode
-
-" Backspace behaviour
-set backspace=indent,eol,start
-" Scrolls some lines before the bottom
-set scrolloff=2
 
 " Case insensitive search
 set ignorecase
@@ -43,7 +43,7 @@ set incsearch
 " Show ribbon for available options in command mode
 set wildmenu
 " Autocomplete menu in insert mode
-set completeopt=menuone,longest
+set completeopt=longest,menuone
 
 " No backup files
 set nobackup
