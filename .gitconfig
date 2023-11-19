@@ -14,14 +14,20 @@
 	contributors = shortlog --email --numbered --summary
 	# Allow git git git...
 	git = !exec git
+	# Log last commit
+	last = log -1 --stat HEAD
 	# List commits logs
 	lo = log --pretty=oneline -n 30 --graph --abbrev-commit
 	# Update last commit with staged files without editing the message
 	oops = commit --amend --no-edit
+	#
+	reauthor = commit --amend --no-edit --reset-author
 	# Update submodules
 	subupdate = submodule update
 	# Show diff summary
 	summary = diff --compact-summary
+	# Short alias for status
+	st = status
 	# Show local author
 	who = "!f() { echo \"$(git config --local user.name)\" " \
 		"\"<$(git config --local user.email)>\"; }; f"
@@ -35,6 +41,8 @@
 	attributesfile = ~/.git.d/gitattributes.default
 	# Avoid to display EOL differences
 	autocrlf = input
+	# Ensure CRLF modification is safe
+	safecrlf = true
 	# Use custom .gitignore
 	excludesfile = ~/.git.d/gitignore.default
 	# Make rebase safer on macOS
@@ -61,10 +69,6 @@
 	upstream = blue
 
 [color "diff"]
-	# File header
-	frag = blue
-	# Diff metadata
-	meta = magenta
 	# Added content
 	new = green
 	# New moved content
@@ -77,12 +81,12 @@
 [color "status"]
 	# Added files
 	added = green
-	# Name of the branch
-	branch = cyan
 	# Modified files
 	changed = yellow
 	# Untracked files
 	untracked = red
+	# Current branche
+	branch = blue
 
 [diff]
 	# Use better, descriptive initials (c, i, w) instead of a/b

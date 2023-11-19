@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
-#
+
 # Bash configuration for interactive non-login shells
-
-# Define some utility functions
-
 bashrc()
 {
 	if [ -z "$SSH_AUTH_SOCK" ]; then
