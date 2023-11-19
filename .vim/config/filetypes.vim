@@ -99,7 +99,7 @@ call <SID>AddDevelopment("java,kotlin", '//', {
 			\ })
 
 call <SID>AddDevelopment("groovy", '//', {
-			\ "files": "Jenkinsfile"
+			\ "files": "Jenkinsfile",
 			\ "expandtab": { "shiftwidth": 4, "tabstop": 4 },
 			\ })
 
