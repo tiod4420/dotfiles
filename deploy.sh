@@ -4,7 +4,7 @@ shopt -s extglob
 
 # Constants
 ROOT_DIR=$(dirname ${BASH_SOURCE})
-CONFIG_DIR_PATH=${XDG_CONFIG_PATH:-"${HOME}/.config"}
+CONFIG_DIR_PATH=${XDG_CONFIG_HOME:-"${HOME}/.config"}
 DRY_RUN="false"
 
 # Util functions
