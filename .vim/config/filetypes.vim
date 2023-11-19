@@ -59,6 +59,8 @@ function s:AddDevelopment(language, comment_str, ...)
 	if has_key(l:options, "extra")
 		execute l:auft . l:options["extra"]
 	endif
+
+	augroup end
 endfunction
 
 " Flush existing rules
