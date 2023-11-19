@@ -47,9 +47,9 @@ snippet! struct
 snippet! cast
 	((${1:const uint8_t *})${0:$VISUAL})
 snippet! pr
-	printf("${0}");
+	printf("${0}\\n");
 snippet fpr
-	fprintf(${1:stderr}, "${0}");
+	fprintf(${1:stderr}, "${0}\\n");
 snippet! dump
 	for (size_t i = 0; i < ${1:${VISUAL:ptr}}_sz; ++i) {
 		printf("%02x", ${0:$1}[i]);
@@ -99,7 +99,6 @@ snippet map
 	std::map<${1:std::string}, ${2:uint8_t}> ${3:map};
 snippet shared
 	auto ${3:shared} = std::make_shared<${1:uint8_t}>(${2});
-# std::unique_ptr
 snippet unique
 	auto ${3:unique} = std::make_unique<${1:uint8_t}>(${2});
 snippet class
