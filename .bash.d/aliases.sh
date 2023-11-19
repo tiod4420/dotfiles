@@ -49,7 +49,7 @@ aliases()
 
 	# Search for file or text in current directory
 	alias ff="find . -name"
-	alias ft="grep -R"
+	alias ft="grep -RI"
 
 	# OpenSSL fast command
 	alias asn1parse="openssl asn1parse -i -dump"
