@@ -21,6 +21,13 @@ function s:RestoreEnv(dic)
 	call setpos("'>", a:dic["visual_marks"]["end"])
 endfunction
 
+" Reformat entire file with formatprg, and restore initial view of the window
+function FileFormatPrg()
+	let l:view = winsaveview()
+	silent execute "noautocmd keepjumps normal gggqG"
+	call winrestview(l:view)
+endfunction
+
 " Search for word inside file or directory
 function VimGrepOperator(...)
 	if a:0 == 0

@@ -35,7 +35,7 @@ nnoremap <Leader>/ :call setreg("/", "", "v")<CR>
 " Toggle paste mode
 nnoremap <Leader>p :set paste!<CR>:set paste?<CR>
 " Format the whole file
-nnoremap <Leader>q gggqG2<C-O>
+nnoremap <Leader>q :call FileFormatPrg()<CR>
 " Search and replace local or global declarations
 nnoremap <Leader>r :call RefactorDecl('[[', '][')<CR>
 nnoremap <Leader>R :call RefactorDecl('gg', 'G')<CR>
