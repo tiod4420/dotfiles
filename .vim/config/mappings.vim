@@ -41,3 +41,6 @@ nnoremap <Leader>R :call RefactorDecl('gg', 'G')<CR>
 nnoremap <Leader>t /TODO<CR>
 " Search for trailing whitespaces
 nnoremap <Leader>w /\s\+$<CR>
+
+" Command line abbreviation for :find
+cnoreabbrev <expr> ff (getcmdtype() == ':' && getcmdline() =~ '^ff$') ? 'find' : 'ff'

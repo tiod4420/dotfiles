@@ -25,17 +25,23 @@ snippet trait
 	    ${0}
 	}
 snippet new
-	impl ${1:${VISUAL:Struct}} {
-	    pub fn new(${3}) -> Self {
-	        Self {
-	            ${0}
-	        }
+	pub fn new(${1}) -> Self {
+	    Self {
+	        ${0}
 	    }
 	}
 snippet debug
 	impl fmt::Debug for ${1:${VISUAL:Struct}} {
 	    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
 	        ${0:write!(f, "")}
+	    }
+	}
+snippet default
+	impl Default for ${1:${VISUAL:Struct}} {
+	    fn default() -> Self {
+	        Self {
+	            ${0}
+	        }
 	    }
 	}
 snippet display
