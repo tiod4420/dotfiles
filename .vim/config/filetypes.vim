@@ -32,9 +32,8 @@ if has("autocmd")
 		" Rust
 		autocmd Filetype rust call DevelopmentEnvironment()
 		autocmd Filetype rust setlocal formatprg=rustfmt
+		autocmd Filetype rust setlocal keywordprg=rusty-man
 		autocmd FileType rust nnoremap <Leader>q :RustFmt<CR>
-		autocmd FileType rust nnoremap <Leader>r :RustRun<CR>
-		autocmd FileType rust nnoremap <Leader>t :RustTest<CR>
 		" sh
 		autocmd Filetype sh call DevelopmentEnvironment()
 		" Python

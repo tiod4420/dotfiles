@@ -30,11 +30,6 @@ snippet once
 
 	#endif /* end ${1} */
 snippet struct
-	enum ${1}_status {
-		${1/.*/\U&}_SUCCESS = 0,
-		${1/.*/\U&}_FAILURE = 1,
-	};
-
 	struct ${1:${VISUAL:struct}} {
 	${0}
 	};
@@ -43,8 +38,6 @@ snippet struct
 	void ${1}_free(struct ${1} *${1});
 
 	int ${1}_setup(struct ${1} *${1});
-
-	const char *${1}_status_to_str(enum ${1}_status status);
 snippet cast
 	((${1:const uint8_t *})${0:$VISUAL})
 snippet todo
@@ -77,6 +70,11 @@ snippet ifndef
 snippet for
 	for (size_t ${2:i} = 0; ${2} < ${1:count}; ${3:++}${2}) {
 		${0}
+	}
+snippet check
+	if (${1:0} != res) {
+		ret = ${2:1};
+		goto cleanup;
 	}
 snippet nocxx
 	#ifdef __cplusplus
