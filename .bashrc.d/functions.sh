@@ -227,6 +227,12 @@ qt()
 	grep -R --color=always --exclude-dir=".git" "$1" "." | less -XR
 }
 
+# VIM-like exit
+:q()
+{
+	exit 0
+}
+
 }
 
 functions
