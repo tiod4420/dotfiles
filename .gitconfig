@@ -23,8 +23,6 @@
 	last = log -1 HEAD
 	# Update last commit with staged files without editing the message
 	oops = commit --amend --no-edit
-	# Display local commit not pushed to origin
-	local = log origin/master..master --abbrev-commit --pretty=custom
 	# List all remotes
 	remotes = remote -v
 	# List contributors.
