@@ -28,8 +28,10 @@ endif
 
 " Fix tmux term capabilities
 if &term =~ "^tmux"
-	if &t_ST == "" | let &t_ST = "\e[22;2t" | endif
-	if &t_RT == "" | let &t_RT = "\e[23;2t" | endif
+	if exists('&t_ST')
+		if &t_ST == "" | let &t_ST = "\e[22;2t" | endif
+		if &t_RT == "" | let &t_RT = "\e[23;2t" | endif
+	endif
 elseif &term =~ "^alacritty"
 	set ttymouse=sgr
 endif
