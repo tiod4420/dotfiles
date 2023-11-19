@@ -32,6 +32,9 @@ noremap <expr> <Leader>X SnipMateVisualCut()
 
 " Clear search results
 nnoremap <Leader>/ :call setreg("/", "", "v")<CR>
+" Jump to git merge conflicts
+nnoremap <Leader>m <Plug>gitConflictNext
+nnoremap <Leader>M <Plug>gitConflictPrev
 " Toggle paste mode
 nnoremap <Leader>p :set paste!<CR>:set paste?<CR>
 " Format the whole file
