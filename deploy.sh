@@ -617,8 +617,8 @@ echo "Checking git -- FOUND"
 
 cd ${ROOT_DIR}
 
-git submodule update --init --recursive 2> /dev/null
-RES=$?; [ 0 -ne $RES ] && echo "git submodule update: failure" && exit 1
+git submodule update --init --recursive
+RES=$?; [ 0 -ne $RES ] && exit 1
 echo "Updating submodules -- DONE"
 echo ""
 
