@@ -8,8 +8,8 @@ snippet cmake
 	add_compile_options(
 		-Wall -Wextra -W -Wwrite-strings -Winit-self -Wpointer-arith
 		-Wreturn-type -Waddress -Wsequence-point -Wshadow -Wformat-security
-		-Wmissing-include-dirs -Wfloat-equal -Wundef -Wcast-align
-		-Wmissing-declarations -Wvla
+		-Wmissing-include-dirs -Wfloat-equal -Wcast-align -Wmissing-declarations
+		-Wvla
 		\$<\$<CONFIG:ASan>:-fsanitize=address\$<SEMICOLON>-fsanitize=undefined>
 		)
 
@@ -26,7 +26,7 @@ snippet exe
 	file(GLOB HEADERS include/*.h)
 
 	add_executable(\${TARGET_NAME} \${SOURCES} \${HEADERS})
-	set_target_properties(\${TARGET_NAME} PROPERTIES C_STANDARD 99)
+	set_target_properties(\${TARGET_NAME} PROPERTIES C_STANDARD 11)
 
 	target_compile_options(\${TARGET_NAME}
 		PUBLIC ${2:option}
@@ -51,7 +51,7 @@ snippet lib
 	file(GLOB HEADERS include/*.h)
 
 	add_library(\${TARGET_NAME} ${2:STATIC} \${SOURCES} \${HEADERS})
-	set_target_properties(\${TARGET_NAME} PROPERTIES C_STANDARD 99)
+	set_target_properties(\${TARGET_NAME} PROPERTIES C_STANDARD 11)
 
 	target_compile_options(\${TARGET_NAME}
 		PUBLIC ${3:option}
@@ -131,32 +131,30 @@ snippet binary
 snippet extern
 	include(ExternalProject)
 
-	set(TARGET_NAME ${1:googletest})
-
-	ExternalProject_Add(\${TARGET_NAME}_dl
+	ExternalProject_Add(${1:googletest}_dl
 		GIT_REPOSITORY    ${2:https://github.com/google/googletest.git}
+		GIT_TAG           ${3:release-1.10.0}
 		GIT_CONFIG        advice.detachedHead=false
 		GIT_SHALLOW       ON
-		GIT_TAG           ${3:release-1.10.0}
 		CMAKE_CACHE_ARGS  -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-		CMAKE_COMMAND     \${GTEST_CMAKE_COMMAND}
 		BUILD_COMMAND     \${CMAKE_COMMAND} --build <BINARY_DIR> --config \$<CONFIG>
 		UPDATE_COMMAND    ""
 		)
-	ExternalProject_Get_property(\${TARGET_NAME}_dl INSTALL_DIR)
+	ExternalProject_Get_property(${1}_dl INSTALL_DIR)
 
-	add_library(\${TARGET_NAME} INTERFACE)
+	add_library(${1} INTERFACE)
 
-	target_include_directories(\${TARGET_NAME}
+	target_include_directories(${1}
 		INTERFACE \${INSTALL_DIR}/include
 		)
 
-	target_link_directories(\${TARGET_NAME}
+	target_link_directories(${1}
 		INTERFACE \${INSTALL_DIR}/lib
 		)
 
-	target_link_libraries(\${TARGET_NAME}
+	target_link_libraries(${1}
+		INTERFACE Threads::Threads
 		INTERFACE ${4:gtest gmock Threads::Threads}
 		)
 
-	add_dependencies(\${TARGET_NAME} \${TARGET_NAME}_dl)
+	add_dependencies(${1} ${1}_dl)
