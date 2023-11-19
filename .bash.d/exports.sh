@@ -59,6 +59,8 @@ exports()
 	# Set locale preferences
 	export LC_ALL="en_US.UTF-8";
 
+	# Set groff options for colored less and man
+	export GROFF_NO_SGR=1
 	# Make vim the default editor.
 	export EDITOR="vim"
 	# Make less the default pager
