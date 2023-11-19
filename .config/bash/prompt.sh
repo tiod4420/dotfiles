@@ -7,23 +7,30 @@ prompt()
 	local vi_ins_string
 	local vi_cmd_string
 
-	if [ "$TERM_COLORS" -ge 256 ]; then
-		PS1=$(build_ps1)
-		PS2=$(build_ps2)
-
-		vi_ins_string="\1$(get_color white)\2"
-		vi_cmd_string="\1$(get_color red)\2"
-	else
-		PS1="\u@\h \w \$(__prompt_git_details)\n "
+	# Setup PS1 and PS@, depending if there is colors and __git_ps1
+	if [ "$TERM_COLORS" -lt 256 ]; then
+		PS1="\u@\h \w\n "
 		PS2=" "
 
 		vi_ins_string="$"
 		vi_cmd_string="*"
-	fi
+	else
+		local ps1_prefix="$(build_ps1_prefix)"
+		local ps1_suffix="$(build_ps1_suffix)"
 
-	# Export prompts
-	export PS1
-	export PS2
+		if check_has_cmd __git_ps1; then
+			local gitformat=" -- %s"
+			GIT_PS1_SHOWCOLORHINTS=1
+			PROMPT_COMMAND="__git_ps1 '${ps1_prefix}' '${ps1_suffix}' '${gitformat}'"
+		else
+			PS1="${ps1_prefix}${ps1_suffix}"
+		fi
+
+		PS2=$(build_ps2)
+
+		vi_ins_string="\1$(get_color white)\2"
+		vi_cmd_string="\1$(get_color red)\2"
+	fi
 
 	# Set vi editing mode string
 	bind "set show-mode-in-prompt on"
@@ -31,7 +38,7 @@ prompt()
 	bind "set vi-cmd-mode-string \"${vi_cmd_string}\""
 }
 
-build_ps1()
+build_ps1_prefix()
 {
 	local user_style
 	local host_style
@@ -52,10 +59,11 @@ build_ps1()
 	set_color white
 	echo -n "\w"
 	set_color reset
-	echo -n " "
-	echo -n "\$(__prompt_git_details blue)"
-	echo -n "\n"
-	echo -n "$ "
+}
+
+build_ps1_suffix()
+{
+	echo -n "\n$ "
 	set_color reset
 }
 
@@ -67,17 +75,10 @@ build_ps2()
 
 set_color()
 {
-	local COLOR=$(get_color "$@")
-	echo -n "\[${COLOR}\]"
-}
-
-__prompt_git_details()
-{
-	local color=$1
-	# TODO:  display something only if we did not deactivated git branches display
-	# TODO color
-	echo "${color:-$(date)}"
+	echo -n "\[$(get_color "$@")\]"
 }
 
 prompt
-unset -f prompt build_ps1 build_ps2 set_color
+unset -f prompt
+unset -f build_ps1_prefix build_ps1_suffix build_ps2
+unset -f set_color

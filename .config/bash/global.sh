@@ -40,6 +40,13 @@ setup_linux()
 {
 	# Setup bash autocomplete
 	check_and_source "/usr/share/bash-completion/bash_completion"
+	# Try to source git-prompt.sh if not already done
+	# CentOS
+	check_has_cmd __git_ps1 || check_and_source "/usr/share/git-core/contrib/completion/git-prompt.sh"
+	# Debian
+	check_has_cmd __git_ps1 || check_and_source "/usr/lib/git-core/git-sh-prompt"
+	# Arch Linux
+	check_has_cmd __git_ps1 || check_and_source "/usr/share/git/completion/git-prompt.sh"
 }
 
 setup_osx()
@@ -50,14 +57,15 @@ setup_osx()
 	local brew_man
 
 	# Get Homebrew's installation path, or empty string if not existing
-	command -v brew &> /dev/null && brew_prefix="$(brew --prefix)/opt"
+	check_has_cmd brew && brew_prefix="$(brew --prefix)"
 
-	# Setup bash autocomplete
-	check_and_source "${brew_prefix}/bash-completion/etc/profile.d/bash_completion.sh"
+	## Setup bash autocomplete
+	check_and_source "${brew_prefix}/opt/bash-completion/etc/profile.d/bash_completion.sh"
+	check_has_cmd __git_ps1 || check_and_source "${brew_prefix}/etc/bash_completion.d/git-prompt.sh"
 
 	local formula
 	for formula in "bison" "coreutils" "findutils" "gnu-sed" "grep" "openssl"; do
-		brew_path="${brew_prefix}/${formula}"
+		brew_path="${brew_prefix}/opt/${formula}"
 
 		# Skip if path doesn't exist
 		[ ! -d "$brew_path" ] && continue
@@ -75,4 +83,6 @@ setup_osx()
 }
 
 global
-unset -f global add_man add_path setup_linux setup_osx
+unset -f global
+unset -f add_man add_path
+unset -f setup_linux setup_osx

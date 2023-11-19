@@ -39,8 +39,17 @@ bashrc()
 
 check_and_source()
 {
-	local file=$1
-	[ -f "$file" -a -r "$file" ] && source $file
+	check_file "$1" && source "$1"
+}
+
+check_file()
+{
+	[ -f "$1" ] && [ -r "$1" ]
+}
+
+check_has_cmd()
+{
+	command -v "$@" &> /dev/null
 }
 
 get_color()
@@ -49,8 +58,6 @@ get_color()
 
 	# Return early if colors are barely supported
 	[ "$TERM_COLORS" -lt 256 ] && return 0
-
-	# TODO: handle options like set_color
 
 	case "$color" in
 		normal | reset) echo "\e[0m";;
@@ -104,4 +111,6 @@ get_os_type()
 }
 
 bashrc
-unset -f bashrc check_and_source get_color get_ls_version get_os_type
+unset -f bashrc
+unset -f check_and_source check_file check_has_cmd
+unset -f get_color get_ls_version get_os_type

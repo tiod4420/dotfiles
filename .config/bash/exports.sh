@@ -26,7 +26,7 @@ exports()
 	export HISTCONTROL="ignoreboth";
 
 	# Get number of colors of the terminal
-	if [ "${TERM_COLORS}" -ge 256 ]; then
+	if [ "$TERM_COLORS" -ge 256 ]; then
 		# Retrieve LS version from here, as path might change during setup
 		local ls_version=$(get_ls_version)
 		[ "gnuls" = "${ls_version}" ] && export LS_COLORS=$(make_gnuls_colors)
@@ -59,8 +59,7 @@ exports()
 make_gnuls_colors()
 {
 	local dir_colors="${CONFIG_DIR_PATH}/dircolors"
-	[ ! -f "$dir_colors" -o ! -r "$dir_colors" ] && dir_colors=""
-
+	check_file "$dir_colors" || dir_colors=""
 	dircolors -b ${dir_colors} | sed -n "s/^LS_COLORS='\(.*\)';/\1/p"
 }
 
@@ -109,4 +108,5 @@ make_gcc_colors()
 }
 
 exports
-unset -f exports make_gnuls_colors make_bsdls_colors make_gcc_colors
+unset -f exports
+unset -f make_gnuls_colors make_bsdls_colors make_gcc_colors

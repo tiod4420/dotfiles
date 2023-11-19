@@ -57,7 +57,7 @@ aliases()
 	alias todolist="vim \$TODO_FILE"
 
 	# Use Git’s colored diff when available
-	command -v git &> /dev/null && alias gdiff="git diff --no-index"
+	check_has_cmd git && alias gdiff="git diff --no-index"
 
 	# Normalize open across Linux and OSX
 	[ "linux" = "$OS" ] && alias open="xdg-open";
