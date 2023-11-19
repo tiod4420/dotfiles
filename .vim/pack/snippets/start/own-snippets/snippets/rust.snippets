@@ -115,6 +115,20 @@ snippet into_iter
 	        ${0}
 	    }
 	}
+snippet index
+	impl ops::Index<${2:I}> for ${1:${VISUAL:Struct}} {
+	    type Output = ${3:T};
+
+	    fn index(&self, idx: ${2}) -> &Self::Output {
+	        ${0}
+	    }
+	}
+snippet index_mut
+	impl ops::IndexMut<${2:I}> for ${1:${VISUAL:Struct}} {
+	    fn index_mut(&mut self, idx: ${2}) -> &mut ${3:T} {
+	        ${0}
+	    }
+	}
 snippet for
 	for ${1:i} in ${2} {
 	    ${0:$VISUAL}
