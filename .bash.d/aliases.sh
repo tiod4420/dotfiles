@@ -74,7 +74,7 @@ aliases()
 	# Print each PATH entry on a separate line
 	alias path='echo -e ${PATH//:/\\n}'
 	# Check what there is to do in current directory
-	alias todo="grep -R TODO --exclude-dir={.git,build,externals}"
+	alias todo="grep -RI TODO --exclude-dir={.git,build,externals}"
 	# Edit todo file
 	alias todolist="vim \$TODO_FILE"
 
