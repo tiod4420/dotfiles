@@ -30,12 +30,6 @@ snippet new
 	        ${0}
 	    }
 	}
-snippet debug
-	impl fmt::Debug for ${1:${VISUAL:Struct}} {
-	    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-	        ${0:write!(fmt, "")}
-	    }
-	}
 snippet default
 	impl Default for ${1:${VISUAL:Struct}} {
 	    fn default() -> Self {
@@ -44,16 +38,22 @@ snippet default
 	        }
 	    }
 	}
-snippet display
-	impl fmt::Display for ${1:${VISUAL:Struct}} {
-	    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-	        ${0:write!(fmt, "")}
-	    }
-	}
 snippet drop
 	impl Drop for ${1:${VISUAL:Struct}} {
 	    fn drop(&mut self) {
 	        ${0}
+	    }
+	}
+snippet debug
+	impl fmt::Debug for ${1:${VISUAL:Struct}} {
+	    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+	        ${0:write!(fmt, "")}
+	    }
+	}
+snippet display
+	impl fmt::Display for ${1:${VISUAL:Struct}} {
+	    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+	        ${0:write!(fmt, "")}
 	    }
 	}
 snippet from
@@ -95,6 +95,23 @@ snippet deref
 	    type Target = ${2:T};
 
 	    fn deref(&self) -> &${2} {
+	        ${0}
+	    }
+	}
+snippet iter
+	impl Iterator for ${1:${VISUAL:Struct}} {
+	    type Item = ${2:T};
+
+	    fn next(&mut self) -> Option<Self::Item> {
+	        ${0}
+	    }
+	}
+snippet into_iter
+	impl IntoIterator for ${1:${VISUAL:Struct}} {
+	    type Item = ${2:T};
+	    type IntoIter = ${3:I};
+
+	    fn into_iter(self) -> Self::IntoIter {
 	        ${0}
 	    }
 	}
