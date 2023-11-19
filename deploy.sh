@@ -224,8 +224,6 @@ echo ""
 echo "Deploying dotfiles"
 deploy_file .gdbinit
 RES=$?; [ 0 -ne $RES ] && exit 1
-
-echo "Deploying .cargo files"
 mkdir -p "${HOME}/.cargo"
 RES=$?; [ 0 -ne $RES ] && exit 1
 deploy_file .cargo/config.toml
