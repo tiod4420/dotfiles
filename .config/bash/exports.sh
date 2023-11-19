@@ -72,23 +72,23 @@ make_bsdls_colors()
 	# Symbolic link
 	lscolors+="gx"
 	# Socket
-	lscolors+="fx"
-	# Pipe
 	lscolors+="dx"
+	# Pipe
+	lscolors+="bx"
 	# Executable
 	lscolors+="cx"
 	# Block special
-	lscolors+="Gx"
+	lscolors+="Bx"
 	# Character special
-	lscolors+="Dx"
+	lscolors+="Cx"
 	# Executable with setuid bit set
-	lscolors+="xB"
+	lscolors+="ab"
 	# Executable with setgid bit set
-	lscolors+="xe"
+	lscolors+="ad"
 	# Directory writable to others, with sticky bit
-	lscolors+="xc"
+	lscolors+="ae"
 	# Directory writable to others, without sticky bit
-	lscolors+="xd"
+	lscolors+="af"
 
 	echo ${lscolors}
 }
