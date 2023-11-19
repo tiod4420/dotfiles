@@ -71,10 +71,13 @@ bashrc()
 			;;
 	esac
 
+	# Load generic configuration files
 	for file in ${SOURCE_FILES[@]}; do
 		[ -f "$file" ] && [ -r "$file" ] && source $file
 	done
 
+	# Load extra configuration files that are not commited
+	# [!] Load after all other settings so it can override previous config
 	for file in "$config_path/extra/*.sh"; do
 		[ -f "$file" ] && [ -r "$file" ] && source $file
 	done

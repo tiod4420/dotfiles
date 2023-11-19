@@ -1,6 +1,6 @@
 " Global settings
 
-" Works only for VIM
+" Works only for Vim
 set nocompatible
 " UTF8 encoding, without BOMB
 set encoding=utf-8 nobomb
