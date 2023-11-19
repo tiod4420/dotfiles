@@ -51,9 +51,7 @@ build_ps1_prefix()
 	get_color -m ps1 ${user_style} "\u"
 	get_color -m ps1 reset "@"
 	get_color -m ps1 ${host_style} "\h"
-	get_color -m ps1 reset " "
-	get_color -m ps1 brwhite "\w"
-	get_color -m ps1 reset
+	get_color -m ps1 reset " \w"
 }
 
 build_ps1_suffix()

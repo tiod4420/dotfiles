@@ -22,6 +22,8 @@
 	oops = commit --amend --no-edit
 	# Edit author of the current commit
 	reauthor = commit --amend --no-edit --reset-author
+	# Show commit log stats
+	stat = log --compact-summary
 	# Update submodules
 	subupdate = submodule update
 	# Show diff summary
