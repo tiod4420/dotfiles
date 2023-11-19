@@ -2,48 +2,46 @@
 #
 # Global environment variables settings
 
+add_path()
+{
+	(echo "$PATH" | grep -q "\(^\|:\)${1}\($\|:\)") && return
+	[ "after" = "$2" ] && PATH="${PATH}:${1}" || PATH="${1}:${PATH}"
+}
+
+add_man()
+{
+	(echo "$MANPATH" | grep -q "\(^\|:\)${1}\($\|:\)") && return
+	[ "after" = "$2" ] && MANPATH="${MANPATH}:${1}" || MANPATH="${1}:${MANPATH}"
+}
+
 exports()
 {
-	local DIR_COLORS=""
+	local BREW_PATH=""
 	local BREW_BIN=""
 	local BREW_MAN=""
-	declare -r -a BREW_UTILS=(
-		"bison"
-		"coreutils"
-		"findutils"
-		"gnu-sed"
-		"grep"
-		"openssl@1.1"
-	)
-	local i
+	local DIR_COLORS=""
+	local formula
 
 	# Add Rust development environment to PATH
-	PATH="${HOME}/.cargo/bin:${PATH}"
+	add_path "${HOME}/.cargo/bin"
 
 	# Set Homebrew bin and man to PATH and MANPATH
 	if [ "osx" = "$OS" ]; then
-		# Loop over all brew utils that we want into our PATH
-		for i in ${BREW_UTILS[@]}; do
-			# Skip if empty
-			[ -z "${BREW_PATHS[$i]}" ] && continue
+		for formula in ${BREW_FORMULAS[@]}; do
+			BREW_PATH="${BREW_PREFIX}/${formula}"
 
-			# Add only if not already in PATH
-			BREW_BIN="${BREW_PATHS[$i]}/libexec/gnubin"
-			[ ! -d "$BREW_BIN" ] && BREW_BIN="${BREW_PATHS[$i]}/bin"
-			if ! echo $PATH | grep -q $BREW_BIN; then
-				if [ -d "$BREW_BIN" ]; then
-					PATH="${BREW_BIN}:${PATH}"
-				fi
-			fi
+			# Skip if path doesn't exist
+			[ ! -d "$BREW_PATH" ] && continue
 
-			# Add only if not already in MANPATH
-			BREW_MAN="${BREW_PATHS[$i]}/libexec/gnuman"
-			[ ! -d "$BREW_MAN" ] && BREW_MAN="${BREW_PATHS[$i]}/man"
-			if ! echo $MANPATH | grep -q $BREW_MAN; then
-				if [ -d "$BREW_MAN" ]; then
-					MANPATH="${BREW_MAN}:${MANPATH}"
-				fi
-			fi
+			BREW_BIN="${BREW_PATH}/libexec/gnubin"
+			[ ! -d "$BREW_BIN" ] && BREW_BIN="${BREW_PATH}/bin"
+
+			BREW_MAX="${BREW_PATH}/libexec/gnuman"
+			[ ! -d "$BREW_MAN" ] && BREW_MAN="${BREW_PATH}/man"
+
+			## Add only if not already in PATH or MANPATH
+			add_path "$BREW_BIN"
+			add_man "$BREW_MAN"
 		done
 	fi
 
@@ -146,3 +144,5 @@ exports()
 
 exports
 unset -f exports
+unset -f add_path
+unset -f add_man

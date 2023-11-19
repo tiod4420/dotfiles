@@ -8,8 +8,7 @@ global()
 
 	# Set Bash auto completion script
 	if [ "osx" = "$OS" ]; then
-		BASH_CPT=${BREW_PATHS["bash-completion"]}
-		BASH_CPT+="/etc/profile.d/bash_completion.sh"
+		BASH_CPT="${BREW_PREFIX}/bash-completion/etc/profile.d/bash_completion.sh"
 	elif [ "linux" = "$OS" ]; then
 		BASH_CPT="/etc/bash_completion"
 	fi
@@ -21,8 +20,7 @@ global()
 		# Init SSH agent
 		eval $(/usr/bin/ssh-agent 2> /dev/null)
 		# Kill SSH agent
-		trap "[ -n \"\$SSH_AGENT_PID\" ] && \
-			eval \$(/usr/bin/ssh-agent -k &> /dev/null)" EXIT
+		trap "[ -n \"\$SSH_AGENT_PID\" ] && eval \$(/usr/bin/ssh-agent -k &> /dev/null)" EXIT
 	fi
 
 	# Append to the Bash history file, rather than overwriting it

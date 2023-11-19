@@ -38,18 +38,24 @@ aliases()
 		man()
 		{
 			LESS_TERMCAP_md=${MAN_COLOR_md} \
-				LESS_TERMCAP_me=${MAN_COLOR_me} \
-				LESS_TERMCAP_so=${MAN_COLOR_so} \
-				LESS_TERMCAP_se=${MAN_COLOR_se} \
-				LESS_TERMCAP_us=${MAN_COLOR_us} \
-				LESS_TERMCAP_ue=${MAN_COLOR_ue} \
-				command man "$@"
+			LESS_TERMCAP_me=${MAN_COLOR_me} \
+			LESS_TERMCAP_so=${MAN_COLOR_so} \
+			LESS_TERMCAP_se=${MAN_COLOR_se} \
+			LESS_TERMCAP_us=${MAN_COLOR_us} \
+			LESS_TERMCAP_ue=${MAN_COLOR_ue} \
+			command man "$@"
 		}
 	fi
 
-	# ls with long mode
+	# Search for file in current directory
+	alias ff="find . -name"
+
+	# Convert hex to binary and reverse
+	alias tobin="xxd -p -r"
+	alias tohex="xxd -p"
+
+	# ls aliases
 	alias ll="ls -lh"
-	# ll with hidden files
 	alias la="ll -A"
 
 	# Allow display of raw characters (only ANSI colors) with less

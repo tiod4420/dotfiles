@@ -28,5 +28,7 @@ nnoremap <Right> <C-w>>
 nnoremap <Leader>/ :call ClearSearch()<CR>
 " Search with cursor on end of word
 nnoremap <Leader>e //e<CR>
+" Display path of the file
+nnoremap <Leader>p <C-G>
 " Toogle extra whitespaces
 nnoremap <Leader>w :call ExtraWhiteSpaceSearch()<CR>

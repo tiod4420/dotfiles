@@ -2,44 +2,26 @@
 #
 # Prompt creation
 
+if [ 0 -ne "$PROMPT_GIT_STATUS" ]; then
 __prompt_git_details()
 {
 	local branch_name=""
-	local flags=""
 
 	# Check if the current directory is in a Git repository
 	! git rev-parse --is-inside-work-tree &> /dev/null && return
 
-	# Check if in .git/ directory
-	if [ "false" = "$(git rev-parse --is-inside-git-dir)" ]; then
-		# Check for uncommitted changes in the index
-		! git diff --quiet --ignore-submodules --cached &&
-			flags+="+"
-		# Check for unstaged changes
-		! git diff-files --quiet --ignore-submodules -- &&
-			flags+="!"
-		# Check for untracked files
-		[ -n "$(git ls-files --others --exclude-standard)" ] &&
-			flags+="?"
-		# Check for stashed files
-		git rev-parse --verify refs/stash &>/dev/null &&
-			flags+="$"
+	# Get the short symbolic ref
+	branch_name=$(git rev-parse --abbrev-ref HEAD 2> /dev/null | tr -d "\n")
+	# If HEAD isn’t a symbolic ref, get the short SHA for the latest commit
+	if [ -z "$branch_name" ]; then
+		branch_name=$(git rev-parse --short HEAD 2> /dev/null | tr -d "\n")
+		# Otherwise, just give up
+		[ -z "$branch_name" ] && branch_name="(unknown)"
 	fi
 
-	[ -n "$flags" ] && flags=" [$flags]"
-
-	# Get the short symbolic ref
-	branch_name=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
-	# If HEAD isn’t a symbolic ref, get the short SHA for the latest commit
-	[ -z "$branch_name" ] &&
-		branch_name=$(git rev-parse --short HEAD 2> /dev/null)
-	# Otherwise, just give up
-	[ -z "$branch_name" ] &&
-		branch_name=$(echo "(unknown)")
-	branch_name=$(echo ${branch_name} | tr -d "\n")
-
-	echo "-- ${1}${branch_name}${2}${flags}"
+	echo "-- ${1}${branch_name}"
 }
+fi
 
 prompt()
 {
@@ -69,22 +51,10 @@ prompt()
 		orange="\e[00;38;5;166m"
 
 		# Set user color according to root or not (dynamic)
-		user_style="[ \"root\" != \"$USER\" ] "
-		user_style+="&& echo \"${yellow}\" || echo \"${red}\""
+		user_style="[ \"root\" != \"$USER\" ] && echo \"${yellow}\" || echo \"${red}\""
 
 		# Set host color according to SSH or not (static)
 		[ -z "$SSH_TTY" ] && host_style="$orange" || host_style="$green"
-
-		# vi edition mode strings
-		vi_ins_string="\1${white}\2"
-		vi_cmd_string="\1${red}\2"
-
-		# PS2: color will be set accordingly to vi mode
-		PS2="> \[${reset}\]"
-	else
-		# vi edition mode strings
-		vi_ins_string="$"
-		vi_cmd_string="*"
 	fi
 
 	# PS1: user@host pwd (-- <branch> [flags])
@@ -95,11 +65,23 @@ prompt()
 	PS1+="\[${host_style}\]\h"
 	PS1+=" "
 	PS1+="\[${white}\]\w"
-	if [ 0 -ne "$PROMPT_GIT_STATUS" ]; then
-		PS1+=" \$(command -v __prompt_git_details &> /dev/null &&"
-		PS1+="__prompt_git_details \"${cyan}\" \"${blue}\")"
+	command -v __prompt_git_details &> /dev/null && PS1+=" \$(__prompt_git_details \"${blue}\")"
+
+	if [ "$TERM_COLORS" -ge 256 ]; then
+		# vi edition mode strings
+		vi_ins_string="\1${white}\2"
+		vi_cmd_string="\1${red}\2"
+
+		PS1+="\n\$ \[${reset}\]"
+		# PS2: color will be set accordingly to vi mode
+		PS2="> \[${reset}\]"
+	else
+		# vi edition mode strings
+		vi_ins_string="$"
+		vi_cmd_string="*"
+
+		PS1+="\n "
 	fi
-	[ "$TERM_COLORS" -ge 256 ] && PS1+="\n\$ \[${reset}\]" || PS1+="\n "
 
 	# Set vi editing mode string
 	bind "set show-mode-in-prompt on"

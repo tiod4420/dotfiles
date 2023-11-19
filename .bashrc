@@ -15,33 +15,22 @@ bashrc()
 		"${CONFIG_DIR_PATH}/prompt.sh"
 	)
 	declare -r -a BREW_FORMULAS=(
-		"bash-completion"
 		"bison"
 		"coreutils"
 		"findutils"
 		"gnu-sed"
 		"grep"
-		"openssl@1.1"
+		"openssl"
 	)
-	declare -A BREW_PATHS
+	local BREW_PREFIX=""
 	local LS_VERSION=""
 	local OS=""
 	local PROMPT_GIT_STATUS=1
 	local TERM_COLORS=0
-	declare -a BREW_FORMULAS_PATH
-	local BREW_FORMULA_PATH
 	local file
-	local i
 
 	# Get Homebrew's installation path, or empty string if not existing
-	if command -v brew &> /dev/null; then
-		BREW_FORMULAS_PATH=($(brew --prefix ${BREW_FORMULAS[*]}))
-
-		for i in ${!BREW_FORMULAS[@]}; do
-			BREW_FORMULA_PATH=${BREW_FORMULAS_PATH[$i]}
-			BREW_PATHS[${BREW_FORMULAS[$i]}]=$BREW_FORMULA_PATH
-		done
-	fi
+	command -v brew &> /dev/null && BREW_PREFIX="$(brew --prefix)/opt"
 
 	# Get number of colors of the terminal
 	TERM_COLORS=$(tput colors || echo 0)
