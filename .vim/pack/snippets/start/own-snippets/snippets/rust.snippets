@@ -57,20 +57,36 @@ snippet drop
 	    }
 	}
 snippet from
-	impl From<${2:T}> for ${1:${VISUAL:Struct}} {
-	    fn from(${3:from}: ${2}) -> Self {
+	impl From<${1:T}> for ${2:${VISUAL:Struct}} {
+	    fn from(${3:from}: ${1}) -> Self {
+	        ${0}
+	    }
+	}
+snippet tryfrom
+	impl TryFrom<${1:T}> for ${2:${VISUAL:Struct}} {
+	    type Error = ${3:&'static str};
+
+	    fn try_from(${4:from}: ${1}) -> Result<Self, Self::Error> {
+	        ${0}
+	    }
+	}
+snippet fromstr
+	impl FromStr for ${1:${VISUAL:Struct}} {
+	    type Err = ${2:&'static str};
+
+	    fn from_str(s: &str) -> Result<Self, Self::Err> {
 	        ${0}
 	    }
 	}
 snippet asref
-	impl AsRef<${2:T}> for ${1:${VISUAL:Struct}} {
-	    fn as_ref(&self) -> &${2} {
+	impl AsRef<${1:T}> for ${2:${VISUAL:Struct}} {
+	    fn as_ref(&self) -> &${1} {
 	        ${0}
 	    }
 	}
 snippet asmut
-	impl AsMut<${2:T}> for ${2:${VISUAL:Struct}} {
-	    fn as_mut(&mut self) -> &mut ${2} {
+	impl AsMut<${1:T}> for ${2:${VISUAL:Struct}} {
+	    fn as_mut(&mut self) -> &mut ${1} {
 	        ${0}
 	    }
 	}
