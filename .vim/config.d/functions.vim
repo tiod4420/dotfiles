@@ -97,32 +97,36 @@ endfunction
 
 " Encode the buffer to hex
 function! HexEnc()
-	" Save options
-	let b:hex_binary = &binary
-	let b:hex_filetype = &filetype
+	if 1 == executable("xxd")
+		" Save options
+		let b:hex_binary = &binary
+		let b:hex_filetype = &filetype
 
-	" Set options
-	setlocal binary
-	let &filetype ="xxd"
+		" Set options
+		setlocal binary
+		let &filetype ="xxd"
 
-	" Set toggle status
-	let b:hex_toggle = 1
+		" Set toggle status
+		let b:hex_toggle = 1
 
-	" Encode to hex
-	%! xxd -g1
+		" Encode to hex
+		%! xxd -g1
+	endif
 endfunction
 
 " Decode the buffer from hex
 function! HexDec()
-	" Restore options
-	if exists("b:hex_binary") | let &binary = b:hex_binary | endif
-	if exists("b:hex_filetype") | let &filetype = b:hex_filetype | endif
+	if 1 == executable("xxd")
+		" Restore options
+		if exists("b:hex_binary") | let &binary = b:hex_binary | endif
+		if exists("b:hex_filetype") | let &filetype = b:hex_filetype | endif
 
-	" Set toggle status
-	let b:hex_toggle = 0
+		" Set toggle status
+		let b:hex_toggle = 0
 
-	" Decode from hex
-	%! xxd -r
+		" Decode from hex
+		%! xxd -r
+	endif
 endfunction
 
 " Toggle from binary to hex
@@ -140,39 +144,43 @@ endfunction
 
 " Dump a file as C array
 function! BinaryDump(file)
-	if filereadable(expand(a:file))
+	if 1 == executable("xxd") && filereadable(expand(a:file))
 		execute ":r! xxd -i " . expand(a:file)
 	endif
 endfunction
 
 " Encode the buffer to Base64
 function! Base64Enc()
-	" Save options
-	let b:b64_binary = &binary
-	let b:b64_filetype = &filetype
+	if 1 == executable("openssl")
+		" Save options
+		let b:b64_binary = &binary
+		let b:b64_filetype = &filetype
 
-	" Set options
-	setlocal nobinary
-	let &filetype="base64"
+		" Set options
+		setlocal nobinary
+		let &filetype="base64"
 
-	" Set toggle state
-	let b:b64_toggle = 1
+		" Set toggle state
+		let b:b64_toggle = 1
 
-	" Encode to Base64
-	%! openssl base64
+		" Encode to Base64
+		%! openssl base64
+	endif
 endfunction
 
 " Decode the buffer from Base64
 function! Base64Dec()
-	" Restore options
-	if exists("b:b64_binary") | let &binary = b:b64_binary | endif
-	if exists("b:b64_filetype") | let &filetype = b:b64_filetype | endif
+	if 1 == executable("openssl")
+		" Restore options
+		if exists("b:b64_binary") | let &binary = b:b64_binary | endif
+		if exists("b:b64_filetype") | let &filetype = b:b64_filetype | endif
 
-	" Set toggle state
-	let b:b64_toggle = 0
+		" Set toggle state
+		let b:b64_toggle = 0
 
-	" Decode from Base64
-	%! openssl base64 -d
+		" Decode from Base64
+		%! openssl base64 -d
+	endif
 endfunction
 
 " Toggle from Base64 to binary
