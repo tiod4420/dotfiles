@@ -44,7 +44,7 @@ aliases()
 	alias chux="chmod u+x"
 
 	# Make tarball with automatic compression algorithm
-	alias mktar="tar cavf"
+	alias mktar="tar caf"
 	# Extract tarball
 	alias extar="tar xvf"
 	# List content of tarball
