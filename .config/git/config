@@ -8,8 +8,8 @@
 	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
 		"git config --local user.name \"$1\" && " \
 		"git config --local user.email \"$2\"; }; f"
-	# List all branches
-	branches = branch -vva
+	# List branches
+	branches = branch --all -vv
 	# List contributors
 	contributors = shortlog --numbered --email --summary
 	# Log last commit
@@ -20,13 +20,15 @@
 	oops = commit --amend --no-edit
 	# Edit author of the current commit
 	reauthor = commit --amend --no-edit --reset-author
+	# List remotes
+	remotes = remote --verbose
 	# Short alias for status
 	st = status
 	# Show commit log stats
 	stat = log --compact-summary
 	# Show diff summary
 	summary = diff --compact-summary
-	# Show tags with message
+	# List tags
 	tags = tag --list -n1
 	# Show local author
 	who = "!f() { echo \"$(git config --local user.name)\" " \
