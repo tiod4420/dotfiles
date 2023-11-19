@@ -120,6 +120,27 @@ deploy_git()
 	return 0
 }
 
+deploy_rust()
+{
+	local RES
+
+	echo "Deploying rust configuration -- "
+
+	# Create cargo directory if does not exist
+	mkdir -p "${HOME}/.cargo"
+	RES=$?; [ 0 -ne $RES ] && exit 1
+
+	# Add cargo configuration
+	deploy_file .cargo/config.toml
+	RES=$?; [ 0 -ne $RES ] && exit 1
+
+	# Add rustfmt configuration
+	deploy_file .rustfmt.toml
+	RES=$?; [ 0 -ne $RES ] && exit 1
+
+	return 0
+}
+
 deploy_ssh()
 {
 	local RES
@@ -215,7 +236,7 @@ command -v git &> /dev/null
 RES=$?; [ 0 -ne $RES ] && echo "git: command not found" && exit 1
 echo "Checking git -- FOUND"
 
-git submodule update --init --recursive --remote
+git submodule update --init --recursive
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo "Updating submodules -- DONE"
 echo ""
@@ -224,11 +245,6 @@ echo ""
 echo "Deploying dotfiles"
 deploy_file .gdbinit
 RES=$?; [ 0 -ne $RES ] && exit 1
-deploy_file .rustfmt.toml
-RES=$?; [ 0 -ne $RES ] && exit 1
-deploy_dir .cargo
-RES=$?; [ 0 -ne $RES ] && exit 1
-
 echo ""
 
 # Deploy multi-files configuration
@@ -241,6 +257,10 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 deploy_git
+RES=$?; [ 0 -ne $RES ] && exit 1
+echo ""
+
+deploy_rust
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
