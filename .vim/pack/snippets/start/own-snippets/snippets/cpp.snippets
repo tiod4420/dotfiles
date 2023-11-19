@@ -59,7 +59,7 @@ snippet! array
 	uint8_t ${1:array}[$2];
 	size_t ${1}_sz = sizeof(${1});
 snippet! ptr
-	uint8_t *${1:ptr} = NULL;
+	uint8_t *${1:ptr} = nullptr;
 	size_t ${1}_sz = 0;
 snippet! inc
 	#include <${1:iostream}>
@@ -146,4 +146,4 @@ snippet try
 		// TODO
 	}
 snippet todo
-	// TODO: ${0}
+	// TODO
