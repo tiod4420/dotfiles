@@ -43,7 +43,7 @@ BLK                   01;38;5;12
 # Character device driver
 CHR                   01;38;5;11
 # Symlink to nonexistent file, or non-stat'able file ...
-ORPHAN                00;38;5;14
+ORPHAN                00;38;5;1
 # ... and the files they point to
 MISSING               05;38;5;7
 # File that is setuid (u+s)
@@ -58,8 +58,8 @@ STICKY_OTHER_WRITABLE 00;48;5;2
 OTHER_WRITABLE        00;48;5;3
 # Dir with the sticky bit set (+t) and not other-writable
 STICKY                00;48;5;5
-# This is for files with execute permission:
-EXEC                  00;38;5;10
+# This is for files with execute permission
+EXEC                  00;38;5;34
 # unimportant files as logs and backups
 *~                    00;38;5;8
 *#                    00;38;5;8

@@ -26,15 +26,17 @@ bashrc()
 	local OS=""
 	local TERM_COLORS=0
 	declare -a BREW_FORMULAS_PATH
+	local BREW_FORMULA_PATH
 	local file
 	local i
 
 	# Get Homebrew's installation path, or empty string if not existing
-	if command -v brew > /dev/null 2>&1; then
+	if command -v brew &> /dev/null; then
 		BREW_FORMULAS_PATH=($(brew --prefix ${BREW_FORMULAS[*]}))
 
 		for i in ${!BREW_FORMULAS[@]}; do
-			BREW_PATHS[${BREW_FORMULAS[$i]}]=${BREW_FORMULAS_PATH[$i]}
+			BREW_FORMULA_PATH=${BREW_FORMULAS_PATH[$i]}
+			BREW_PATHS[${BREW_FORMULAS[$i]}]=$BREW_FORMULA_PATH
 		done
 	fi
 
@@ -42,9 +44,9 @@ bashrc()
 	TERM_COLORS=$(tput colors || echo 0)
 
 	# Get version of ls
-	if ls --color -d . > /dev/null 2>&1; then
+	if ls --color -d . &> /dev/null; then
 		LS_VERSION="gnuls"
-	elif  ls -G -d . > /dev/null 2>&1; then
+	elif  ls -G -d . &> /dev/null; then
 		LS_VERSION="bsdls"
 	else
 		LS_VERSION="unknown"

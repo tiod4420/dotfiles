@@ -10,14 +10,11 @@ if [ "linux" = "$OS" ]; then
 	update_all()
 	{
 		# Upgrade on Linux systems with apt
-		if command -v apt > /dev/null 2>&1; then
-			apt update && apt upgrade
-		fi
-
+		command -v apt &> /dev/null && apt update && apt upgrade
 		# Upgrade pip2
-		command -v pip2 > /dev/null 2>&1 && pip2 install --upgrade pip
+		command -v pip2 &> /dev/null && pip2 install --upgrade pip
 		# Upgrade pip3
-		command -v pip3 > /dev/null 2>&1 && pip3 install --upgrade pip
+		command -v pip3 &> /dev/null && pip3 install --upgrade pip
 		# Update dotfiles
 		pushd ~ && git pull && source ~/.bashrc ; popd
 	}
@@ -27,14 +24,12 @@ elif [ "osx" = "$OS" ]; then
 		# Upgrade on OSX
 		softwareupdate --install --all
 		# Upgrade Homebrew
-		if command -v brew > /dev/null 2>&1; then
+		command -v brew &> /dev/null &&
 			brew update && brew upgrade && brew cleanup
-		fi
-
 		# Upgrade pip2
-		command -v pip2 > /dev/null 2>&1 && pip2 install --upgrade pip
+		command -v pip2 &> /dev/null && pip2 install --upgrade pip
 		# Upgrade pip3
-		command -v pip3 > /dev/null 2>&1 && pip3 install --upgrade pip
+		command -v pip3 &> /dev/null && pip3 install --upgrade pip
 		# Update dotfiles
 		pushd ~ && git pull && source ~/.bashrc ; popd
 	}
@@ -100,7 +95,8 @@ epoch()
 	local date_version
 
 	# Get date version (GNU or BSD)
-	date --version && date_version='gnudate' || date_version='bsddate'
+	date --version &> /dev/null &&
+		date_version='gnudate' || date_version='bsddate'
 
 	if [ 0 -eq $# ]; then # Print current epoch
 		if [ "gnudate" = "$date_version" ]; then
@@ -176,7 +172,7 @@ fsize()
 	# Check if argument is provided
 	[ 1 -eq "$#" ] && [ -n "$dir" ] && dir=$1
 	# Check if -b is supported
-	args=$(du -b /dev/null > /dev/null 2>&1 && echo '-sbh' || echo '-sh')
+	args=$(du -b /dev/null &> /dev/null && echo '-sbh' || echo '-sh')
 	# Get the size of the directory or file
 	du $args $dir | cut -f 1
 }

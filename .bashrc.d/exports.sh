@@ -5,6 +5,8 @@
 exports()
 {
 	local DIR_COLORS=""
+	local BREW_BIN=""
+	local BREW_MAN=""
 	declare -r -a BREW_UTILS=(
 		"coreutils"
 		"findutils"
@@ -17,9 +19,19 @@ exports()
 	if [ "osx" = "$OS" ]; then
 		# Loop over all brew utils that we want into our PATH
 		for i in ${BREW_UTILS[@]}; do
-			if [ -n "${BREW_PATHS[$i]}" ]; then
-				PATH="${BREW_PATHS[$i]}/libexec/gnubin:${PATH}"
-				MANPATH="${BREW_PATHS[$i]}/libexec/gnuman:${PATH}"
+			# Skip if empty
+			[ -z "${BREW_PATHS[$i]}" ] && continue
+
+			# Add only if not already in PATH
+			BREW_BIN="${BREW_PATHS[$i]}/libexec/gnubin"
+			if ! echo $PATH | grep -q $BREW_BIN; then
+				PATH="${BREW_BIN}:${PATH}"
+			fi
+
+			# Add only if not already in MANPATH
+			BREW_MAN="${BREW_PATHS[$i]}/libexec/gnuman"
+			if ! echo $MANPATH | grep -q $BREW_MAN; then
+				MANPATH="${BREW_MAN}:${MANPATH}"
 			fi
 		done
 	fi
