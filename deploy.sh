@@ -258,6 +258,9 @@ version_get()
 		clang-format)
 			clang-format --version | sed -E "s/.*clang-format version (${d})\.(${d})\.(${d}).*/\1.\2.\3/"
 			;;
+		gdb)
+			gdb --version | head -n 1 | sed -E "s/.*\(.*\) (${d})\.(${d}).*/\1.\2/"
+			;;
 		git)
 			git --version | sed -E "s/.*git version (${d})\.(${d})\.(${d}).*/\1.\2.\3/"
 			;;
@@ -382,7 +385,7 @@ setup_ctags()
 	mkdir -p "${CONFIG_DIR_PATH}/ctags"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Add alacritty configuration files
+	# Add ctags configuration files
 	for file in .config/ctags/*; do
 		[ ! -f "$file" ] && continue
 
@@ -395,9 +398,34 @@ setup_ctags()
 
 setup_gdb()
 {
-	echo "Deploying gdb configuration"
+	local RES
+	local version
 
-	deploy_file .gdbinit
+	echo -n "Deploying gdb configuration"
+
+	# Get version
+	version=$(version_get gdb)
+	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
+
+	# Check if GDB is less than 11.1
+	if version_lt "$version" 11.1; then
+		deploy_file -d $HOME -f .gdbinit .config/gdb/gdbinit
+		return
+	fi
+
+	# Create directory if does not exist
+	mkdir -p "${CONFIG_DIR_PATH}/gdb"
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Add gdb configuration files
+	for file in .config/gdb/*; do
+		[ ! -f "$file" ] && continue
+
+		deploy_file $file
+		RES=$?; [ 0 -ne $RES ] && return 1
+	done
+
+	return 0
 }
 
 setup_git()

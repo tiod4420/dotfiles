@@ -1,0 +1,12 @@
+set disassembly-flavor intel
+
+python
+import os
+
+search_path = [ "/usr/share", "/opt/peda" ]
+
+for path in search_path:
+	peda_script = os.path.join(path, "peda", "peda.py")
+
+	if os.path.exists(peda_script) and os.path.isfile(peda_script):
+		gdb.execute('source %s' % peda_script)
