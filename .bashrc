@@ -6,7 +6,7 @@
 
 bashrc()
 {
-	local CONFIG_DIR_PATH="$(dirname ${BASH_SOURCE[0]})/.bashrc.d"
+	local CONFIG_DIR_PATH="$(dirname ${BASH_SOURCE[0]})/.bash.d"
 	declare -r -a SOURCE_FILES=(
 		"${CONFIG_DIR_PATH}/global.sh"
 		"${CONFIG_DIR_PATH}/exports.sh"
@@ -31,6 +31,7 @@ bashrc()
 	local BREW_FORMULA_PATH
 	local file
 	local i
+	local GIT_BARE_DIR="${HOME}/.git_bare"
 
 	# Get Homebrew's installation path, or empty string if not existing
 	if command -v brew &> /dev/null; then
@@ -69,9 +70,9 @@ bashrc()
 		[ -f "$file" ] && [ -r "$file" ] && source $file
 	done
 
-	# Load extra configuration files that are not commited
+	# Load local configuration files that are not commited
 	# [!] Load after all other settings so it can override previous config
-	for file in "$config_path/extra/*.sh"; do
+	for file in "${CONFIG_DIR_PATH}/local/*.sh"; do
 		[ -f "$file" ] && [ -r "$file" ] && source $file
 	done
 }

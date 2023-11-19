@@ -77,11 +77,11 @@
 
 [core]
 	# Use custom .gitattributes
-	attributesfile = ~/.gitattributes
+	attributesfile = ~/.git.d/gitattributes
 	# Avoid to display EOL differences
 	autocrlf = input
 	# Use custom .gitignore
-	excludesfile = ~/.gitignore
+	excludesfile = ~/.git.d/gitignore
 	# Make rebase safer on macOS
 	trustctime = false
 	# Speed up commands involving untracked files such as git status
@@ -156,4 +156,4 @@
 [include]
 	# Load extra configuration file that is not commited
 	# [!] Load after all other settings so it can override previous config
-	path = ~/.gitconfig.local
+	path = ~/.git.d/gitconfig.local

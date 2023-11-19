@@ -16,7 +16,11 @@ if [ "linux" = "$OS" ]; then
 		# Upgrade pip3
 		command -v pip3 &> /dev/null && sudo pip3 install --upgrade pip
 		# Update dotfiles
-		pushd ~ && git pull && source ~/.bashrc ; popd
+		if pushd $HOME; then
+			git --git-dir="$GIT_BARE_DIR" --work-tree="$HOME" pull --recurse-submodules
+			[ 0 -eq "$?" ] source ${HOME}/.bashrc
+			popd
+		fi
 	}
 elif [ "osx" = "$OS" ]; then
 	update_all()
@@ -31,7 +35,11 @@ elif [ "osx" = "$OS" ]; then
 		# Upgrade pip3
 		sudo command -v pip3 &> /dev/null && pip3 install --upgrade pip
 		# Update dotfiles
-		pushd ~ && git pull && source ~/.bashrc ; popd
+		if pushd $HOME; then
+			git --git-dir="$GIT_BARE_DIR" --work-tree="$HOME" pull --recurse-submodules
+			[ 0 -eq "$?" ] source ${HOME}/.bashrc
+			popd
+		fi
 	}
 fi
 
