@@ -1,3 +1,6 @@
+import:
+  - ~/.config/alacritty/base16/colors/base16-gruvbox-dark-medium-256.yml
+
 colors:
   vi_mode_cursor:
     text: 'CellBackground'

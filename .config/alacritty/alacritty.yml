@@ -2,7 +2,6 @@
 
 import:
   - ~/.config/alacritty/terminal.yml
-  - ~/.config/alacritty/theme.yml
   - ~/.config/alacritty/colors.yml
   - ~/.config/alacritty/bindings.yml
   - ~/.config/alacritty/local.yml
