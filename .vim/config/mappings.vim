@@ -15,10 +15,14 @@ nnoremap <expr> <Leader>c CommentOperator()
 nnoremap <expr> <Leader>cc CommentOperator() .. '_'
 xnoremap <expr> <Leader>c CommentOperator()
 
-" snipMate visual buffer copy or cut operator
+" snipMate visual buffer copy operator
 noremap <expr> <Leader>v SnipMateVisualCopy()
+noremap <expr> <Leader>vv SnipMateVisualCopy() .. 'iw'
 xnoremap <expr> <Leader>v SnipMateVisualCopy()
+
+" snipMate visual buffer cut operator
 noremap <expr> <Leader>x SnipMateVisualCut()
+noremap <expr> <Leader>xx SnipMateVisualCut() .. 'iw'
 xmap <Leader>x <Plug>snipMateVisual
 
 " Clear search results
