@@ -25,20 +25,19 @@ if has("autocmd")
 		autocmd!
 
 		" sh
-		autocmd Filetype sh call DevelopmentEnvironment("syntax", "est")
+		autocmd Filetype sh call DevelopmentEnvironment("est")
 		" C and C++
-		autocmd Filetype c,cpp call DevelopmentEnvironment("syntax", "es", "clang-format")
+		autocmd Filetype c,cpp call DevelopmentEnvironment("es", "clang-format")
 		" Assembly
-		autocmd Filetype nasm call DevelopmentEnvironment("manual", "esi")
+		autocmd Filetype nasm call DevelopmentEnvironment("esi")
 		" Python
-		autocmd Filetype python call DevelopmentEnvironment("indent", "e")
+		autocmd Filetype python call DevelopmentEnvironment("e")
 		" Rust
-		autocmd Filetype rust call DevelopmentEnvironment("syntax", "est", "rustfmt")
+		autocmd Filetype rust call DevelopmentEnvironment("est", "rustfmt")
 		" Other C-syntax languages
-		autocmd Filetype java,kotlin,thrift call DevelopmentEnvironment("syntax", "est")
+		autocmd Filetype java,kotlin,thrift call DevelopmentEnvironment("est")
 		" Objective-C and derivated
-		autocmd Filetype objc,objcpp call DevelopmentEnvironment("syntax", "est", "clang-format")
-
+		autocmd Filetype objc,objcpp call DevelopmentEnvironment("est", "clang-format")
 		" Base64 file detection
 		autocmd BufNewFile,BufRead *.b64,*.base64,*.pem.*.crt setlocal filetype=base64
 	augroup END

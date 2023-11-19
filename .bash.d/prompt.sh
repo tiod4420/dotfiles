@@ -106,15 +106,14 @@ prompt()
 	fi
 	[ "$TERM_COLORS" -ge 256 ] && PS1+="\n\$ \[${reset}\]" || PS1+="\n "
 
-	# PS4: +   HH:mm:ss:ms [LINENO]: <cmd>
+	# PS4: + FILE:LINENO: <cmd>
 	PS4=""
 	PS4+="\[${red}\]+"
-	PS4+=$(printf "\t")
-	PS4+="\[${yellow}\]\$(${date_cmd})"
 	PS4+=" "
-	PS4+="\[${green}\][\$LINENO]"
+	PS4+="\[${green}\]\${BASH_SOURCE}"
 	PS4+="\[${white}\]:"
-	PS4+=" "
+	PS4+="\[${green}\]\${LINENO}"
+	PS4+="\[${white}\] - "
 	PS4+="\[${reset}\]"
 
 	# Set vi editing mode string

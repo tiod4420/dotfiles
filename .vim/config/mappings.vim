@@ -1,7 +1,7 @@
 " Global shortcut mappings
 
 " Map leader
-let mapleader=","
+let mapleader="\\"
 
 " Tab navigation
 nnoremap <C-h> :tabprevious<CR>
