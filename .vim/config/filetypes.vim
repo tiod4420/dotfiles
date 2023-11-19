@@ -34,7 +34,12 @@ if has("autocmd")
 		autocmd Filetype python call DevelopmentEnvironment("e")
 		" Rust
 		autocmd Filetype rust call DevelopmentEnvironment("est", "rustfmt")
+		autocmd FileType rust nnoremap <Leader>q :RustFmt<CR>
+		autocmd FileType rust nnoremap <Leader>r :RustRun<CR>
+		autocmd FileType rust nnoremap <Leader>t :RustTest<CR>
 		" Base64 file detection
 		autocmd BufNewFile,BufRead *.b64,*.base64,*.pem.*.crt setlocal filetype=base64
+		" EDL (SGX) file detection
+		autocmd BufNewFile,BufRead *.edl setlocal syntax=cpp
 	augroup END
 endif
