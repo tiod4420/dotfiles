@@ -1,0 +1,229 @@
+# TERM entries
+TERM Eterm
+TERM ansi
+TERM *color*
+TERM con[0-9]*x[0-9]*
+TERM cons25
+TERM console
+TERM cygwin
+TERM dtterm
+TERM gnome
+TERM hurd
+TERM jfbterm
+TERM konsole
+TERM kterm
+TERM linux
+TERM linux-c
+TERM mlterm
+TERM putty
+TERM rxvt*
+TERM screen*
+TERM st
+TERM terminator
+TERM tmux*
+TERM vt100
+TERM xterm*
+# Basic file types
+# Reset to "normal" color
+RESET                 0
+# Directory
+DIR                   00;38;5;4
+# Symbolic link. (set this to 'target' for the color of the file pointed to.)
+LINK                  00;38;5;14
+# Regular file with more than one link
+MULTIHARDLINK         00 # TODO
+# Pipe
+FIFO                  00;38;5;11
+# Socket
+SOCK                  00;38;5;13
+# Door
+DOOR                  00;38;5;5
+# Block device driver
+BLK                   01;38;5;12
+# Character device driver
+CHR                   01;38;5;11
+# Symlink to nonexistent file, or non-stat'able file ...
+ORPHAN                00;38;5;14
+# ... and the files they point to
+MISSING               05;38;5;7
+# File that is setuid (u+s)
+SETUID                00;48;5;1
+# File that is setgid (g+s)
+SETGID                00;48;5;4
+# File with capability
+CAPABILITY            00;38;5;11;48;5;1
+# Dir that is sticky and other-writable (+t,o+w)
+STICKY_OTHER_WRITABLE 00;48;5;2
+# Dir that is other-writable (o+w) and not sticky
+OTHER_WRITABLE        00;48;5;3
+# Dir with the sticky bit set (+t) and not other-writable
+STICKY                00;48;5;5
+# This is for files with execute permission:
+EXEC                  00;38;5;34
+# unimportant files as logs and backups
+*~                    00;38;5;8
+*#                    00;38;5;8
+.aux                  00;38;5;8
+.bak                  00;38;5;8
+.bbl                  00;38;5;8
+.blg                  00;38;5;8
+.cache                00;38;5;8
+.class                00;38;5;8
+.incomplete           00;38;5;8
+.lof                  00;38;5;8
+.log                  00;38;5;8
+.lol                  00;38;5;8
+.lot                  00;38;5;8
+.o                    00;38;5;8
+.out                  00;38;5;8
+.part                 00;38;5;8
+.pyc                  00;38;5;8
+.swo                  00;38;5;8
+.swp                  00;38;5;8
+.temp                 00;38;5;8
+.tmp                  00;38;5;8
+.toc                  00;38;5;8
+# Archives or compressed
+.7z                   00;38;5;3
+.ace                  00;38;5;3
+.alz                  00;38;5;3
+.arc                  00;38;5;3
+.arj                  00;38;5;3
+.bz                   00;38;5;3
+.bz2                  00;38;5;3
+.cab                  00;38;5;3
+.cpio                 00;38;5;3
+.deb                  00;38;5;3
+.dwm                  00;38;5;3
+.dz                   00;38;5;3
+.ear                  00;38;5;3
+.esd                  00;38;5;3
+.gz                   00;38;5;3
+.jar                  00;38;5;3
+.lha                  00;38;5;3
+.lrz                  00;38;5;3
+.lz                   00;38;5;3
+.lz4                  00;38;5;3
+.lzh                  00;38;5;3
+.lzma                 00;38;5;3
+.lzo                  00;38;5;3
+.rar                  00;38;5;3
+.rpm                  00;38;5;3
+.rz                   00;38;5;3
+.sar                  00;38;5;3
+.swm                  00;38;5;3
+.t7z                  00;38;5;3
+.tar                  00;38;5;3
+.taz                  00;38;5;3
+.tbz                  00;38;5;3
+.tbz2                 00;38;5;3
+.tgz                  00;38;5;3
+.tlz                  00;38;5;3
+.txz                  00;38;5;3
+.tz                   00;38;5;3
+.tzo                  00;38;5;3
+.tzst                 00;38;5;3
+.war                  00;38;5;3
+.wim                  00;38;5;3
+.xz                   00;38;5;3
+.z                    00;38;5;3
+.zip                  00;38;5;3
+.zoo                  00;38;5;3
+.zst                  00;38;5;3
+# Image formats
+.asf                  00;38;5;5
+.avi                  00;38;5;5
+.bmp                  00;38;5;5
+.cgm                  00;38;5;5
+.dl                   00;38;5;5
+.emf                  00;38;5;5
+.flc                  00;38;5;5
+.fli                  00;38;5;5
+.flv                  00;38;5;5
+.gif                  00;38;5;5
+.gl                   00;38;5;5
+.jpeg                 00;38;5;5
+.jpg                  00;38;5;5
+.m2v                  00;38;5;5
+.m4v                  00;38;5;5
+.mp4v                 00;38;5;5
+.mjpeg                00;38;5;5
+.mjpg                 00;38;5;5
+.mkv                  00;38;5;5
+.mng                  00;38;5;5
+.mov                  00;38;5;5
+.mp4                  00;38;5;5
+.mpeg                 00;38;5;5
+.mpg                  00;38;5;5
+.nuv                  00;38;5;5
+.ogm                  00;38;5;5
+.ogv                  00;38;5;5
+.ogx                  00;38;5;5
+.pbm                  00;38;5;5
+.pcx                  00;38;5;5
+.pgm                  00;38;5;5
+.png                  00;38;5;5
+.ppm                  00;38;5;5
+.qt                   00;38;5;5
+.rm                   00;38;5;5
+.rmvb                 00;38;5;5
+.svg                  00;38;5;5
+.svgz                 00;38;5;5
+.tga                  00;38;5;5
+.tif                  00;38;5;5
+.tiff                 00;38;5;5
+.vob                  00;38;5;5
+.webm                 00;38;5;5
+.wmv                  00;38;5;5
+.xbm                  00;38;5;5
+.xcf                  00;38;5;5
+.xpm                  00;38;5;5
+.xwd                  00;38;5;5
+.yuv                  00;38;5;5
+# Audio formats
+.aac                  00;38;5;30
+.au                   00;38;5;30
+.flac                 00;38;5;30
+.m4a                  00;38;5;30
+.mid                  00;38;5;30
+.midi                 00;38;5;30
+.mka                  00;38;5;30
+.mp3                  00;38;5;30
+.mpc                  00;38;5;30
+.oga                  00;38;5;30
+.ogg                  00;38;5;30
+.opus                 00;38;5;30
+.ra                   00;38;5;30
+.spx                  00;38;5;30
+.wav                  00;38;5;30
+.xspf                 00;38;5;30
+# Video formats
+.anx                  00;38;5;45
+.asf                  00;38;5;45
+.avi                  00;38;5;45
+.axv                  00;38;5;45
+.divx                 00;38;5;45
+.flc                  00;38;5;45
+.fli                  00;38;5;45
+.flv                  00;38;5;45
+.gl                   00;38;5;45
+.m2ts                 00;38;5;45
+.m2v                  00;38;5;45
+.m4v                  00;38;5;45
+.mkv                  00;38;5;45
+.mov                  00;38;5;45
+.MOV                  00;38;5;45
+.mp4                  00;38;5;45
+.mp4v                 00;38;5;45
+.mpeg                 00;38;5;45
+.mpg                  00;38;5;45
+.nuv                  00;38;5;45
+.ogm                  00;38;5;45
+.ogv                  00;38;5;45
+.ogx                  00;38;5;45
+.qt                   00;38;5;45
+.rm                   00;38;5;45
+.rmvb                 00;38;5;45
+.vob                  00;38;5;45
+.webm                 00;38;5;45
+.wmv                  00;38;5;45

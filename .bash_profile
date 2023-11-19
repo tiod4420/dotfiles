@@ -2,6 +2,6 @@
 #
 # Bash configuration for login shells
 
-bashrc="~/.bashrc"
+bashrc="${HOME}/.bashrc"
 [ -f "${bashrc}" ] && [ -r "${bashrc}" ] && source ${bashrc}
 unset bashrc

@@ -53,11 +53,12 @@ _os_name()
 _ls_type()
 {
 	# Check if --color is supported (GNU ls)
-	ls --color -d . > /dev/null 2>&1 && echo 'gnuls'
+	ls --color -d . > /dev/null 2>&1 && echo 'gnuls' && return 0
 	# Check if -G is supported (BSD ls)
-	ls -G -d . > /dev/null 2>&1 && echo 'bsdls'
+	ls -G -d . > /dev/null 2>&1 && echo 'bsdls' && return 0
 	# Unknown result
 	echo 'unknown'
+	return 1
 }
 
 # Check if the system has brew installed
@@ -77,7 +78,7 @@ _has_colors()
 	return 0
 }
 
-_config_path="~/bashrc.d"
+_config_path="${HOME}/.bashrc.d"
 
 # Source all the configuration files
 for _file in global.sh exports.sh functions.sh aliases.sh prompt.sh; do
