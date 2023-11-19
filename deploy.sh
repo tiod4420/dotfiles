@@ -219,6 +219,10 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo "Updating submodules -- DONE"
 echo ""
 
+# Create Workspace directory if does not exist
+mkdir -p "${HOME}/Workspace"
+RES=$?; [ 0 -ne $RES ] && exit 1
+
 # Deploy single-file configuration
 echo "Deploying dotfiles"
 deploy_file .gdbinit
