@@ -225,9 +225,6 @@ echo "Deploying dotfiles"
 deploy_file .gdbinit
 RES=$?; [ 0 -ne $RES ] && exit 1
 
-deploy_file .wgetrc
-RES=$?; [ 0 -ne $RES ] && exit 1
-
 deploy_file .cargo/config.toml
 RES=$?; [ 0 -ne $RES ] && exit 1
 
