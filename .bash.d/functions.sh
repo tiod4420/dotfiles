@@ -70,7 +70,7 @@ UPDATE_DOTFILES+='update_dotfiles() { '
 UPDATE_DOTFILES+='    local GIT_DIR WORK_TREE;'
 # Create options for git update
 UPDATE_DOTFILES+="    GIT_DIR=\"--git-dir=${GIT_BARE_DIR}\";"
-UPDATE_DOTFILES+='    WORK_TREE="--work-tree=\${HOME};'
+UPDATE_DOTFILES+='    WORK_TREE="--work-tree=${HOME}";'
 # Jump to $HOME
 UPDATE_DOTFILES+='    if pushd $HOME; then'
 # Update work tree ($HOME) with git directory, recurse on  submodules
