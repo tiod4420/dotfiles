@@ -26,11 +26,12 @@ exports()
 	export HISTCONTROL="ignoreboth"
 
 	# Get number of colors of the terminal
-	if [ "$TERM_COLORS" -ge 256 ]; then
+	if [ "$term_colors" -ge 256 ]; then
 		# Retrieve LS version from here, as path might change during setup
-		local ls_version=$(get_ls_version)
-		[ "gnuls" = "${ls_version}" ] && export LS_COLORS=$(make_gnuls_colors)
-		[ "bsdls" = "${ls_version}" ] && export CLICOLOR=1 LSCOLORS=$(make_bsdls_colors)
+		case "$ls_version" in
+			gnu) export LS_COLORS=$(make_gnuls_colors);;
+			bsd) export CLICOLOR=1 LSCOLORS=$(make_bsdls_colors);;
+		esac
 
 		# Set GCC messages colors
 		export GCC_COLORS=$(make_gcc_colors)
@@ -45,8 +46,8 @@ exports()
 
 make_gnuls_colors()
 {
-	local dir_colors="${CONFIG_DIR_PATH}/dircolors"
-	check_file "$dir_colors" || dir_colors=""
+	local dir_colors="${config_dir_path}/dircolors"
+	check_has_file "$dir_colors" || dir_colors=""
 	dircolors -b ${dir_colors} | sed -n "s/^LS_COLORS='\(.*\)';/\1/p"
 }
 

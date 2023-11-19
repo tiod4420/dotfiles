@@ -14,9 +14,10 @@ aliases()
 	alias mv="mv -i"
 
 	# Retrieve ls version from here, as path might change during setup
-	local ls_version=$(get_ls_version)
-	[ "gnuls" = "$ls_version" ] && alias ls="ls --color=auto"
-	[ "bsdls" = "$ls_version" ] && alias ls="ls -G"
+	case "$ls_version" in
+		gnu) alias ls="ls --color=auto";;
+		bsd) alias ls="ls -G";;
+	esac
 
 	# ls aliases
 	alias ll="ls -lh"

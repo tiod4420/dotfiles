@@ -8,7 +8,7 @@ prompt()
 	local vi_cmd_string
 
 	# Setup PS1 and PS@, depending if there is colors and __git_ps1
-	if [ "$TERM_COLORS" -lt 256 ]; then
+	if [ "$term_colors" -lt 256 ]; then
 		PS1="\u@\h \w\n "
 		PS2=" "
 

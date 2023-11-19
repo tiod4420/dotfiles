@@ -7,42 +7,214 @@
 
 bashrc()
 {
-	# Setup CONFIG_DIR_PATH
-	local CONFIG_DIR_PATH=${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash
+	local config_dir_path
+	local os_type
+	local file
+	local ls_version
+	local term_colors
+
+	# Get config directory
+	config_dir_path=${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash
 
 	# Get OS type
-	local OS=$(get_os_type)
+	case "$(uname | tr "[:upper:]" "[:lower:]")" in
+		linux*) os_type=linux;;
+		darwin*) os_type=macos;;
+		*bsd*) os_type=bsd;;
+		msys*) os_type=windows;;
+		*) os_type=unknown;;
+	esac
+
+	# Get ls type
+	if ls --color -d . &> /dev/null; then
+		ls_version=gnu
+	elif ls -G -d . &> /dev/null; then
+		ls_version=bsd
+	else
+		ls_version=unknown
+	fi
 
 	# Get number of colors of the terminal
-	local TERM_COLORS=$(tput colors 2> /dev/null || echo 0)
+	term_colors=$(tput colors 2> /dev/null || echo 0)
+
+	# Start ssh-agent if not started
+	if [ -n "$SSH_AUTH_SOCK" ]; then
+		: # Check if already running ssh-agent
+	elif [ -z "$SHELL" ]; then
+		: # Check if SHELL is set
+	else
+		check_and_exec /usr/bin/ssh-agent $SHELL
+	fi
+
+	# Start tmux if local shell and not inside tmux
+	if [ -n "$TMUX" ]; then
+		: # Check if already running tmux
+	elif [ -e "${HOME}/.notmux" ] || [ -e "${HOME}/notmux" ]; then
+		: # Check if no short circuit for tmux
+	elif ! is_local_host; then
+		: # Check if session is remote
+	elif [ "macos" != "$os_type" ] && [ -z "$DISPLAY" ]; then
+		: # Check if OS is Linux or BSD, and if we are in graphical session
+	else
+		check_and_exec -h /opt/local/bin/ tmux
+	fi
 
 	# Load generic configuration files
-	local file
 	for file in "global.sh" "exports.sh" "functions.sh" "aliases.sh" "prompt.sh"; do
-		check_and_source "${CONFIG_DIR_PATH}/$file"
+		check_and_source "${config_dir_path}/${file}"
 	done
 
 	# Load local configuration files that are not commited
 	# [!] Load after all other settings so it can override previous config
-	local file
-	for file in ${CONFIG_DIR_PATH}/local/*.sh; do
+	for file in ${config_dir_path}/local/*.sh; do
 		check_and_source "$file"
 	done
 }
 
-check_and_source()
+add_man()
 {
-	check_file "$1" && source "$1"
+	local OPTARG
+	local OPTIND
+	local opts
+	local where
+	local dir_array
+	local path_array
+	local dir
+	local path
+
+	# Parse arguments
+	while getopts ":f" opts; do
+		case "$opts" in
+			f) where=head;;
+			\?) echo "Invalid option: -${OPTARG}" && return 1;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	# Initialize dir array
+	dir_array=()
+	# Split MANPATH as an array
+	path_array=($(echo "${MANPATH}" | tr ':' ' '))
+
+	# Loop over dirs
+	for dir in "$@"; do
+		# Check if dir exists
+		! [ -d "$dir" ] && continue
+
+		# Check that it is not in path
+		for path in "${path_array[@]}"; do
+			# Skip to next directory
+			[ "$path" = "$dir" ] && continue 2
+		done
+
+		dir_array+=("$dir")
+	done
+
+	# Append dirs to MANPATH
+	if [ ${#dir_array[@]} -gt 0 ]; then
+		case "$where" in
+			head) export MANPATH="$(join_array ":" ${dir_array[@]}):${MANPATH}";;
+			tail) export MANPATH="${MANPATH}:$(join_array ":" ${dir_array[@]})";;
+		esac
+	fi
 }
 
-check_file()
+add_path()
 {
-	[ -f "$1" ] && [ -r "$1" ]
+	local OPTARG
+	local OPTIND
+	local opts
+	local where
+	local dir_array
+	local path_array
+	local dir
+	local path
+
+	# Parse arguments
+	while getopts ":f" opts; do
+		case "$opts" in
+			f) where=head;;
+			\?) echo "Invalid option: -${OPTARG}" && return 1;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	# Initialize dir array
+	dir_array=()
+	# Split PATH as an array
+	path_array=($(echo "${PATH}" | tr ':' ' '))
+
+	# Loop over dirs
+	for dir in "$@"; do
+		# Check if dir exists
+		! [ -d "$dir" ] && continue
+
+		# Check that it is not in path
+		for path in "${path_array[@]}"; do
+			# Skip to next directory
+			[ "$path" = "$dir" ] && continue 2
+		done
+
+		dir_array+=("$dir")
+	done
+
+	# Append dirs to PATH
+	if [ ${#dir_array[@]} -gt 0 ]; then
+		case "$where" in
+			head) export PATH="$(join_array ":" ${dir_array[@]}):${PATH}";;
+			tail) export PATH="${PATH}:$(join_array ":" ${dir_array[@]})";;
+		esac
+	fi
+}
+
+check_and_exec()
+{
+	local OPTARG
+	local OPTIND
+	local opts
+	local hints
+	local cmd
+
+	# Parse arguments
+	while getopts ":h:" opts; do
+		case "$opts" in
+			h) hints=$OPTARG;;
+			\?) echo "Invalid option: -${OPTARG}" && exit 1;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	# Get command
+	cmd="$1"
+	shift
+
+	if check_has_cmd "$cmd"; then
+		exec "$cmd" "$@"
+	else
+		# Check if command could be in hinted PATH
+		cmd=$(PATH=${PATH}:${hints} command -v ${cmd} 2> /dev/null)
+		[ -n "$cmd" ] && exec "$cmd" "$@"
+	fi
+
+	return 1
+}
+
+check_and_source()
+{
+	check_has_file "$1" && source "$1"
 }
 
 check_has_cmd()
 {
 	command -v "$@" &> /dev/null
+}
+
+check_has_file()
+{
+	[ -f "$1" ] && [ -r "$1" ]
 }
 
 get_color()
@@ -87,15 +259,15 @@ get_color()
 		color_str=$(get_color_code reset)
 	else
 		local -a colors=$(
-			[ 1 -eq $is_bold ] && get_color_code bold
-			[ 1 -eq $is_dim ] && get_color_code dim;
-			[ 1 -eq $is_reverse ] && get_color_code reverse;
-			[ 1 -eq $is_underline ] && get_color_code underline;
-			[ -n "$fg_color" ] && get_color_code ${fg_color} "fg"
-			[ -n "$bg_color" ] && get_color_code ${bg_color} "bg"
-		)
+		[ 1 -eq $is_bold ] && get_color_code bold
+		[ 1 -eq $is_dim ] && get_color_code dim;
+		[ 1 -eq $is_reverse ] && get_color_code reverse;
+		[ 1 -eq $is_underline ] && get_color_code underline;
+		[ -n "$fg_color" ] && get_color_code ${fg_color} "fg"
+		[ -n "$bg_color" ] && get_color_code ${bg_color} "bg"
+	)
 
-		color_str=$(join_array ";" ${colors[@]})
+	color_str=$(join_array ";" ${colors[@]})
 	fi
 
 	# Process string
@@ -151,28 +323,6 @@ get_color_code()
 	esac
 }
 
-get_ls_version()
-{
-	if ls --color -d . &> /dev/null; then
-		echo "gnuls"
-	elif ls -G -d . &> /dev/null; then
-		echo "bsdls"
-	else
-		echo "unknown"
-	fi
-}
-
-get_os_type()
-{
-	case "$(uname | tr "[:upper:]" "[:lower:]")os_type" in
-		linux*) echo "linux" ;;
-		darwin*) echo "macos" ;;
-		freebsd*) echo "freebsd" ;;
-		msys*) echo "windows" ;;
-		*) echo "unknown" ;;
-	esac
-}
-
 is_local_host()
 {
 	[ -z "$SSH_CLIENT" ] && [ -z "$SSH_TTY" ]
@@ -191,42 +341,11 @@ join_array()
 	shift 2 && printf "%s" "$first" "${@/#/${delim}}"
 }
 
-run_tmux()
-{
-	local os_type
-
-	# Check if no short circuit for tmux
-	[ -e "${HOME}/.notmux" ] && return 1
-	[ -e "${HOME}/notmux" ] && return 1
-
-	# Check if session is local
-	! is_local_host && return 1
-
-	# Check if Linux or BSD, and we are in graphical session
-	[ "macos" != "$(get_os_type)" ] && [ -z "$DISPLAY" ] && return 1
-
-	return 0
-}
-
-# Start ssh-agent if not started
-if check_has_cmd /usr/bin/ssh-agent; then
-	if [ -z "$SSH_AUTH_SOCK" ]; then
-		[ -n "$SHELL" ] && exec /usr/bin/ssh-agent $SHELL
-	fi
-fi
-
-# Start tmux if local shell and not inside tmux
-if check_has_cmd tmux; then
-	if [ -z "$TMUX" ]; then
-		run_tmux && exec tmux
-	fi
-fi
-
 bashrc
 unset -f bashrc
-unset -f check_and_source check_file check_has_cmd
+unset -f add_man add_path
+unset -f check_and_exec check_and_source
+unset -f check_has_cmd check_has_file
 unset -f get_color get_color_code
-unset -f get_ls_version get_os_type
 unset -f is_local_host is_normal_user
 unset -f join_array
-unset -f run_tmux
