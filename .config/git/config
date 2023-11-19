@@ -24,8 +24,6 @@
 	st = status
 	# Show commit log stats
 	stat = log --compact-summary
-	# Update submodules
-	subupdate = submodule update
 	# Show diff summary
 	summary = diff --compact-summary
 	# Show local author
