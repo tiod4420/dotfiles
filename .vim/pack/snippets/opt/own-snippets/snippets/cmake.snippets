@@ -1,0 +1,67 @@
+snippet cmake
+	cmake_minimum_required(VERSION 3.10)
+	
+	project(${1:Project} CXX)
+	
+	set(CMAKE_CXX_STANDARD 11)
+	set(CMAKE_CXX_STANDARD_REQUIRED True)
+	
+	set(CMAKE_CXX_FLAGS_RELEASE "")
+	
+	add_compile_options(
+		-Wall -Wextra -W -Wwrite-strings
+		\$<\$<CXX_COMPILER_ID:AppleClang>:-Wimplicit-fallthrough\$<SEMICOLON>-Wpointer-arith>
+		\$<\$<CXX_COMPILER_ID:Clang>:-Wimplicit-fallthrough\$<SEMICOLON>-Wpointer-arith>
+		\$<\$<OR:\$<CONFIG:>,\$<CONFIG:Release>>:-O2>
+		\$<\$<CONFIG:Debug>:-O0>
+		)
+	
+	add_subdirectory(src)
+	add_subdirectory(lib)
+	
+	enable_testing()
+	add_subdirectory(tests)
+
+snippet inc
+	include_directories(${${1:include}})
+
+snippet find
+	find_package(${1:library} ${2:REQUIRED})
+
+snippet file
+	file(GLOB ${1:SOURCES} *.${2:cpp})
+
+snippet sub
+	add_subdirectory(${1:src})
+
+snippet lib
+	add_library(${1:lib} ${2:$1_SOURCES})
+
+snippet tar
+	target_link_libraries(${1:main} ${2:PUBLIC} ${3:lib})
+
+snippet add
+	add_executable(${1:main} ${2:\${SOURCES}})
+
+snippet set
+	set(${1:var} ${2:value})
+
+snippet dep
+	add_dependencies(${1:target} ${2:dep})
+
+snippet git 
+	include(ExternalProject)
+
+	ExternalProject_Add(${1:googletest}
+		GIT_REPOSITORY    ${2:https://github.com/google/googletest.git}
+		GIT_TAG           ${3:master}
+		SOURCE_DIR        "${4:${CMAKE_BINARY_DIR}/googletest-src}"
+		BINARY_DIR        "${5:${CMAKE_BINARY_DIR}/googletest-build}"
+		CONFIGURE_COMMAND ""
+		BUILD_COMMAND     ""
+		INSTALL_COMMAND   ""
+		TEST_COMMAND      ""
+	)
+
+snippet test
+	add_test(${1:ATestName} ${2:testCommand})

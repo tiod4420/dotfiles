@@ -1,0 +1,27 @@
+[submodule ".vim/pack/snippets/opt/vim-snippets"]
+	path = .vim/pack/snippets/opt/vim-snippets
+	url = https://github.com/honza/vim-snippets
+[submodule ".vim/pack/snippets/start/vim-snipmate"]
+	path = .vim/pack/snippets/start/vim-snipmate
+	url = https://github.com/garbas/vim-snipmate
+[submodule ".vim/pack/snippets/start/vim-addon-mw-utils"]
+	path = .vim/pack/snippets/start/vim-addon-mw-utils
+	url = https://github.com/marcweber/vim-addon-mw-utils
+[submodule ".vim/pack/snippets/start/tlib_vim"]
+	path = .vim/pack/snippets/start/tlib_vim
+	url = https://github.com/tomtom/tlib_vim
+[submodule ".vim/pack/syntax/start/rust.vim"]
+	path = .vim/pack/syntax/start/rust.vim
+	url = https://github.com/rust-lang/rust.vim
+[submodule ".vim/pack/syntax/start/thrift.vim"]
+	path = .vim/pack/syntax/start/thrift.vim
+	url = https://github.com/solarnz/thrift.vim
+[submodule ".vim/pack/nerdtree/start/nerdtree"]
+	path = .vim/pack/nerdtree/start/nerdtree
+	url = https://github.com/scrooloose/nerdtree
+[submodule ".vim/pack/nerdtree/start/vim-nerdtree-tabs"]
+	path = .vim/pack/nerdtree/start/vim-nerdtree-tabs
+	url = https://github.com/jistr/vim-nerdtree-tabs
+[submodule ".vim/pack/nerdtree/start/nerdtree-git-plugin"]
+	path = .vim/pack/nerdtree/start/nerdtree-git-plugin
+	url = https://github.com/Xuyuanp/nerdtree-git-plugin
