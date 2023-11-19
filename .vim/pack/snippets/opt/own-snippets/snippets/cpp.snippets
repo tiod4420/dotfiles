@@ -31,8 +31,7 @@ snippet amup
 	auto ${1} = std::make_unique<${2:T}>(${3});
 ## Class
 snippet cl
-	class ${1:`vim_snippets#Filename('$1', 'MyClass')`}
-	{
+	class ${1:`vim_snippets#Filename('$1', 'MyClass')`} {
 	public:
 		${1}(${2});
 		${1}(const ${1}&);
@@ -47,8 +46,7 @@ snippet cl
 	};
 # member function implementation
 snippet mfun
-	${4:void}
-	${1:`vim_snippets#Filename('$1', 'MyClass')`}::${2:func}(${3})
+	${4:void} ${1:`vim_snippets#Filename('$1', 'MyClass')`}::${2:func}(${3})
 	{
 		${0}
 	}
@@ -57,7 +55,7 @@ snippet ns
 	namespace ${1:`vim_snippets#Filename('$1', 'MyNamespace')`}
 	{
 		${0:${VISUAL}}
-	} /* namespace ${1} */
+	} /* ${1} */
 snippet ans
 	namespace
 	{
@@ -79,7 +77,7 @@ snippet cca
 	const_cast<${1:uint8_t}>(${2:expr})${0}
 ## Iteration
 snippet for
-	for (std::size_t ${2:i} = 0 ; ${2} < ${1:count}; ${3:++}$2) {
+	for (std::size_t ${2:i} = 0; ${2} < ${1:count}; ${3:++}$2) {
 		${0}
 	}
 snippet fore
@@ -87,7 +85,7 @@ snippet fore
 		${0}
 	}
 snippet iter
-	for (auto ${1:i} = ${2:container}.begin() ; $1 != $2.end() ; ++$1) {
+	for (auto ${1:i} = ${2:container}.begin(); $1 != $2.end(); ++$1) {
 		${0}
 	}
 ## Lambdas
@@ -102,4 +100,21 @@ snippet try
 	try {
 		${0}
 	} catch(${1}) {
+	}
+## Custom snippets
+# main
+snippet main
+	#include <iostream>
+
+	int main(int argc, char *argv[])
+	{
+		${0}return EXIT_SUCCESS;
+	}
+# main(void)
+snippet mainn
+	#include <iostream>
+
+	int main(void)
+	{
+		${0}return EXIT_SUCCESS;
 	}
