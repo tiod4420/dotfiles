@@ -5,6 +5,8 @@ set nocompatible
 " UTF8 encoding, without BOMB
 set encoding=utf-8 nobomb
 
+" Set auto indentation
+set autoindent
 " Set column space
 set colorcolumn=80,100
 " Show line number

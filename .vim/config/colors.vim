@@ -1,4 +1,4 @@
-" Global color settings
+" Color settings
 
 " Dark theme
 set background=dark

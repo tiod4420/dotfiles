@@ -1,73 +1,99 @@
 snippet main
 	pub fn main() {
-	    ${0}
+	    ${0:$VISUAL}
+	}
+snippet mod
+	mod ${1:my_mod} {
+	    ${0:$VISUAL}
 	}
 snippet fn
-	fn ${1:function_name}(${2}) {
-	    ${0}
+	fn ${1:function_name}(${2})${3} {
+	    ${0:$VISUAL}
 	}
 snippet struct
-	struct ${1:Struct} {
-	    ${2}
+	struct ${1:MyStruct} {
+	    ${0:$VISUAL}
 	}
 snippet enum
-	enum ${1:Enum} {
-	    ${0}
+	enum ${1:MyEnum} {
+	    ${0:$VISUAL}
 	}
-snippet object
-	struct ${1:Struct} {
-	    ${2}
-	}
-
-	impl ${1} {
-	    fn new(${3}) -> Self {
-	        Self { ${0} }
-	    }
+snippet trait
+	trait ${1:MyTrait} {
+	    ${0:$VISUAL}
 	}
 snippet impl
-	impl ${1} {
+	impl ${1:${VISUAL:MyStruct}} {
 	    ${0}
 	}
+snippet new
+	impl ${1:${VISUAL:MyStruct}} {
+	    pub fn new(${3}) -> Self {
+	        Self {
+		    ${0}
+		}
+	    }
+	}
+snippet from
+	impl From<${2:T}> for ${1:${VISUAL:MyStruct}} {
+	    fn from(${3:from}: ${2}) -> Self {
+	        ${0}
+	    }
+	}
 snippet deref
-	impl Deref for ${1} {
+	impl Deref for ${1:${VISUAL:MyStruct}} {
 	    type Target = ${2:T};
 
 	    fn deref(&self) -> &${2} {
 	        ${0}
 	    }
 	}
+snippet asref
+	impl AsRef<${2:T}> for ${1:${VISUAL:MyStruct}} {
+	    fn as_ref(&self) -> &${2} {
+	        ${0}
+	    }
+	}
+snippet asmut
+	impl AsMut<${2:T}> for ${2:${VISUAL:MyStruct}} {
+	    fn as_mut(&mut self) -> &mut ${2} {
+	        ${0}
+	    }
+	}
 snippet drop
-	impl Drop for ${1} {
+	impl Drop for ${1:${VISUAL:MyStruct}} {
 	    fn drop(&mut self) {
 	        ${0}
 	    }
 	}
-snippet mod
-	mod ${1:mod} {
-	    ${0:$VISUAL}
-	}
-snippet trait
-	trait ${1:Trait} {
-	    ${0:$VISUAL}
-	}
 snippet for
 	for ${1:i} in ${2} {
-	    ${0}
+	    ${0:$VISUAL}
 	}
-snippet iflet
+snippet ifl
 	if let Some(${1}) = ${2} {
 	    ${0:$VISUAL}
 	}
+snippet whl
+	while let Some(${1}) = ${2} {
+	    ${0:$VISUAL}
+	}
+snippet spawn
+	thread::spawn(${1:move }|| {
+	    ${0:VISUAL}
+	});
 snippet pr
-	println!("${1}"${2});${0}
+	println!("${1}"${2});
 snippet fmt
-	format!("${1}"${2});${0}
+	format!("${1}"${2});
 snippet epr
-	eprintln!("${1}"${2});${0}
+	eprintln!("${1}"${2});
 snippet dump
 	println!("{:#?}", ${1:$VISUAL});
 snippet todo
 	// TODO: ${0:$VISUAL}
+snippet unim
+	unimplemented!()
 snippet <
 	<${1:T}>
 snippet opt
@@ -75,11 +101,21 @@ snippet opt
 snippet res
 	Result<${1}, ${2}>
 snippet vec
-	vec![${1}]
+	vec![]
 snippet box
 	Box::new(${0:$VISUAL})
 snippet rc
 	Rc::new(${0:$VISUAL})
+snippet refc
+	RefCell::new(${0:$VISUAL})
+snippet mutex
+	Mutex::new(${0:$VISUAL})
+snippet arc
+	Arc::new(${0:VISUAL})
+snippet dbg
+	dbg!(${0:${VISUAL}})
+snippet chan
+	let (${1:tx}, ${2:rx}) = mpsc::channel();
 snippet #[
 	#[${1:inline}]
 snippet cfg
@@ -95,14 +131,14 @@ snippet ut
 	}
 snippet test
 	#[test]
-	fn ${1:test}() {
+	fn ${1:my_test}() {
 	    ${0}
 	}
 snippet as
 	assert!(${1});
-snippet ase
+snippet aseq
 	assert_eq!(${1}, ${2});
-snippet asn
+snippet asne
 	assert_ne!(${1}, ${2});
 snippet ext
 	#[macro_user]

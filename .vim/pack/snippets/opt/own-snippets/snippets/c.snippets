@@ -14,14 +14,17 @@ snippet main
 		return ret;
 	}
 snippet func
-	int ret = ${1}FAILURE;
-	int res;
+	int ${1:function_name}(${2})
+	{
+		int ret = ${3:STATUS}_FAILURE;
+		int res;
 
-	${0:$VISUAL}
+		${0:$VISUAL}
 
-	ret = ${1}SUCCESS;
+		ret = ${3}_SUCCESS;
 	cleanup:
-	return ret;
+		return ret;
+	}
 snippet once
 	#ifndef ${1:`toupper(vim_snippets#Filename('$1_H', 'UNTITLED_H'))`}
 	#define ${1}
@@ -30,14 +33,12 @@ snippet once
 
 	#endif /* end ${1} */
 snippet struct
-	struct ${1:${VISUAL:struct}} {
-	${0}
+	struct ${1:my_struct} {
+		${0}
 	};
 
 	void ${1}_init(struct ${1} *${1});
 	void ${1}_free(struct ${1} *${1});
-
-	int ${1}_setup(struct ${1} *${1});
 snippet cast
 	((${1:const uint8_t *})${0:$VISUAL})
 snippet todo

@@ -1,4 +1,4 @@
-" Global shortcut mappings
+" Mapping settings
 
 " Tab navigation
 nnoremap <C-h> :tabprevious<CR>
@@ -7,18 +7,20 @@ nnoremap <C-k> :tabnew<CR>
 nnoremap <C-l> :tabnext<CR>
 
 " Clear search results
-nnoremap <Leader>/ :call ClearSearch()<CR>
-" Search with cursor on end of word
-nnoremap <Leader>e //e<CR>
+nnoremap <Leader>/ :call SearchClear()<CR>
+" Toggle move to end of match
+nnoremap <Leader>e :call SearchEndMatch()<CR>
 " Display path of the file
 nnoremap <Leader>p <C-G>
 " Call format program for whole file
 nnoremap <Leader>q gggqG2<C-O>
 " Search and Replace local variable
-nnoremap <Leader>r :let refactor = '\V\<<C-R><C-w>\>'<CR>[[V%:s/<C-R>=refactor<CR>//gcI<left><left><left><left>
+nnoremap <Leader>r :let b:refactor = '\V\<<C-R><C-w>\>'<CR>[[V%:s/<C-R>=b:refactor<CR>//gcI<left><left><left><left>
 " Search and Replace global variable
-nnoremap <Leader>R :let refactor = '\V\<<C-R><C-w>\>'<CR>gg:%s/<C-R>=refactor<CR>//gcI<left><left><left><left>
-" Display all snippets available
-nmap <Leader>s i<Plug>snipMateShow
-" Toogle extra whitespaces
-nnoremap <Leader>w :call ExtraWhiteSpaceSearch()<CR>
+nnoremap <Leader>R :let b:refactor = '\V\<<C-R><C-w>\>'<CR>gg:%s/<C-R>=b:refactor<CR>//gcI<left><left><left><left>
+" Copy visual selection to snipMate buffer
+xnoremap <Leader>v :<C-U>call SnipMateVisualCopy()<CR>
+" Search for extra whitespaces
+nnoremap <Leader>w :call SearchExtraWhiteSpace()<CR>
+" Cut visual selection to snipMate buffer
+xmap <Leader>x <Plug>snipMateVisual

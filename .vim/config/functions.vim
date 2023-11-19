@@ -1,19 +1,27 @@
-" Global function definitions
+" Function settings
 
-" Function to clear the search buffer
-function! ClearSearch()
+" Clear search buffer
+function! SearchClear()
 	call setreg("/", "", "v")
 endfunction
 
-" Enable some development mode display
-function! DevelopmentEnvironment(...)
-	" Set auto indentation
-	setlocal autoindent
-	" Show extra white spaces
-	syntax match ExtraWhiteSpace "\s\+$" containedin=ALL
+" Move cursor to begin/end of match
+function! SearchEndMatch()
+	call feedkeys("//e\<CR>")
 endfunction
 
 " Search for extra whitespaces
-function! ExtraWhiteSpaceSearch()
+function! SearchExtraWhiteSpace()
 	call feedkeys("/" . '\s\+$' . "\<CR>")
+endfunction
+
+" Copy selection into SnipMate register
+function! SnipMateVisualCopy() abort
+	let a_save = @a
+	try
+		normal! gv"ay
+		let b:snipmate_visual = @a
+	finally
+		let @a = a_save
+	endtry
 endfunction
