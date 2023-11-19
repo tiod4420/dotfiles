@@ -22,7 +22,7 @@ update_all()
 }
 
 # Delete automatically created files from current folder, recursively
-rmrec()
+cleanup()
 {
 	local file
 
