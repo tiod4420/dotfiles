@@ -5,6 +5,13 @@
 functions()
 {
 
+# Quick calculation with Python one-liner
+calc()
+{
+	local eval=$(printf "%s" "$@")
+	python -c "print(${eval})"
+}
+
 # Download a X509 certificate from an URL
 cert()
 {
