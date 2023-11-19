@@ -40,7 +40,7 @@ nnoremap <Leader>q gggqG2<C-O>
 nnoremap <Leader>r :call RefactorDecl('[[', '][')<CR>
 nnoremap <Leader>R :call RefactorDecl('gg', 'G')<CR>
 " Search for todos in the file
-nnoremap <Leader>t /TODO<CR>
+nnoremap <Leader>t /\<todo\><CR>
 " Search for trailing whitespaces
 nnoremap <Leader>w /\s\+$<CR>
 
