@@ -372,6 +372,34 @@ setup_clang_format()
 	return 0
 }
 
+setup_ctags()
+{
+	local RES
+
+	echo "Deploying ctags configuration"
+
+	# Create ctags directory if does not exist
+	mkdir -p "${CONFIG_DIR_PATH}/ctags"
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Add alacritty configuration files
+	for file in .config/ctags/*; do
+		[ ! -f "$file" ] && continue
+
+		deploy_file $file
+		RES=$?; [ 0 -ne $RES ] && return 1
+	done
+
+	return 0
+}
+
+setup_gdb()
+{
+	echo "Deploying gdb configuration"
+
+	deploy_file .gdbinit
+}
+
 setup_git()
 {
 	local RES
@@ -594,13 +622,7 @@ RES=$?; [ 0 -ne $RES ] && echo "git submodule update: failure" && exit 1
 echo "Updating submodules -- DONE"
 echo ""
 
-# Deploy single-file configuration
-echo "Deploying dotfiles"
-deploy_file .gdbinit
-RES=$?; [ 0 -ne $RES ] && exit 1
-echo ""
-
-# Deploy multi-files configuration
+# Deploy configurations
 setup_alacritty
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
@@ -610,6 +632,14 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 setup_clang_format
+RES=$?; [ 0 -ne $RES ] && exit 1
+echo ""
+
+setup_ctags
+RES=$?; [ 0 -ne $RES ] && exit 1
+echo ""
+
+setup_gdb
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 

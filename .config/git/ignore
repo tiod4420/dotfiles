@@ -21,8 +21,11 @@ Thumbs.db
 *.sw[a-z]
 *.un~
 .netrwhist
-Session.vim
+session.vim
 
 # Compiled files
 *.o
 *.pyc
+
+# Ctags
+tags
