@@ -6,23 +6,23 @@ nnoremap <C-j> :tabclose<CR>
 nnoremap <C-k> :tabnew<CR>
 nnoremap <C-l> :tabnext<CR>
 
-" vimgrep operator
-nnoremap <expr> <Leader>g VimGrepOperator() .. 'iw'
-xnoremap <expr> <Leader>g VimGrepOperator()
-noremap <expr> <Leader>G VimGrepOperator()
-
 " Comment/uncomment operator
-nnoremap <expr> <Leader>c CommentOperator() .. '_'
+nnoremap <expr> <Leader>c CommentOperator() . '_'
 xnoremap <expr> <Leader>c CommentOperator()
 noremap <expr> <Leader>C CommentOperator()
 
+" vimgrep operator
+nnoremap <expr> <Leader>g VimGrepOperator() . 'iw'
+xnoremap <expr> <Leader>g VimGrepOperator()
+noremap <expr> <Leader>G VimGrepOperator()
+
 " snipMate visual buffer copy operator
-nnoremap <expr> <Leader>v SnipMateVisualCopy() .. 'iw'
+nnoremap <expr> <Leader>v SnipMateVisualCopy() . 'iw'
 xnoremap <expr> <Leader>v SnipMateVisualCopy()
 noremap <expr> <Leader>V SnipMateVisualCopy()
 
 " snipMate visual buffer cut operator
-nnoremap <expr> <Leader>x SnipMateVisualCut() .. 'iw'
+nnoremap <expr> <Leader>x SnipMateVisualCut() . 'iw'
 xmap <Leader>x <Plug>snipMateVisual
 noremap <expr> <Leader>X SnipMateVisualCut()
 
