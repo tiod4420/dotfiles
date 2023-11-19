@@ -145,12 +145,12 @@ get_color_code()
 		color13 | brmagenta) echo "${mode};5;13";;
 		color14 | brcyan) echo "${mode};5;14";;
 		color15 | brwhite) echo "${mode};5;15";;
-		color16 ) echo "${mode};5;16";;
-		color17 ) echo "${mode};5;17";;
-		color18 ) echo "${mode};5;18";;
-		color19 ) echo "${mode};5;19";;
-		color20 ) echo "${mode};5;20";;
-		color21 ) echo "${mode};5;21";;
+		color16 | orange) echo "${mode};5;16";;
+		color17 | brown) echo "${mode};5;17";;
+		color18) echo "${mode};5;18";;
+		color19) echo "${mode};5;19";;
+		color20) echo "${mode};5;20";;
+		color21) echo "${mode};5;21";;
 		*) echo "";;
 	esac
 }
