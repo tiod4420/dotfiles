@@ -6,7 +6,7 @@ function! CheckAndSource(file_path)
 	endif
 endfunction
 
-let config_path=fnamemodify(expand($MYVIMRC), ':p:h') . '/config'
+let config_dir_path=fnamemodify(expand($MYVIMRC), ':p:h') . '/config'
 
 " For Windows version only
 if has('win32') || has('win64')
@@ -27,15 +27,15 @@ endif
 
 " Source all the configuration files
 for file in [ "global.vim", "colors.vim", "functions.vim", "filetypes.vim", "mappings.vim" ]
-	call CheckAndSource(config_path . "/" . file)
+	call CheckAndSource(config_dir_path . "/" . file)
 endfor
 unlet file
 
 " Load local configuration files that are not commited
 " [!] Load after all other settings so it can override previous config
-for file in split(expand(config_path . "/local/*.vim"), "\n")
+for file in split(expand(config_dir_path . "/local/*.vim"), "\n")
 	call CheckAndSource(file)
 endfor
 
-unlet config_path
+unlet config_dir_path
 delfunction CheckAndSource

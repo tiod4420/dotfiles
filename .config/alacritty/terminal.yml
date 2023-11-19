@@ -4,6 +4,9 @@ env:
 window:
   startup_mode: Maximized
 
+scrolling:
+    history: 0
+
 cursor:
   style:
     blinking: Always

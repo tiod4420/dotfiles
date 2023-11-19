@@ -7,7 +7,6 @@ syntax on
 
 " Color scheme style
 try
-	let g:gruvbox_contrast_dark="hard"
 	colorscheme gruvbox
 	highlight Todo ctermfg=167 cterm=bold
 catch
