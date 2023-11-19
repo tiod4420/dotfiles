@@ -115,9 +115,11 @@ snippet dbg
 snippet dump
 	println!("{:#?}", ${1:$VISUAL});
 snippet todo
-	// TODO: ${0:$VISUAL}
+	todo!()
 snippet unimplemented
 	unimplemented!()
+snippet unreachable
+	unreachable!()
 snippet #[
 	#[${1:derive(${2:Debug})}]
 snippet cfg
