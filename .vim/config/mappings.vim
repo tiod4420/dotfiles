@@ -41,6 +41,3 @@ nnoremap <Leader>R :call RefactorDecl('gg', 'G')<CR>
 nnoremap <Leader>t /TODO<CR>
 " Search for trailing whitespaces
 nnoremap <Leader>w /\s\+$<CR>
-" Quickfix window navigation
-nnoremap <Leader>p :cprev<CR>
-nnoremap <Leader>n :cnext<CR>
