@@ -108,10 +108,6 @@
 	# Do not guess user identity
 	useConfigOnly = true
 
-[url "https://github.com/"]
-	# URL shorthands for Github
-	insteadOf = github://
-
 [include]
 	# Load extra configuration file that is not commited
 	# [!] Load after all other settings so it can override previous config
