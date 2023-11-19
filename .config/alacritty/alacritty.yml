@@ -65,7 +65,7 @@ colors:
     focused_match:
       foreground: 'CellBackground'
       background: '0xfe8019'
-    bar:
+    footer_bar:
       foreground: '0xd5c4a1'
       background: '0x504945'
   line_indicator:
