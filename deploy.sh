@@ -571,15 +571,6 @@ setup_tmux()
 	mkdir -p "${CONFIG_DIR_PATH}/tmux"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Choose configuration directory source
-	version_lt "$version" 3.0 && dir=".config/tmux-2" || dir=".config/tmux"
-	# Choose main configuration file destination
-	version_lt "$version" 3.1 && file=".tmux.conf" || file="${CONFIG_DIR_PATH}/tmux/tmux.conf"
-
-	# Deploy main files in $HOME or .config/tmux
-	deploy_file -f ${file} .tmux.conf
-	RES=$?; [ 0 -ne $RES ] && return 1
-
 	# Add other configuration files
 	for file in ${dir}/*; do
 		[ ! -f "$file" ] && continue
