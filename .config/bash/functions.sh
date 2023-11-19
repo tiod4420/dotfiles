@@ -47,10 +47,11 @@ disas()
 	local opts
 	local objdump
 	local version
-	local arch
 	local binary
+	local arch
 	local symbols
-	local options
+	local arch_args
+	local args
 
 	# Set objdump binary
 	objdump=objdump
@@ -73,7 +74,7 @@ disas()
 		return 1
 	fi
 
-	# Get objdump flavour
+	# Get objdump flavour (GNU or LLVM)
 	if $objdump --version | grep -qi gnu; then
 		version=gnu
 	else
@@ -82,61 +83,61 @@ disas()
 
 	# Get target architecture
 	if [ -z "$arch" ]; then
-		if file binary | grep -qi x86; then
+		if file ${binary} | grep -qi x86; then
 			arch=x86
 		fi
 	fi
 
-	# Set disassemble options
-	if [ -n "$symbols" ]; then
-		case $version in
-			gnu) options+="--disassemble=${symbols}";;
-			llvm) options+="--disassemble-symbols=${symbols}";;
-		esac
-	fi
+	# Set parameters
+	case "$version" in
+		gnu) args=${symbols:+--disassemble="${symbols}"};;
+		llvm) args=${symbols:+--disassemble-symbols="${symbols}"};;
+	esac
 
-	# Set x86 assembly flavour to Intel
-	if [ "x86" = "$arch" ]; then
-		case $version in
-			gnu) options+=" --disassembler-options=intel";;
-			llvm) options+=" --x86-asm-syntax=intel";;
-		esac
-	fi
+	case "${version}_${arch:-none}" in
+		gnu_x86) arch_args=--disassembler-options=intel;;
+		llvm_x86) arch_args=--x86-asm-syntax=intel;;
+	esac
 
-	$objdump --demangle --disassemble $options $binary
+	$objdump --demangle ${arch_args} ${args:---disassemble} $binary
 }
 
 # Handle epoch time
 epoch()
 {
+	local OPTARG
+	local OPTIND
+	local opts
+	local mode="epoch"
 	local version
+	local date
+	local args
+	local fmt
 
-	# Get date version (GNU or BSD)
-	date --version &> /dev/null && version='gnu' || version='bsd'
+	# Parse arguments
+	while getopts ":r" opts; do
+		case "$opts" in
+			r) mode="date";;
+			\?) (1>&2 echo "${FUNCNAME}: invalid parameter: -${OPTARG}") && return 1;;
+		esac
+	done
 
-	if [ 0 -eq $# ]; then # Print current epoch
-		if [ "gnu" = "$version" ]; then
-			date -u +%s
-		else
-			date -j -u +%s
-		fi
-	elif [ 1 -eq $# ]; then # Give epoch of given time
-		if [ "gnu" = "$version" ]; then
-			date -u --date=$1 +%s
-		else
-			date -u -j -f "%F %T" +%s
-		fi
-	elif [ "-r" = "$1" ]; then # Reverse epoch of given time
-		shift
-		if [ "gnu" = "$version" ]; then
-			date -u --date="@${1}" +"%F %T"
-		else
-			date -u -j -r $1 +"%F %T"
-		fi
-	else # Unknown parameters
-		echo "${FUNCNAME}: too many operands" >&2
-		return 1
+	shift $((OPTIND - 1))
+	date=$1
+
+	# Get date flavour (GNU or BSD)
+	if date --version &> /dev/null; then
+		version=gnu
+	else
+		version=bsd
 	fi
+
+	case "${version}_${mode}" in
+		gnu_epoch) date -u    ${date:+--date="${date}"}     +"%s";;
+		bsd_epoch) date -u -j ${date:+-f "%F %T" "${date}"} +"%s";;
+		gnu_date)  date -u    ${date:+--date="@${date}"}    +"%F %T";;
+		bsd_date)  date -u -j ${date:+-r "${date}"}         +"%F %T";;
+	esac
 }
 
 # Extract usual archive formats
@@ -148,18 +149,20 @@ extract()
 	fi
 
 	case $1 in
-		*.tar.gz)  tar xzvf $1;;
-		*.tgz)     tar xzvf $1;;
-		*.tar.bz2) tar xjvf $1;;
-		*.tbz2)    tar xjvf $1;;
-		*.tar)     tar xvf $1;;
-		*.bz2)     bunzip2 $1;;
-		*.gz)      gunzip $1;;
-		*.Z)       uncompress $1;;
-		*.rar)     unrar e $1;;
-		*.zip)     unzip $1;;
-		*.7z)      7z x $1;;
-		*)         (1>&2 echo "${FUNCNAME}: '${1}' has unknown extraction method") && return 1;;
+		*.tar)              tar xvf $1;;
+		*.tgz  | *.tar.gz)  tar xzvf $1;;
+		*.tbz2 | *.tar.bz2) tar xjvf $1;;
+		*.txz  | *.tar.xz)  tar xJvf $1;;
+		*.bz2)              bunzip2 $1;;
+		*.exe)              cabextract $1;;
+		*.gz)               gunzip $1;;
+		*.rar)              unrar e $1;;
+		*.xz)               unxz $1;;
+		*.zip)              unzip $1;;
+		*.zst)              unzstd $1;;
+		*.Z)                uncompress $1;;
+		*.7z)               7z x $1;;
+		*)                  (1>&2 echo "${FUNCNAME}: '${1}' has unknown extraction method") && return 1;;
 	esac
 }
 
@@ -214,9 +217,46 @@ mktar()
 }
 
 # Remove dupplicate lines, without sorting
-uq()
+nodup()
 {
 	cat -n "$@" | sort -k2 -u | sort -k1 -n | cut -f2-
+}
+
+# Mirror website for local view
+webdump()
+{
+	if [ 1 -ne $# ]; then
+		echo "usage: ${FUNCNAME} URL" >&2
+		return 1
+	fi
+
+	# Recursively download the contents of a page
+	# -np: no parent
+	# -m: mirroring (-r -N -l inf --no-remove-listing)
+	#   -r: recursive
+	#   -N: turn on timestamping
+	#   -l: recursion depth
+	#   --no-remove-listing: don't remove temporary .listing files
+	# -k: convert links for local view
+	# -w: timeout in seconds
+	wget -np -m -k -w 5 -e robots=off $1
+}
+
+# Download media files from a web page
+webmedia()
+{
+	if [ 1 -ne $# ]; then
+		echo "usage: ${FUNCNAME} URL" >&2
+		return 1
+	fi
+
+	# Download media files from a page
+	# -nd: no directories
+	# -r: recursive
+	# -l: recursion depth
+	# -H: enable spanning across hosts
+	# -A: allowlist
+	wget -nd -r -l 1 -H -A png,gif,jpg,svg,jpeg,webm -e robots=off ${url}
 }
 
 }
