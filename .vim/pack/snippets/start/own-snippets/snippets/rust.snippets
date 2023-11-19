@@ -150,6 +150,12 @@ snippet deref
 	        ${0}
 	    }
 	}
+snippet deref_mut
+	impl ops::DerefMut for ${1:${VISUAL:Struct}} {
+	    fn deref_mut(&mut self) -> &mut Self::Target {
+	        ${0}
+	    }
+	}
 snippet display
 	impl fmt::Display for ${1:${VISUAL:Struct}} {
 	    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
