@@ -567,12 +567,6 @@ setup_tmux()
 	version=$(version_get tmux)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Check if tmux version is less than 2.0
-	if version_lt "$version" 2.0; then
-		setup_tmux_1
-		return
-	fi
-
 	# Create config directory if does not exist
 	mkdir -p "${CONFIG_DIR_PATH}/tmux"
 	RES=$?; [ 0 -ne $RES ] && return 1
@@ -595,11 +589,6 @@ setup_tmux()
 	done
 
 	return 0
-}
-
-setup_tmux_1()
-{
-	deploy_file -f .tmux.conf .tmux-1.conf
 }
 
 setup_vim()
