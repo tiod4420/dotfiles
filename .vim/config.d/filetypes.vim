@@ -35,7 +35,7 @@ if has("autocmd")
 		" Rust
 		autocmd Filetype rust call DevelopmentEnvironment("syntax", "est", "rustfmt")
 		" Other C-syntax languages
-		autocmd Filetype java,thrift call DevelopmentEnvironment("syntax", "est")
+		autocmd Filetype java,kotlin,thrift call DevelopmentEnvironment("syntax", "est")
 		" Objective-C and derivated
 		autocmd Filetype objc,objcpp call DevelopmentEnvironment("syntax", "est", "clang-format")
 
