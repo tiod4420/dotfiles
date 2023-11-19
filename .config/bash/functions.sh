@@ -97,7 +97,7 @@ http()
 }
 
 # Remove dupplicate lines, without sorting
-remdup()
+uq()
 {
 	cat -n "$@" | sort -k2 -u | sort -k1 -n | cut -f2-
 }
