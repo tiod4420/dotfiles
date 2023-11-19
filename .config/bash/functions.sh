@@ -5,39 +5,6 @@
 functions()
 {
 
-# Handle epoch time
-epoch()
-{
-	local date_version
-
-	# Get date version (GNU or BSD)
-	date --version &> /dev/null &&
-		date_version='gnudate' || date_version='bsddate'
-
-	if [ 0 -eq $# ]; then # Print current epoch
-		if [ "gnudate" = "$date_version" ]; then
-			date -u +%s
-		else
-			date -j -u +%s
-		fi
-	elif [ 1 -eq $# ]; then # Give epoch of given time
-		if [ "gnudate" = "$date_version" ]; then
-			date -u --date=$1 +%s
-		else
-			date -u -j -f "%F %T" +%s
-		fi
-	elif [ "-r" = "$1" ]; then # Reverse epoch of given time
-		shift
-		if [ "gnudate" = "$date_version" ]; then
-			date -u --date="@${1}" +"%F %T"
-		else
-			date -u -j -r $1 +"%F %T"
-		fi
-	else # Unknown parameters
-		(1>&2 echo "${FUNCNAME}: too many operands") && return 1
-	fi
-}
-
 # Download a X509 certificate from an URL
 cert()
 {
@@ -72,16 +39,104 @@ cert()
 		2>&1 <<< "GET / HTTP/1.0\n\n" | sed -ne "/${begin}/,/${end}/p"
 }
 
+# Disassemble function
+disas()
+{
+	local version
+	local OPTARG
+	local OPTIND
+	local opts
+	local binary
+	local symbol
+
+	# Get objdump version (GNU or BSD)
+	if objdump --version | grep -qi GNU; then
+		version="gnu"
+	else
+		version="bsd"
+	fi
+
+	# Parse arguments
+	while getopts ":s:" opts; do
+		case "$opts" in
+			s) symbol=$OPTARG;;
+			\?) (1>&2 echo "${FUNCNAME}: invalid parameter: -${OPTARG}") && return 1;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+	binary=$1
+
+	if [ -z "$binary" ]; then
+		echo "usage: ${FUNCNAME} [-s SYMBOL] BINARY" >&2
+		return 1
+	fi
+
+	# Setup propery objdump options
+	if [ -n "$symbol" ]; then
+		if [ "gnu" = "$version" ]; then
+			symbol="--disassemble=${symbol}"
+		else
+			symbol="--disassemble-symbols=${symbol}"
+		fi
+	fi
+
+	objdump --disassembler-options=intel $symbol $binary
+}
+
+# Handle epoch time
+epoch()
+{
+	local version
+
+	# Get date version (GNU or BSD)
+	date --version &> /dev/null && version='gnu' || version='bsd'
+
+	if [ 0 -eq $# ]; then # Print current epoch
+		if [ "gnu" = "$version" ]; then
+			date -u +%s
+		else
+			date -j -u +%s
+		fi
+	elif [ 1 -eq $# ]; then # Give epoch of given time
+		if [ "gnu" = "$version" ]; then
+			date -u --date=$1 +%s
+		else
+			date -u -j -f "%F %T" +%s
+		fi
+	elif [ "-r" = "$1" ]; then # Reverse epoch of given time
+		shift
+		if [ "gnu" = "$version" ]; then
+			date -u --date="@${1}" +"%F %T"
+		else
+			date -u -j -r $1 +"%F %T"
+		fi
+	else # Unknown parameters
+		(1>&2 echo "${FUNCNAME}: too many operands") && return 1
+	fi
+}
+
 # Jump to .git root working tree
 gitroot()
 {
 	local dir=$PWD
+	local found=0
+
 	while [ "/" != "$dir" ]; do
-		[ -d "${dir}/.git" ] && cd $dir && return 0
+		if [ -d "${dir}/.git" ]; then
+			found=1
+			break
+		fi
+
 		dir=$(dirname "$dir")
 	done
 
-	(1>&2 echo "${FUNCNAME}: root working tree not found") && return 1
+	if [ 0 -eq "$found" ]; then
+		(1>&2 echo "${FUNCNAME}: root working tree not found")
+		return 1
+	fi
+
+	pushd $dir
 }
 
 # Local HTTP server
