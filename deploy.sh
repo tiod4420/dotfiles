@@ -219,7 +219,10 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo "Updating submodules -- DONE"
 echo ""
 
-# Create Workspace directory if does not exist
+# Create Downloads and Workspace directory if does not exist
+mkdir -p "${HOME}/Downloads"
+RES=$?; [ 0 -ne $RES ] && exit 1
+
 mkdir -p "${HOME}/Workspace"
 RES=$?; [ 0 -ne $RES ] && exit 1
 
