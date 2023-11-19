@@ -3,73 +3,90 @@
 shopt -s extglob
 
 # Constants
-ROOT_DIR=$(dirname ${BASH_SOURCE})
-CONFIG_DIR_PATH=${XDG_CONFIG_HOME:-"${HOME}/.config"}
+
+CONFIG_DIR_PATH=${XDG_CONFIG_HOME:-${HOME}/.config}
 DRY_RUN="false"
 
 # Util functions
-deploy_file()
+
+deploy()
 {
 	local RES
-	local OPTARG OPTIND
-	local OPTERR=0
-	local opts
-	local dir
-	local mode
-	local file
+	local OPTARG
+	local OPTIND
+	local check="f"
+	local is_config="false"
+	local target
+	local src_dir
+	local dst_dir
+	local src
+	local dst
+
+	# Get parameters
+	while getopts ":cd" opts; do
+		case "$opts" in
+			c) is_config="true";;
+			d) check="d";;
+			\?) echo "Invalid option: -${OPTARG}" && exit 1;;
+		esac
+	done
+
+	shift $((OPTIND - 1))
+
+	[ -n "$1" ] && target="$1" || return 1
+
+	# Set source and destination directories
+	if [ "true" = "$is_config" ]; then
+		src_dir=".config/${target}"
+		dst_dir="${CONFIG_DIR_PATH}/${target}"
+	else
+		src_dir="${target}"
+		dst_dir="${HOME}/${target}"
+	fi
+
+	# Create directory
+	mkdir -p "${dst_dir}"
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Deploy files
+	for src in ${src_dir}/*; do
+		# Check if source is file or dir
+		! [ -${check} "$src" ] && continue
+
+		# Set destination file
+		if [ "true" = "$is_config" ]; then
+			dst="${dst_dir}/${src##*/}"
+		else
+			dst="${HOME}/${src}"
+		fi
+
+		# Deploy
+		deploy_target "$src" "$dst"
+		RES=$?; [ 0 -ne $RES ] && return 1
+	done
+
+	return 0
+}
+
+deploy_target()
+{
+	local RES
 	local src
 	local dst
 	local choice
 
-	# Get options
-	while getopts "d:f:m:" opts; do
-		case "$opts" in
-			d) dir=$OPTARG;;
-			f) file=$OPTARG;;
-			m) mode=$OPTARG;;
-			\?) echo "Invalid option: -${OPTARG}" && return 1;;
-		esac
-	done
-
-	shift $((OPTIND-1))
-	[ 1 -ne $# ] && echo "No input file provided" && return 1
-
-	# Set source path
-	src="${1}"
-	[ ! -f "$src" ] && echo "${src}: No such file or directory" && return 1
-
-	# Set destination path
-	if [ -z "$dir" ]; then
-		dir="${HOME}/$(dirname ${src})"
-	elif [ "/" != "${dir:0:1}" ]; then
-		dir="${HOME}/${dir}"
-	fi
-
-	if [ -z "$file" ]; then
-		file=$(basename ${src})
-	elif [ "/" = "${file:0:1}" ]; then
-		dir=$(dirname ${file})
-		file=$(basename ${file})
-	fi
-
-	dst=$(realpath "${dir}/${file}")
+	# Get parameters
+	[ -n "$1" ] && src="$1" || return 1
+	[ -n "$2" ] && dst="$2" || dst="${HOME}/${src}"
 
 	# Deploy file
-	if [ ! -f "$dst" ]; then
+	if ! target_exists "$src" "$dst"; then
 		# Destination does not exist
-		file_copy $src $dst
+		file_copy "$src" "$dst"
 		RES=$?; [ 0 -ne $RES ] && return 1
 
-		if [ -n "$mode" ]; then
-			chmod $mode $dst
-			RES=$?; [ 0 -ne $RES ] && return 1
-		fi
-
 		file_status "$dst" "DEPLOYED"
-	elif git diff --no-index --quiet $dst $src &> /dev/null; then
-		# Files are the same
-		file_status "$dst" "SAME"
-	else
+	elif ! git diff --no-index --quiet $dst $src &> /dev/null; then
 		# Files are different
 		file_status "$dst" "DIFF"
 
@@ -79,87 +96,16 @@ deploy_file()
 
 		if [ "yes" = "$choice" ]; then
 			# Replace file
-			file_copy $src $dst
+			file_copy "$src" "$dst"
 			RES=$?; [ 0 -ne $RES ] && return 1
-
-			if [ -n "$mode" ]; then
-				chmod $mode $dst
-				RES=$?; [ 0 -ne $RES ] && return 1
-			fi
 
 			file_status "$dst" "DEPLOYED"
 		else
 			file_status "$dst" "SKIP"
 		fi
-	fi
-
-	return 0
-}
-
-deploy_dir()
-{
-	local RES
-	local OPTARG OPTIND
-	local OPTERR=0
-	local opts
-	local name
-	local src dst
-	local choice
-
-	# Get options
-	while getopts "n:" opts; do
-		case "$opts" in
-			n) name=$OPTARG;;
-			\?) echo "Invalid option: -${OPTARG}" && return 1;;
-		esac
-	done
-
-	shift $((OPTIND-1))
-	[ 1 -ne $# ] && echo "No input directory provided" && return 1
-
-	# Set source and destination path
-	src=$1
-	[ ! -d "$src" ] && echo "${src}: No such file or directory" && return 1
-
-	dst="${HOME}/${1}"
-	if [ -n "$name" ]; then
-		if false; then
-			dst=$name
-		else
-			dst="$(dirname ${dst})/${name}"
-		fi
-	fi
-
-	# Deploy directory
-	if [ ! -d "$dst" ]; then
-		# Destination does not exist
-		file_copy -r $src $dst
-		RES=$?; [ 0 -ne $RES ] && return 1
-
-		file_status "$dst" "DEPLOYED"
-	elif git diff --no-index --quiet $dst $src &> /dev/null; then
-		# Directories are the same
-		file_status "$dst" "SAME"
 	else
-		# Directories are different
-		file_status "$dst" "DIFF"
-
-		# Get user choice
-		read_choice "$src" "$dst"
-		RES=$?; [ 0 -ne $RES ] && echo "" && return 1
-
-		if [ "yes" = "$choice" ]; then
-			# Replace directory
-			rm -rf $dst
-			RES=$?; [ 0 -ne $RES ] && return 1
-
-			file_copy -r $src $dst
-			RES=$?; [ 0 -ne $RES ] && return 1
-
-			file_status "$dst" "DEPLOYED"
-		else
-			file_status "$dst" "SKIP"
-		fi
+		# Files are the same
+		file_status "$dst" "SAME"
 	fi
 
 	return 0
@@ -168,9 +114,12 @@ deploy_dir()
 deploy_terminfo()
 {
 	local RES
-	local termname=$1
-	local file=$2
+	local termname
+	local file
 	local location
+
+	[ -n "$1" ] && termname="$1" || return 1
+	[ -n "$2" ] && file="$2" || return 1
 
 	location=$(find "${HOME}/.terminfo" -name "$termname" 2> /dev/null)
 
@@ -193,7 +142,33 @@ deploy_terminfo()
 
 file_copy()
 {
-	[ "true" != "$DRY_RUN" ] && cp $@ || return 0
+	local RES
+	local src
+	local dst
+
+	# Get parameters
+	[ -n "$1" ] && src="$1" || return 1
+	[ -n "$2" ] && dst="$2" || return 1
+
+	if [ "true" != "$DRY_RUN" ]; then
+		if [ -f "$src" ]; then
+			# Copy file
+			cp "$src" "$dst"
+			RES=$?; [ 0 -ne $RES ] && exit 1
+		else
+			# Remove existing directory
+			if [ -d "$dst" ]; then
+				rm -rf "$dst"
+				RES=$?; [ 0 -ne $RES ] && return 1
+			fi
+
+			# Copy directory
+			cp -r "$src" "$dst"
+			RES=$?; [ 0 -ne $RES ] && return 1
+		fi
+	fi
+
+	return 0
 }
 
 file_status()
@@ -203,7 +178,7 @@ file_status()
 
 os_type_get ()
 {
-	case "$(uname | tr "[:upper:]" "[:lower:]")os_type" in
+	case "$(uname | tr "[:upper:]" "[:lower:]")" in
 		linux*) echo "linux" ;;
 		darwin*) echo "macos" ;;
 		freebsd*) echo "freebsd" ;;
@@ -215,15 +190,19 @@ os_type_get ()
 read_choice()
 {
 	local RES
-	local REPLY
+	local src
+	local dst
+	local reply
 	local prompt
-	local src=$1
-	local dst=$2
 
+	# Get parameters
+	[ -n "$1" ] && src="$1" || return 1
+	[ -n "$2" ] && dst="$2" || return 1
+
+	# Get choice
 	[ -f "$src" ] && prompt="overwrite file" || prompt="replace directory"
 
 	choice=""
-
 	while [ -z "$choice" ]; do
 		# Default choice to no
 		read -p "Do you want to ${prompt} '$(basename ${dst})'? [y/N/d/q] "
@@ -235,7 +214,7 @@ read_choice()
 			n?(o)) choice="no";;
 			d?(iff))
 				# Display diff and retry
-				git diff --no-index $dst $src
+				git diff --no-index "$dst" "$src"
 				choice=""
 				;;
 			q?(uit))
@@ -251,13 +230,33 @@ read_choice()
 	done
 }
 
+target_exists()
+{
+	local src
+	local dst
+
+	# Get parameters
+	[ -n "$1" ] && src="$1" || return 1
+	[ -n "$2" ] && dst="$2" || return 1
+
+	# Check if destination exists according to source type
+	if [ -f "$src" ]; then
+		[ -f "$dst" ]
+	else
+		[ -d "$dst" ]
+	fi
+}
+
 version_get()
 {
-	local prgm=$1
 	local d="[0-9]+"
+	local prgm
+
+	# Get parameters
+	[ -n "$1" ] && prgm="$1" || return 1
 
 	# Check if command exists
-	if ! command -v $prgm &> /dev/null; then
+	if ! command -v "$prgm" &> /dev/null; then
 		return 1
 	fi
 
@@ -299,24 +298,16 @@ version_lt()
 }
 
 # Deploy functions
+
 setup_alacritty()
 {
 	local RES
-	local file
 
 	echo "Deploying alacritty configuration"
 
-	# Create config directory if does not exist
-	mkdir -p "${CONFIG_DIR_PATH}/alacritty"
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Add alacritty configuration files
-	for file in .config/alacritty/*; do
-		[ ! -f "$file" ] && continue
-
-		deploy_file $file
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
+	# Deploy configuration
+	deploy -c alacritty
+	RES=$?; [ 0 -ne $RES ] && exit 1
 
 	return 0
 }
@@ -325,7 +316,6 @@ setup_bash()
 {
 	local RES
 	local version
-	local file
 
 	echo -n "Deploying bash configuration -- "
 
@@ -334,24 +324,18 @@ setup_bash()
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
 	# Deploy main files in $HOME
-	deploy_file .bash_profile
+	deploy_target .bash_profile
 	RES=$?; [ 0 -ne $RES ] && return 1
-	deploy_file .bashrc
+	deploy_target .bashrc
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Create directory if does not exist
-	mkdir -p "${CONFIG_DIR_PATH}/bash"
+	# Deploy configuration
+	deploy -c bash
 	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Create local configuration directory
 	mkdir -p "${CONFIG_DIR_PATH}/bash/local"
 	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Add other configuration files
-	for file in .config/bash/*; do
-		[ ! -f "$file" ] && continue
-
-		deploy_file $file
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
 
 	return 0
 }
@@ -376,8 +360,8 @@ setup_clang_format()
 		[ -f ".clang-format-${i}" ] && file=".clang-format-${i}"
 	done
 
-	# Deploy file
-	deploy_file -f .clang-format $file
+	# Deploy configuration
+	deploy_target "$file" "${HOME}/.clang-format"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	return 0
@@ -389,17 +373,9 @@ setup_ctags()
 
 	echo "Deploying ctags configuration"
 
-	# Create ctags directory if does not exist
-	mkdir -p "${CONFIG_DIR_PATH}/ctags"
+	# Deploy configuration
+	deploy -c ctags
 	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Add ctags configuration files
-	for file in .config/ctags/*; do
-		[ ! -f "$file" ] && continue
-
-		deploy_file $file
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
 
 	return 0
 }
@@ -415,23 +391,14 @@ setup_gdb()
 	version=$(version_get gdb)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Check if GDB is less than 11.1
+	# Deploy configuration
 	if version_lt "$version" 11.1; then
-		deploy_file -d $HOME -f .gdbinit .config/gdb/gdbinit
-		return
-	fi
-
-	# Create directory if does not exist
-	mkdir -p "${CONFIG_DIR_PATH}/gdb"
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Add gdb configuration files
-	for file in .config/gdb/*; do
-		[ ! -f "$file" ] && continue
-
-		deploy_file $file
+		deploy_target .config/gdb/gdbinit "${HOME}/.gdbinit"
 		RES=$?; [ 0 -ne $RES ] && return 1
-	done
+	else
+		deploy -c gdb
+		RES=$?; [ 0 -ne $RES ] && return 1
+	fi
 
 	return 0
 }
@@ -440,7 +407,6 @@ setup_git()
 {
 	local RES
 	local version
-	local file
 
 	echo -n "Deploying git configuration -- "
 
@@ -448,17 +414,9 @@ setup_git()
 	version=$(version_get git)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Create directory if does not exist
-	mkdir -p "${CONFIG_DIR_PATH}/git"
+	# Deploy configuration
+	deploy -c git
 	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Add git configuration files
-	for file in .config/git/*; do
-		[ ! -f "$file" ] && continue
-
-		deploy_file $file
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
 
 	return 0
 }
@@ -478,20 +436,16 @@ setup_rust()
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	# Add cargo configuration
-	deploy_file .cargo/config.toml
+	deploy_target .cargo/config.toml
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Add rustfmt configuration
+	# Deploy configuration
 	if [ "linux" != "$os" ]; then
-		deploy_file -d $HOME -f .rustfmt.toml .config/rustfmt/rustfmt.toml
+		deploy_target .config/rustfmt/rustfmt.toml "${HOME}/.rustfmt.toml"
 		RES=$?; [ 0 -ne $RES ] && return 1
 	else
-		# Create directory if does not exist
-		mkdir -p "${CONFIG_DIR_PATH}/rustfmt"
-		RES=$?; [ 0 -ne $RES ] && return 1
-
-		deploy_file .config/rustfmt/rustfmt.toml
-		RES=$?; [ 0 -ne $RES ] && return 1
+		deploy -c rustfmt
+		RES=$?; [ 0 -ne $RES ] && exit 1
 	fi
 
 	return 0
@@ -501,7 +455,6 @@ setup_ssh()
 {
 	local RES
 	local version
-	local file
 
 	echo -n "Deploying ssh configuration -- "
 
@@ -509,17 +462,13 @@ setup_ssh()
 	version=$(version_get ssh)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Create ssh directory if does not exist
-	mkdir -p -m 755 "${HOME}/.ssh"
+	# Deploy configuration
+	deploy .ssh
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Add ssh configuration files
-	for file in .ssh/*; do
-		[ ! -f "$file" ] && continue
-
-		deploy_file -m 600 $file
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
+	# Set file permissions
+	chmod 600 ${HOME}/.ssh/*
+	RES=$?; [ 0 -ne $RES ] && return 1
 
 	return 0
 }
@@ -538,14 +487,14 @@ setup_terminfo()
 	# Short circuit setup of terminfo if ncurses is not installed
 	[ -z "$version" ] && return 0
 
-	# Deploy missing terminfo
-	deploy_terminfo alacritty "${ROOT_DIR}/terminfo/alacritty.info"
+	# Deploy missing terminfo files
+	deploy_terminfo alacritty terminfo/alacritty.info
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	deploy_terminfo alacritty-direct "${ROOT_DIR}/terminfo/alacritty.info"
+	deploy_terminfo alacritty-direct terminfo/alacritty.info
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	deploy_terminfo tmux-256color "${ROOT_DIR}/terminfo/terminfo.src"
+	deploy_terminfo tmux-256color terminfo/terminfo.src
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	return 0
@@ -556,7 +505,6 @@ setup_tmux()
 	local RES
 	local version
 	local dir
-	local file
 
 	echo -n "Deploying tmux configuration -- "
 
@@ -564,17 +512,9 @@ setup_tmux()
 	version=$(version_get tmux)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Create config directory if does not exist
-	mkdir -p "${CONFIG_DIR_PATH}/tmux"
+	# Deploy configuration
+	deploy -c tmux
 	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Add other configuration files
-	for file in .config/tmux/*; do
-		[ ! -f "$file" ] && continue
-
-		deploy_file $file
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
 
 	return 0
 }
@@ -583,8 +523,6 @@ setup_vim()
 {
 	local RES
 	local version
-	local file
-	local package
 
 	echo -n "Deploying vim configuration -- "
 
@@ -592,33 +530,24 @@ setup_vim()
 	version=$(version_get vim)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Create .vim directory if does not exist
+	# Deploy vimrc
 	mkdir -p "${HOME}/.vim"
 	RES=$?; [ 0 -ne $RES ] && return 1
-	mkdir -p "${HOME}/.vim/config"
+
+	deploy_target .vim/vimrc
 	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Deploy configuration
+	deploy .vim/config
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Create local configuration directory
 	mkdir -p "${HOME}/.vim/config/local"
 	RES=$?; [ 0 -ne $RES ] && return 1
-	mkdir -p "${HOME}/.vim/pack"
+
+	# Deploy plugins
+	deploy -d .vim/pack
 	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Add vim configuration files
-	deploy_file .vim/vimrc
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	for file in .vim/config/*; do
-		[ ! -f "$file" ] && continue
-
-		deploy_file $file
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
-
-	for package in .vim/pack/*; do
-		[ ! -d "$package" ] && continue
-
-		deploy_dir $package
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
 
 	return 0
 }
@@ -626,14 +555,16 @@ setup_vim()
 # Main script
 
 # Check if is a dry run
-[ "-d" = "$1" -o "--dry-run" = "$1" ] && DRY_RUN="true"
+if [ "-d" = "$1" ] || [ "--dry-run" = "$1" ]; then
+	DRY_RUN="true"
+fi
 
 # Check that git exists and initialize modules
 command -v git &> /dev/null
 RES=$?; [ 0 -ne $RES ] && echo "git: command not found" && exit 1
 echo "Checking git -- FOUND"
 
-cd ${ROOT_DIR}
+cd $(dirname ${BASH_SOURCE})
 
 git submodule update --init --recursive
 RES=$?; [ 0 -ne $RES ] && exit 1
