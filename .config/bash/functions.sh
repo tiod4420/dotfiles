@@ -170,6 +170,13 @@ http()
 	fi
 }
 
+# Make directory and cd into it
+mkcd()
+{
+	mkdir "$@" && cd "$_"
+}
+
+
 # Remove dupplicate lines, without sorting
 nodup()
 {

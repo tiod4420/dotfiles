@@ -45,10 +45,10 @@ aliases()
 
 	# Make tarball with automatic compression algorithm
 	alias mktar="tar caf"
-	# Extract tarball
-	alias extar="tar xvf"
 	# List content of tarball
 	alias lstar="tar tvf"
+	# Extract tarball
+	alias untar="tar xvf"
 
 	# OpenSSL fast command
 	alias asn1parse="openssl asn1parse -i -dump"
