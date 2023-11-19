@@ -3,6 +3,7 @@
 shopt -s extglob
 
 ROOT_DIR=$(dirname ${BASH_SOURCE})
+CONFIG_DIR="${HOME}/.config"
 
 # Include utils
 if [ ! -f "${ROOT_DIR}/deploy_utils.sh" ]; then
@@ -24,7 +25,7 @@ deploy_alacritty()
 	echo "Deploying alacritty configuration -- "
 
 	# Create config directory if does not exist
-	mkdir -p "${HOME}/.config/alacritty"
+	mkdir -p "${CONFIG_DIR}/alacritty"
 	RES=$?; [ 0 -ne $RES ] && exit 1
 
 	# Add alacritty configuration files
@@ -63,13 +64,13 @@ deploy_bash()
 	RES=$?; [ 0 -ne $RES ] && exit 1
 
 	# Create .bash.d directory if does not exist
-	mkdir -p "${HOME}/.bash.d"
+	mkdir -p "${CONFIG_DIR}/bash"
 	RES=$?; [ 0 -ne $RES ] && exit 1
-	mkdir -p "${HOME}/.bash.d/local"
+	mkdir -p "${CONFIG_DIR}/bash/local"
 	RES=$?; [ 0 -ne $RES ] && exit 1
 
 	# Add bash configuration files
-	for FILE in .bash.d/*; do
+	for FILE in .config/bash/*; do
 		[ ! -f "$FILE" ] && continue
 
 		deploy_file $FILE
@@ -128,7 +129,7 @@ deploy_git()
 	fi
 
 	# Create .git.d directory if does not exist
-	mkdir -p "${HOME}/.config/git"
+	mkdir -p "${CONFIG_DIR}/git"
 	RES=$?; [ 0 -ne $RES ] && exit 1
 
 	# Add git configuration files

@@ -7,7 +7,7 @@ bashrc()
 		[ -x /usr/bin/ssh-agent ] && [ -n "$SHELL" ] && exec /usr/bin/ssh-agent $SHELL
 	fi
 
-	local CONFIG_DIR_PATH="$(dirname ${BASH_SOURCE[0]})/.bash.d"
+	local CONFIG_DIR_PATH="${HOME}/.config/bash"
 	local -r -a SOURCE_FILES=(
 		"${CONFIG_DIR_PATH}/global.sh"
 		"${CONFIG_DIR_PATH}/exports.sh"
