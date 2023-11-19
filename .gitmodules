@@ -19,3 +19,6 @@
 [submodule ".vim/pack/syntax/start/kotlin-vim"]
 	path = .vim/pack/syntax/start/kotlin-vim
 	url = https://github.com/udalov/kotlin-vim.git
+[submodule ".vim/pack/themes/opt/solarized8"]
+	path = .vim/pack/themes/opt/solarized8
+	url = https://github.com/lifepillar/vim-solarized8.git
