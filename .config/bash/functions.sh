@@ -42,7 +42,7 @@ cert()
 	name=$([ -n "$2" ] && echo "$2" || (cut -d':' -f 1 <<< "$server"))
 
 	# Get the certificates from the handshake connection of OpenSSL
-	openssl s_client -connect "$server" -servername "$name" "$all" \
+	openssl s_client -connect "$server" -servername "$name" $all \
 		2>&1 <<< "GET / HTTP/1.0\n\n" | sed -ne "/${begin}/,/${end}/p"
 }
 
