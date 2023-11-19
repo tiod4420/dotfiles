@@ -565,6 +565,7 @@ RES=$?; [ 0 -ne $RES ] && echo "git: command not found" && exit 1
 echo "Checking git -- FOUND"
 
 cd $(dirname ${BASH_SOURCE})
+RES=$?; [ 0 -ne $RES ] && exit 1
 
 git submodule update --init --recursive
 RES=$?; [ 0 -ne $RES ] && exit 1
