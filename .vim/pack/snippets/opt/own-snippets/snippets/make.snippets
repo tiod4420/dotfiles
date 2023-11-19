@@ -4,20 +4,23 @@ snippet make
 
 	# Variables
 	CC       = gcc
-	CFLAGS   = -O2 -Wall -Werror -pedantic
+	CFLAGS   = -Wall -Wextra -W
+	LDFLAGS  =
 
-	PROG	= ${1:a.out}
-	SRC	= ${2:\$(wildcard *.c)}
-	OBJ	= \$(SRC:.c=.o)
+	PROG = ${1:a.out}
+	SRC  = ${2:\$(wildcard *.c)}
+	OBJ  = \$(SRC:.c=.o)
 
 	# Rules
 	all: \$(PROG)
 
 	\$(PROG): \$(OBJ)
-		\$(CC) \$(CFLAGS) -o \$@ \$+
+		\$(CC) \$(CFLAGS) \$(LDFLAGS) -o \$@ \$+
 
 	%.o: %.c
 		\$(CC) \$(CFLAGS) -c -o \$@ \$+
+
+	${0}
 
 	clean:
 		\$(RM) *.o

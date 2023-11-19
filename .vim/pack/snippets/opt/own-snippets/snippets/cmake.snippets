@@ -1,74 +1,119 @@
 snippet cmake
-	cmake_minimum_required(VERSION 3.10)
+	cmake_minimum_required(VERSION 3.13)
 	project(${1:Project} C)
 
-	option(ENABLE_TESTING "Enable testing" OFF)
+	option(BUILD_TESTING "Build the testing tree." OFF)
+	include(CTest)
 
 	add_compile_options(
-		-Wall -Wextra -W -Wwrite-strings -Wpointer-arith -Wimplicit-fallthrough
-		$<$<CONFIG:ASan>:-fsanitize=address$<SEMICOLON>-fsanitize=undefined>
-		$<$<CONFIG:Coverage>:--coverage>
+		-Wall -Wextra -W -Wwrite-strings -Winit-self -Wpointer-arith
+		-Wreturn-type -Waddress -Wsequence-point -Wformat-security
+		-Wmissing-include-dirs -Wfloat-equal -Wundef -Wcast-align
+		-Wimplicit-fallthrough -Wmissing-declarations -Wvla
+		\$<\$<CONFIG:ASan>:-fsanitize=address\$<SEMICOLON>-fsanitize=undefined>
 		)
 
 	add_link_options(
-		$<$<CONFIG:ASan>:-fsanitize=address$<SEMICOLON>-fsanitize=undefined>
-		$<$<CONFIG:Coverage>:--coverage>
+		\$<\$<CONFIG:ASan>:-fsanitize=address\$<SEMICOLON>-fsanitize=undefined>
 		)
 
-	# Set public include directory
-	set(${2:PROJECT}_INCLUDE_DIRECTORY \${CMAKE_CURRENT_SOURCE_DIR}/include)
-
-	# Build external dependencies
 	add_subdirectory(externals)
+	add_subdirectory(tests)
+snippet exe
+	set(TARGET_NAME ${1:${VISUAL:target}})
 
-	# Build target
-	add_subdirectory(src)
+	file(GLOB SOURCES src/*.cpp src/*.h)
+	file(GLOB HEADERS include/*.h)
 
-	# Build tests
-	if(ENABLE_TESTING)
-		enable_testing()
-		add_subdirectory(tests)
-	endif()
-snippet inc
-	include_directories(${${1:include}})
+	add_executable(\${TARGET_NAME} \${SOURCES} \${HEADERS})
+	set_property(TARGET \${TARGET_NAME} PROPERTY C_STANDARD 99)
 
-snippet find
-	find_package(${1:library} ${2:REQUIRED})
+	target_compile_options(\${TARGET_NAME}
+		PUBLIC ${2:option}
+		)
 
-snippet file
-	file(GLOB ${1:SOURCES} *.${2:cpp})
+	target_include_directories(\${TARGET_NAME}
+		PUBLIC include
+		PRIVATE src
+		)
 
-snippet sub
-	add_subdirectory(${1:src})
+	target_link_options(\${TARGET_NAME}
+		PUBLIC ${3:option}
+		)
 
+	target_link_libraries(\${TARGET_NAME}
+		PUBLIC ${4:library}
+		)
 snippet lib
-	add_library(${1:lib} ${2:$1_SOURCES})
+	set(TARGET_NAME ${1:${VISUAL:target}})
 
-snippet tar
-	target_link_libraries(${1:main} ${2:PUBLIC} ${3:lib})
+	file(GLOB SOURCES src/*.cpp src/*.h)
+	file(GLOB HEADERS include/*.h)
 
+	add_library(\${TARGET_NAME} ${2:STATIC} \${SOURCES} \${HEADERS})
+	set_property(TARGET \${TARGET_NAME} PROPERTY C_STANDARD 99)
+
+	target_compile_options(\${TARGET_NAME}
+		PUBLIC ${3:option}
+		)
+
+	target_include_directories(\${TARGET_NAME}
+		PUBLIC include
+		PRIVATE src
+		)
+
+	target_link_options(\${TARGET_NAME}
+		PUBLIC ${4:option}
+		)
+
+	target_link_libraries(\${TARGET_NAME}
+		PUBLIC ${5:option}
+		)
 snippet add
-	add_executable(${1:main} ${2:\${SOURCES}})
-
-snippet set
-	set(${1:var} ${2:value})
-
+	add_subdirectory(${1:${VISUAL:src}})
 snippet dep
 	add_dependencies(${1:target} ${2:dep})
-
-snippet git
+snippet test
+	add_test(NAME ${1:test}
+		COMMAND ${2:\$<TARGET_FILE:target>}
+		)
+snippet command
+	add_custom_command(
+		COMMENT "${1:comment}"
+		OUTPUT ${2:output}
+		${0:COMMAND}
+		)
+snippet custom
+	add_custom_target(${1:target} ${2:ALL}
+		${0:DEPENDS}
+		)
+snippet external
 	include(ExternalProject)
 
-	ExternalProject_Add(${1:googletest}
-		GIT_REPOSITORY    ${2:https://github.com/google/googletest.git}
-		GIT_TAG           ${3:master}
-		SOURCE_DIR        "${4:${CMAKE_BINARY_DIR}/googletest-src}"
-		BINARY_DIR        "${5:${CMAKE_BINARY_DIR}/googletest-build}"
-		CONFIGURE_COMMAND ""
-		BUILD_COMMAND     ""
-		INSTALL_COMMAND   ""
-		TEST_COMMAND      ""
-	)
+	set(TARGET_NAME ${1:target})
 
-snippet test
-	add_test(${1:ATestName} ${2:testCommand})
+	ExternalProject_Add(\${TARGET_NAME}_dl
+		GIT_REPOSITORY    "${2:https://github.com/google/googletest.git}"
+		GIT_TAG           ${3:master}
+		GIT_SHALLOW       ON
+		CMAKE_CACHE_ARGS  -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+		BUILD_COMMAND     \${CMAKE_COMMAND} --build <BINARY_DIR> --config Release
+		UPDATE_COMMAND    ""
+		)
+	ExternalProject_Get_property(\${TARGET_NAME}_dl INSTALL_DIR)
+
+	add_library(\${TARGET_NAME} INTERFACE)
+
+	target_include_directories(\${TARGET_NAME}
+		INTERFACE \${INSTALL_DIR}/include
+		)
+
+	target_link_directories(\${TARGET_NAME}
+		INTERFACE \${INSTALL_DIR}/lib
+		)
+
+	target_link_libraries(\${TARGET_NAME}
+		INTERFACE ${4:library}
+		)
+
+	add_dependencies(\${TARGET_NAME} \${TARGET_NAME}_dl)

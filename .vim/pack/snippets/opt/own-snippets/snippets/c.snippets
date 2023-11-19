@@ -1,187 +1,59 @@
-## Preprocessor
-# #include <...>
-snippet inc
-	#include <${1:stdio}.h>
-# #include "..."
-snippet Inc
-	#include "${1:`vim_snippets#Filename("$1.h")`}"
-# ifndef...define...endif
-snippet ndef
-	#ifndef $1
-	#define ${1:SYMBOL} ${2:value}
-	#endif /* end $1 */
-# define
-snippet def
-	#define
-# ifdef...endif
-snippet ifdef
-	#ifdef ${1:FOO}
-		${2:#define }
-	#endif
-# if
-snippet #if
-	#if ${1:FOO}
-		${0:${VISUAL}}
-	#endif /* end $1 */
-# header include guard
-snippet once
-	#ifndef ${1:`toupper(vim_snippets#Filename('$1_H', 'UNTITLED_H'))`}
-	#define $1
-
-	${0}
-
-	#endif /* end $1 */
-# Disable C++ name mangling in C headers
-snippet nocxx
-	#ifdef __cplusplus
-	extern "C" {
-	#endif
-
-	${0}
-
-	#ifdef __cplusplus
-	} /* extern "C" */
-	#endif /* end __cplusplus */
-##
-## Control Statements
-# if
-snippet if
-	if (${1:true}) {
-		${0:${VISUAL}}
-	}
-snippet ife
-	if (${1:true}) {
-		${2:${VISUAL}}
-	} else {
-		${0}
-	}
-# else
-snippet el
-	else {
-		${0:${VISUAL}}
-	}
-# else if
-snippet elif
-	else if (${1:true}) {
-		${0:${VISUAL}}
-	}
-# ifi
-snippet ifi
-	if (${1:true}) { ${0} };
-# ternary
-snippet t
-	${1:/* condition */} ? ${2:a} : ${3:b}
-# switch
-snippet switch
-	switch (${1:/* variable */}) {
-	case ${2:/* variable case */}:
-		${3}
-		${4:break;}${5}
-	default:
-		${6}
-	}
-# switch without default
-snippet switchndef
-	switch (${1:/* variable */}) {
-	case ${2:/* variable case */}:
-		${3}
-		${4:break;}${5}
-	}
-# case
-snippet case
-	case ${1:/* variable case */}:
-		${2}
-		${3:break;}
-snippet ret
-	return ${0};
-##
-## Loops
-# for
-snippet for
-	for (size_t ${2:i} = 0; $2 < ${1:count}; ${3:++}$2) {
-		${0}
-	}
-# while
-snippet wh
-	while (${1:/* condition */}) {
-		${0:${VISUAL}}
-	}
-# do... while
-snippet do
-	do {
-		${0:${VISUAL}}
-	} while (${1:/* condition */});
-##
-## Types
-snippet td
-	typedef ${1:int} ${2:MyCustomType};
-# struct
-snippet st
-	struct ${1}
-	{
-		${0}
-	};
-snippet enum
-	enum ${1:name}
-	{
-		${0}
-	};
-## Input/Output
-# printf
-snippet pr
-	printf("${1:%s}\\n"${2});
-# fprintf (again, this isn't as nice as TextMate's version, but it works)
-snippet fpr
-	fprintf(${1:stderr}, "${2:%s}\\n"${3});
-## Custom snippets
-# main
 snippet main
 	#include <stdio.h>
 	#include <stdlib.h>
 
 	int main(int argc, char *argv[])
 	{
-		${0}
-		return EXIT_SUCCESS;
-	}
-# main(void)
-snippet mainn
-	#include <stdio.h>
-	#include <stdlib.h>
+		int ret = EXIT_FAILURE;
+		int res;
 
-	int main(void)
-	{
-		${0}
-		return EXIT_SUCCESS;
+		${0:$VISUAL}
+
+		ret = EXIT_SUCCESS;
+	cleanup:
+		return ret;
 	}
-# function definition with zero parameters
 snippet func
 	int ret = ${1}FAILURE;
 	int res;
 
-	${0}
+	${0:$VISUAL}
 
-	ret = $1SUCCESS;
+	ret = ${1}SUCCESS;
 	cleanup:
 	return ret;
-snippet gocl
-	goto cleanup;
-# function definition with Doxygen documentation
-snippet doc
-	/*! \\brief ${1:Brief function description here}
-	 *
-	 *  ${2:Detailed description of the function}
-	 *
-	 * \\param $3 ${4:Parameter description}
-	 * \\return ${5:Return parameter description}
-	 */
-snippet cmt
-	/*
-	${0:${VISUAL}}
-	*/
+snippet once
+	#ifndef ${1:`toupper(vim_snippets#Filename('$1_H', 'UNTITLED_H'))`}
+	#define ${1}
+
+	${0:$VISUAL}
+
+	#endif /* end ${1} */
+snippet struct
+	enum ${1}_status {
+		${1/.*/\U&}_SUCCESS = 0,
+		${1/.*/\U&}_FAILURE = 1,
+	};
+
+	struct ${1:${VISUAL:struct}} {
+	${0}
+	};
+
+	void ${1}_init(struct ${1} *${1});
+	void ${1}_free(struct ${1} *${1});
+
+	int ${1}_setup(struct ${1} *${1});
+
+	const char *${1}_status_to_str(enum ${1}_status status);
+snippet cast
+	((${1:const uint8_t *})${0:$VISUAL})
+snippet todo
+	// TODO: ${0:$VISUAL}
+snippet pr
+	printf("${1:%s}${2:\\n}");
 snippet dump
-	for (size_t i = 0; i < ${1:array}_sz; ++i) {
-		printf("%02x", ${1:array}[i]);
+	for (size_t i = 0; i < ${1:${VISUAL:ptr}}_sz; ++i) {
+		printf("%02x", ${0:$1}[i]);
 	}
 	printf("\\n");
 snippet array
@@ -190,3 +62,29 @@ snippet array
 snippet ptr
 	uint8_t *${1:ptr} = NULL;
 	size_t ${1}_sz = 0;
+snippet inc
+	#include <${1:stdio}.h>
+snippet Inc
+	#include "${1:`vim_snippets#Filename("$1.h")`}"
+snippet ifdef
+	#ifdef ${1:FOO}
+	${0:#define}
+	#endif /* end ${1} */
+snippet ifndef
+	#ifndef ${1:FOO}
+	${0:#define}
+	#endif /* end ${1} */
+snippet for
+	for (size_t ${2:i} = 0; ${2} < ${1:count}; ${3:++}${2}) {
+		${0}
+	}
+snippet nocxx
+	#ifdef __cplusplus
+	extern "C" {
+	#endif
+
+	${0:$VISUAL}
+
+	#ifdef __cplusplus
+	} /* end extern "C" */
+	#endif
