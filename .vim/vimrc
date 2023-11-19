@@ -6,6 +6,7 @@ function! CheckAndSource(file_path)
 	endif
 endfunction
 
+" Get path of config directory
 let config_dir_path=fnamemodify(expand($MYVIMRC), ':p:h') . '/config'
 
 " For Windows version only
@@ -23,6 +24,14 @@ if has('win32') || has('win64')
 	set runtimepath+=~/.vim/after
 	set packpath^=~/.vim
 	set packpath+=~/.vim/after
+endif
+
+" Fix tmux term capabilities
+if &term =~ "^tmux"
+	if &t_ST == "" | let &t_ST = "\e[22;2t" | endif
+	if &t_RT == "" | let &t_RT = "\e[23;2t" | endif
+elseif &term =~ "^alacritty"
+	set ttymouse=sgr
 endif
 
 " Source all the configuration files

@@ -4,9 +4,6 @@
 
 # Source files only in an interactive shell
 [ -z "$PS1" ] && return
-# Start ssh-agent if not started
-# TODO: fix that maybe
-[ -z "$SSH_AUTH_SOCK" -a -x /usr/bin/ssh-agent ] && [ -n "$SHELL" ] && exec /usr/bin/ssh-agent $SHELL
 
 bashrc()
 {
@@ -197,6 +194,20 @@ join_array()
 
 	shift 2 && printf "%s" "$first" "${@/#/${delim}}"
 }
+
+# Start ssh-agent if not started
+if check_has_cmd /usr/bin/ssh-agent; then
+	if [ -z "$SSH_AUTH_SOCK" ]; then
+		[ -n "$SHELL" ] && exec /usr/bin/ssh-agent $SHELL
+	fi
+fi
+
+# Start tmux if local shell and not inside tmux
+if check_has_cmd tmux; then
+	if [ -z "$TMUX" ]; then
+		is_local_host && exec tmux
+	fi
+fi
 
 bashrc
 unset -f bashrc

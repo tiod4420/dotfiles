@@ -271,6 +271,8 @@ echo ""
 echo "Deploying dotfiles"
 deploy_file .gdbinit
 RES=$?; [ 0 -ne $RES ] && exit 1
+deploy_dir .terminfo/
+RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 # Deploy multi-files configuration

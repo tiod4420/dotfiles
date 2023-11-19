@@ -2,10 +2,16 @@
 
 " Works only for Vim
 set nocompatible
+
 " Disable modeline
 set nomodeline
 " UTF8 encoding, without BOMB
 set encoding=utf-8 nobomb
+
+" Enable screen interaction
+if has("mouse") | set mouse=a | endif
+" Enable title changes
+if has ("title") | set title | endif
 
 " Set auto indentation
 set autoindent
@@ -19,11 +25,7 @@ set ruler
 set showcmd
 " Show current mode
 set showmode
-" Change window's title
-set title
 
-" Enable screen interaction
-if has("mouse") | set mouse=a | endif
 " Backspace behaviour
 set backspace=indent,eol,start
 " Scrolls some lines before the bottom
@@ -48,6 +50,6 @@ set nobackup
 " No undo files
 set noundofile
 " Command mode history
-set history=256
+set history=4096
 " In-memory undo levels
-set undolevels=256
+set undolevels=4096
