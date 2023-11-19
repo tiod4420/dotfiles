@@ -11,12 +11,6 @@ aliases()
 	alias ...="cd ../.."
 	alias ....="cd ../../.."
 
-	# Shortcuts for usual directories
-	alias cdl="cd ~/Downloads"
-	alias pdl="pushd ~/Downloads"
-	alias cws="cd ~/Workspace"
-	alias pws="pushd ~/Workspace"
-
 	# Safe cp and mv
 	alias cp="cp -i"
 	alias mv="mv -i"
