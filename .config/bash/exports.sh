@@ -125,36 +125,24 @@ exports()
 		GCC_COLORS+="quote=1"
 		export GCC_COLORS
 
-		# Set colors for man pages (no export to keep the display of env clean)
-		man()
-		{
-			# Start blink -- unused
-			local LESS_TERMCAP_mb=$'\e[0m'
-			# Start bold -- section titles
-			local LESS_TERMCAP_md=$'\e[0;38;5;16m'
-			# End blink, bold, and underline
-			local LESS_TERMCAP_me=$'\e[0m'
-			# End standout
-			local LESS_TERMCAP_se=$'\e[0m'
-			# Start standout -- bottom bar
-			local LESS_TERMCAP_so=$'\e[0;48;5;19m'
-			# End underline
-			local LESS_TERMCAP_ue=$'\e[0m'
-			# Start underline -- parameters, keywords
-			local LESS_TERMCAP_us=$'\e[0;38;5;3m'
-
-			LESS_TERMCAP_mb=${LESS_TERMCAP_mb} \
-			LESS_TERMCAP_md=${LESS_TERMCAP_md} \
-			LESS_TERMCAP_me=${LESS_TERMCAP_me} \
-			LESS_TERMCAP_se=${LESS_TERMCAP_se} \
-			LESS_TERMCAP_so=${LESS_TERMCAP_so} \
-			LESS_TERMCAP_ue=${LESS_TERMCAP_ue} \
-			LESS_TERMCAP_us=${LESS_TERMCAP_us} \
-			command man "$@"
-		}
-
 		# Set GTest colors
 		export GTEST_COLOR=1
+
+		# Export less color codes, for colored manpages
+		# Start blink -- unused
+		export LESS_TERMCAP_mb=$'\e[0m'
+		# Start bold -- section titles
+		export LESS_TERMCAP_md=$'\e[0;38;5;16m'
+		# End blink, bold, and underline
+		export LESS_TERMCAP_me=$'\e[0m'
+		# End standout
+		export LESS_TERMCAP_se=$'\e[0m'
+		# Start standout -- bottom bar
+		export LESS_TERMCAP_so=$'\e[0;48;5;19m'
+		# End underline
+		export LESS_TERMCAP_ue=$'\e[0m'
+		# Start underline -- parameters, keywords
+		export LESS_TERMCAP_us=$'\e[0;38;5;3m'
 	fi
 }
 

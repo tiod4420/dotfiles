@@ -95,6 +95,16 @@ http()
 	fi
 }
 
+# Override printenv to escape non-printable characters
+printenv()
+{
+	if [ 0 -eq "$#" ]; then
+		command printenv | cat -v
+	else
+		command printenv "$@"
+	fi
+}
+
 }
 
 functions
