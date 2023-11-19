@@ -1,3 +1,5 @@
+# Binding settings
+
 key_bindings:
   # Vi mode toggles
   - { key: I,      mods: Shift|Control, mode: ~Search,    action: ToggleViMode     }

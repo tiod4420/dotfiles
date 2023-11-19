@@ -37,8 +37,15 @@ deploy_file()
 	[ ! -f "$src" ] && echo "${src}: No such file or directory" && return 1
 
 	dst="${HOME}/${1}"
-	[ -n "$name" ] && dst="$(dirname $dst)/${name}"
+	if [ -n "$name" ]; then
+		if [ "/" = "${name:0:1}" ]; then
+			dst=$name
+		else
+			dst="$(dirname ${dst})/${name}"
+		fi
+	fi
 
+	# Deploy file
 	if [ ! -f "$dst" ]; then
 		# Destination does not exist
 		file_copy $src $dst
@@ -106,8 +113,15 @@ deploy_dir()
 	[ ! -d "$src" ] && echo "${src}: No such file or directory" && return 1
 
 	dst="${HOME}/${1}"
-	[ -n "$name" ] && dst="$(dirname $dst)/${name}"
+	if [ -n "$name" ]; then
+		if false; then
+			dst=$name
+		else
+			dst="$(dirname ${dst})/${name}"
+		fi
+	fi
 
+	# Deploy directory
 	if [ ! -d "$dst" ]; then
 		# Destination does not exist
 		file_copy -r $src $dst
@@ -212,7 +226,10 @@ version_get()
 			git --version | sed -E "s/.*git version (${d})\.(${d})\.(${d}).*/\1.\2.\3/"
 			;;
 		ssh)
-			ssh -V 2>&1 | sed -E "s/.*OpenSSH_(${d})\.(${d})p(${d}).*/\1.\2.\3/"
+			ssh -V 2>&1 | sed -E "s/.*OpenSSH_(${d})\.(${d})p(${d}).*/\1.\2p\3/"
+			;;
+		tmux)
+			tmux -V | sed -E "s/.*tmux (${d})\.(${d}).*/\1.\2/"
 			;;
 		vim)
 			vim --version | head -n 1 | sed -E "s/.*VIM - Vi IMproved (${d})\.(${d}).*/\1.\2/"
@@ -265,7 +282,7 @@ deploy_bash()
 	version=$(version_get bash)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Deploy files in $HOME
+	# Deploy main files in $HOME
 	deploy_file .bash_profile
 	RES=$?; [ 0 -ne $RES ] && return 1
 	deploy_file .bashrc
@@ -277,7 +294,7 @@ deploy_bash()
 	mkdir -p "${CONFIG_DIR_PATH}/bash/local"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Add bash configuration files
+	# Add other configuration files
 	for file in .config/bash/*; do
 		[ ! -f "$file" ] && continue
 
@@ -390,6 +407,39 @@ deploy_ssh()
 	return 0
 }
 
+deploy_tmux()
+{
+	local RES
+	local version
+	local file
+
+	echo -n "Deploying tmux configuration -- "
+
+	# Get version
+	version=$(version_get tmux)
+	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
+
+	# Create config directory if does not exist
+	mkdir -p "${CONFIG_DIR_PATH}/tmux"
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Deploy main files in $HOME or .config/tmux
+	version_lt "$version" 3.1 && file=".tmux.conf" || file="${CONFIG_DIR_PATH}/tmux/tmux.conf"
+
+	deploy_file -n ${file} .tmux.conf
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Add other configuration files
+	for file in .config/tmux/*; do
+		[ ! -f "$file" ] && continue
+
+		deploy_file $file
+		RES=$?; [ 0 -ne $RES ] && return 1
+	done
+
+	return 0
+}
+
 deploy_vim()
 {
 	local RES
@@ -490,6 +540,10 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 deploy_ssh
+RES=$?; [ 0 -ne $RES ] && exit 1
+echo ""
+
+deploy_tmux
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
