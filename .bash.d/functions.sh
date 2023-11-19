@@ -74,7 +74,13 @@ cert()
 # Local HTTP server
 http()
 {
-	python -m SimpleHTTPServer
+	if command -v python3 &> /dev/null; then
+		python3 -m http.server $1
+	elif command -v python2 &> /dev/null; then
+		python2 -m SimpleHTTPServer $1
+	else
+		echo "python2 or python3 is missing"
+	fi
 }
 
 }
