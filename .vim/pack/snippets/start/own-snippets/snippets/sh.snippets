@@ -32,17 +32,6 @@ snippet case
 		*)
 			;;
 	esac
-snippet opt
-	local OPTIND OPTARG $2
-	while getopts '${1:o}' ${2:opts}; do
-		case \$$2 in
-			${0:0})
-				;;
-			\?)
-				echo "Invalid option: -\${OPTARG}" && exit 1
-				;;
-		esac
-	done
 snippet fun
 	${1:function_name}()
 	{
@@ -50,3 +39,20 @@ snippet fun
 	}
 snippet check
 	${1:RES}=\$?; [ 0 -ne \$${1} ] && exit 1
+snippet getopts
+	local OPTARG OPTIND
+	local OPTERR=0
+	local ${2:opts}
+
+	while getopts "${1:o}" ${2} \$@; do
+		case "\$${2}" in
+			${0:pat})
+				;;
+			\\?)
+				echo "Invalid option: -\${OPTARG}"
+				exit 1
+				;;
+		esac
+	done
+
+	shift $((OPTIND -1 ))
