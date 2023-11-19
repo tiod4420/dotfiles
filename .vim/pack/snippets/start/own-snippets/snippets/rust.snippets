@@ -32,6 +32,18 @@ snippet new
 	        }
 	    }
 	}
+snippet display
+	impl fmt::Display for ${1:${VISUAL:Struct}} {
+	    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+	        ${0:write!(f, "")}
+	    }
+	}
+snippet drop
+	impl Drop for ${1:${VISUAL:Struct}} {
+	    fn drop(&mut self) {
+	        ${0}
+	    }
+	}
 snippet from
 	impl From<${2:T}> for ${1:${VISUAL:Struct}} {
 	    fn from(${3:from}: ${2}) -> Self {
@@ -55,12 +67,6 @@ snippet deref
 	    type Target = ${2:T};
 
 	    fn deref(&self) -> &${2} {
-	        ${0}
-	    }
-	}
-snippet drop
-	impl Drop for ${1:${VISUAL:Struct}} {
-	    fn drop(&mut self) {
 	        ${0}
 	    }
 	}
