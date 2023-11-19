@@ -59,10 +59,4 @@ let g:netrw_banner=0
 " Display tree view
 let g:netrw_liststyle=3
 " Open files is like preview
-let g:netrw_browse_split=4
-" Split preview in vertical split window
-let g:netrw_preview=1
-" Control where preview splits (right)
-let g:netrw_alto=0
-" Control where vertical splits (right)
-let g:netrw_altv=1
+let g:netrw_browse_split=2
