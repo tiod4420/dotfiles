@@ -108,26 +108,20 @@ snippet func
 	endfunction()
 snippet binary
 	set(TARGET_NAME ${1:target})
-	set(INPUT_FILE ${2:input_file})
-
-	get_filename_component(INPUT_FILE_DIR \${INPUT_FILE} DIRECTORY)
-	get_filename_component(INPUT_FILE_NAME \${INPUT_FILE} NAME)
-	set(OUTPUT_FILE "\${INPUT_FILE_NAME}.o")
+	set(${2:INPUT_FILE} ${3:path})
+	get_filename_component(${2}_NAME ${2} NAME)
+	get_filename_component(${2}_DIR ${2} DIRECTORY)
+	set(${4:OUTPUT_FILE} \${${2}_NAME}.c)
 
 	add_custom_command(
-		COMMENT "Generating binary object for \${INPUT_FILE_NAME}"
-		OUTPUT \${OUTPUT_FILE}
-		DEPENDS \${INPUT_FILE}
-		COMMAND \${CMAKE_LINKER} -m \$<IF:\$<EQUAL:4,\${CMAKE_SIZEOF_VOID_P}>,elf_i386,elf_x86_64> -r -b binary \${INPUT_FILE_NAME} -o "\${CMAKE_CURRENT_BINARY_DIR}/\${OUTPUT_FILE}"
-		WORKING_DIRECTORY \${INPUT_FILE_DIR}
+		COMMENT "Generating C include file for \${${2}_NAME}"
+		OUTPUT \${${4}}
+		DEPENDS \${TARGET_NAME} \${${2}}
+		COMMAND xxd -i \${${2}_NAME} "\${CMAKE_CURRENT_BINARY_DIR}/\${${4}}"
+		WORKING_DIRECTORY \${${2}_DIR}
 		)
 
-	add_library(\${TARGET_NAME} STATIC \${OUTPUT_FILE})
-
-	set_target_properties(\${TARGET_NAME} PROPERTIES
-		EXCLUDE_FROM_ALL 1
-		LINKER_LANGUAGE C
-		)
+	add_library(${5:lib} OBJECT \${${4}})
 snippet extern
 	include(ExternalProject)
 
