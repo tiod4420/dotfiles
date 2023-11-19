@@ -120,6 +120,7 @@
 
 # URL shorthand for GitHub
 [url "https://github.com/"]
+	insteadOf = http://github.com/
 	insteadOf = github://
 
 [include]
