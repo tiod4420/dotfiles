@@ -63,7 +63,7 @@ snippet asmut
 	    }
 	}
 snippet deref
-	impl Deref for ${1:${VISUAL:Struct}} {
+	impl ops::Deref for ${1:${VISUAL:Struct}} {
 	    type Target = ${2:T};
 
 	    fn deref(&self) -> &${2} {
@@ -109,7 +109,9 @@ snippet pr
 snippet epr
 	eprintln!("${1}"${2});
 snippet fmt
-	format!("${1}"${2});
+	format!("${1}"${2})
+snippet wr
+	write!(${3:f}, "${1}"${2})
 snippet dbg
 	dbg!(${0:${VISUAL}})
 snippet dump
