@@ -11,25 +11,23 @@
 	# List all branches
 	branches = branch -vva
 	# List contributors
-	contributors = shortlog --email --numbered --summary
-	# Allow git git git...
-	git = !exec git
+	contributors = shortlog --numbered --email --summary
 	# Log last commit
-	last = log -1 --stat HEAD
+	last = log --stat -n 1
 	# List commits logs
-	lo = log --pretty=oneline -n 30 --graph --abbrev-commit
+	lo = log --graph --pretty=oneline --abbrev-commit -n 30
 	# Update last commit with staged files without editing the message
 	oops = commit --amend --no-edit
 	# Edit author of the current commit
 	reauthor = commit --amend --no-edit --reset-author
+	# Short alias for status
+	st = status
 	# Show commit log stats
 	stat = log --compact-summary
 	# Update submodules
 	subupdate = submodule update
 	# Show diff summary
 	summary = diff --compact-summary
-	# Short alias for status
-	st = status
 	# Show local author
 	who = "!f() { echo \"$(git config --local user.name)\" " \
 		"\"<$(git config --local user.email)>\"; }; f"
