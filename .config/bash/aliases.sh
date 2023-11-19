@@ -25,10 +25,10 @@ aliases()
 
 	# Set colors for grep
 	alias grep="grep --color=auto"
-	# Set colors for fgrep
-	alias fgrep="fgrep --color=auto"
 	# Set colors for egrep
 	alias egrep="egrep --color=auto"
+	# Set colors for fgrep
+	alias fgrep="fgrep --color=auto"
 
 	# Set colors for diff
 	alias diff="diff --color=auto"
@@ -65,14 +65,14 @@ aliases()
 	alias tobin="xxd -p -r"
 	alias tohex="xxd -p -c 32"
 
-	# Search all occurences of info in MANPATH
-	alias findman="lsman | xargs -I{} find {} -name"
-	# Search all occurences of command in PATH
-	alias findpath="lspath | xargs -I{} find {} -maxdepth 1 -name"
 	# Print each MANPATH entry on a separate line
 	alias lsman="man --path | tr ':' '\n'"
 	# Print each PATH entry on a separate line
 	alias lspath="echo \$PATH | tr ':' '\n'"
+	# Search all occurences of info in MANPATH
+	alias findman="lsman | xargs -I{} find {} -name"
+	# Search all occurences of command in PATH
+	alias findpath="which -a"
 
 	# Start a VirtualBox VM in headless mode
 	alias vmstart="VBoxManage startvm --type headless"
