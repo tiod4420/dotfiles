@@ -569,10 +569,10 @@ setup_tmux()
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	# Add other configuration files
-	for file in ${dir}/*; do
+	for file in .config/tmux/*; do
 		[ ! -f "$file" ] && continue
 
-		deploy_file -d ".config/tmux/" $file
+		deploy_file $file
 		RES=$?; [ 0 -ne $RES ] && return 1
 	done
 
