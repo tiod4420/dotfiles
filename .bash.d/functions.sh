@@ -5,43 +5,84 @@
 functions()
 {
 
-# Update system
+# Update all system
+update_all()
+{
+	# Update OS
+	command -v update_system &> /dev/null && update_system
+	# Update brew
+	command -v update_brew &> /dev/null && update_brew
+	# Update pip
+	command -v update_pip &> /dev/null && update_pip
+	# Update dotfiles
+	command -v update_dotfiles &> /dev/null && update_dotfiles
+}
+
 if [ "linux" = "$OS" ]; then
-	update_all()
+	# Upgrade on Linux
+	update_system()
 	{
-		# Upgrade on Linux systems with apt
-		command -v apt &> /dev/null && sudo apt update && sudo apt upgrade
-		# Upgrade pip2
-		command -v pip2 &> /dev/null && sudo pip2 install --upgrade pip
-		# Upgrade pip3
-		command -v pip3 &> /dev/null && sudo pip3 install --upgrade pip
-		# Update dotfiles
-		if pushd $HOME; then
-			git --git-dir="$GIT_BARE_DIR" --work-tree="$HOME" pull --recurse-submodules
-			[ 0 -eq "$?" ] source ${HOME}/.bashrc
-			popd
+		if command -v apt &> /dev/null; then
+			# Debian/Ubuntu
+			sudo apt update && sudo apt upgrade
+		elif command -v yum &> /dev/null; then
+			# RHEL/CentOS/Red Hat/Fedora
+			sudo yum update
+		elif command -v pacman &> /dev/null; then
+			# Arch Linux
+			sudo pacman --sync --refresh --sysupgrade
 		fi
 	}
 elif [ "osx" = "$OS" ]; then
-	update_all()
+	# Upgrade on OSX
+	update_system()
 	{
-		# Upgrade on OSX
 		softwareupdate --install --all
-		# Upgrade Homebrew
-		command -v brew &> /dev/null &&
+	}
+
+	# Update brew
+	update_brew()
+	{
+		if command -v brew &> /dev/null; then
 			brew update && brew upgrade && brew cleanup
-		# Upgrade pip2
-		sudo command -v pip2 &> /dev/null && pip2 install --upgrade pip
-		# Upgrade pip3
-		sudo command -v pip3 &> /dev/null && pip3 install --upgrade pip
-		# Update dotfiles
-		if pushd $HOME; then
-			git --git-dir="$GIT_BARE_DIR" --work-tree="$HOME" pull --recurse-submodules
-			[ 0 -eq "$?" ] source ${HOME}/.bashrc
-			popd
 		fi
 	}
 fi
+
+# Update pip
+update_pip()
+{
+	# Upgrade pip2
+	if command -v pip2 &> /dev/null; then
+		sudo pip2 install --upgrade pip
+	fi
+	# Upgrade pip3
+	if command -v pip3 &> /dev/null; then
+		sudo pip3 install --upgrade pip;
+	fi
+}
+
+# Create function to update dotfiles
+# It cannot be used as a regular function as we need to resolve some path
+# during the .bashrc sourcing
+local UPDATE_DOTFILES=""
+UPDATE_DOTFILES+='update_dotfiles() { '
+UPDATE_DOTFILES+='    local GIT_DIR WORK_TREE;'
+# Create options for git update
+UPDATE_DOTFILES+="    GIT_DIR=\"--git-dir=${GIT_BARE_DIR}\";"
+UPDATE_DOTFILES+='    WORK_TREE="--work-tree=\${HOME};'
+# Jump to $HOME
+UPDATE_DOTFILES+='    if pushd $HOME; then'
+# Update work tree ($HOME) with git directory, recurse on  submodules
+UPDATE_DOTFILES+='        git $GIT_DIR $WORK_TREE pull --recurse-submodules;'
+# Source new configuration
+UPDATE_DOTFILES+='        [ 0 -eq "$?" ] && source "${HOME}/.bashrc";'
+# Go back to previous directory
+UPDATE_DOTFILES+='        popd;'
+UPDATE_DOTFILES+='    fi;'
+UPDATE_DOTFILES+='}'
+# Evaluate string to create the function
+eval $UPDATE_DOTFILES
 
 # Delete automatically created files from current folder, recursively
 cleanup()
