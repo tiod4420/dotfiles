@@ -3,8 +3,6 @@
 " Filetype detection
 filetype plugin indent on
 
-" Default extra whitespace highlight
-let g:ews_flags="est"
 " Default TeX syntax
 let g:tex_flavor="latex"
 " Default assembly syntax
@@ -24,21 +22,29 @@ if has("autocmd")
 	augroup Development
 		autocmd!
 
-		" sh
-		autocmd Filetype sh call DevelopmentEnvironment("est")
 		" C and C++
-		autocmd Filetype c,cpp call DevelopmentEnvironment("es", "clang-format")
+		autocmd Filetype c,cpp call DevelopmentEnvironment()
+		autocmd Filetype c,cpp setlocal formatprg="clang-format"
 		" CMake
-		autocmd Filetype cmake call DevelopmentEnvironment("e")
+		autocmd Filetype cmake call DevelopmentEnvironment()
 		" Assembly
-		autocmd Filetype nasm call DevelopmentEnvironment("esi")
-		" Python
-		autocmd Filetype python call DevelopmentEnvironment("e")
+		autocmd Filetype asm,nasm call DevelopmentEnvironment()
 		" Rust
-		autocmd Filetype rust call DevelopmentEnvironment("est", "rustfmt")
+		autocmd Filetype rust call DevelopmentEnvironment()
+		autocmd Filetype rust setlocal formatprg="rustfmt"
 		autocmd FileType rust nnoremap <Leader>q :RustFmt<CR>
 		autocmd FileType rust nnoremap <Leader>r :RustRun<CR>
 		autocmd FileType rust nnoremap <Leader>t :RustTest<CR>
+		" sh
+		autocmd Filetype sh call DevelopmentEnvironment()
+		" Python
+		autocmd Filetype python call DevelopmentEnvironment()
+		autocmd FileType python setlocal shiftwidth=4 tabstop=4 expandtab
+		" HTML, CSS and JavaScript
+		autocmd Filetype html,css,javascript call DevelopmentEnvironment()
+		autocmd FileType html,css,javascript setlocal shiftwidth=2 tabstop=2 expandtab
+		" VIM script
+		autocmd Filetype vim call DevelopmentEnvironment()
 		" Base64 file detection
 		autocmd BufNewFile,BufRead *.b64,*.base64,*.pem.*.crt setlocal filetype=base64
 		" EDL (SGX) file detection

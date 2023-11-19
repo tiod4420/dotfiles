@@ -1,17 +1,14 @@
 [alias]
-	# Command shortcuts
-	lo = log --pretty=oneline -n 30 --graph --abbrev-commit
-	st = status -s
-
-	# Longer aliases
-	# Edit last commit message
-	amend = commit --amend
 	# Allow git git git...
 	git = !exec git
+
+	# Command aliases
+	# List contributors
+	contributors = shortlog --email --numbered --summary
+	# List commits
+	list = log --pretty=oneline -n 30 --graph --abbrev-commit
 	# Update last commit with staged files without editing the message
 	oops = commit --amend --no-edit
-	# List contributors.
-	summary = shortlog --email --numbered --summary
 
 	# Shell functions
 	# List aliases
@@ -42,7 +39,7 @@
 	# Default editor
 	editor = vim
 	# Default pager
-	pager = 'less'
+	pager = less
 
 [color]
 	# Use colors in commands that are capable when tty is a terminal

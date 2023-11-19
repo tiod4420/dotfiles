@@ -26,5 +26,10 @@ nnoremap <Right> <C-w>>
 
 " Clear search results
 nnoremap <Leader>/ :call ClearSearch()<CR>
+" Search with cursor on end of word
+nnoremap <Leader>e //e<CR>
 " Toogle extra whitespaces
-nnoremap <Leader>ws :call ExtraWhiteSpaceSearchToggle()<CR>
+nnoremap <Leader>w :call ExtraWhiteSpaceSearch()<CR>
+" SnipMate trigger key
+imap <Leader><Tab> <Plug>snipMateNextOrTrigger
+smap <Leader><Tab> <Plug>snipMateNextOrTrigger
