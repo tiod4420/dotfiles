@@ -219,7 +219,7 @@ deploy_vim()
 	MAJOR=$(echo $VERSION | cut -d '.' -f 1)
 
 	if [ 8 -gt "$MAJOR" ]; then
-		deploy_dir -n .vim-7.0 .vim
+		deploy_dir -n .vim .vim-7.0
 		RES=$?; [ 0 -ne $RES ] && exit 1
 
 		return 0
