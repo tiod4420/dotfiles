@@ -326,7 +326,7 @@ ff()
 	[ 0 -eq "$#" ] && return 0
 	[ 1 -lt "$#" ] && (1>&2 echo "${FUNCNAME}: too many operands") && return 1
 	# Search for file execpted .git directory
-	find . -name "$1" 2> /dev/null
+	find . -name $1 2> /dev/null
 }
 
 # Search for text within the current directory
@@ -355,6 +355,12 @@ bin2hex()
 hex2bin()
 {
 	xxd -r $1
+}
+
+# Local HTTP server
+http()
+{
+	python -m SimpleHTTPServer
 }
 
 }
