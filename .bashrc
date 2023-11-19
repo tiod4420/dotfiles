@@ -6,6 +6,10 @@
 
 bashrc()
 {
+	if [ -z "$SSH_AUTH_SOCK" ]; then
+		[ -x /usr/bin/ssh-agent ] && [ -n "$SHELL" ] && exec /usr/bin/ssh-agent $SHELL
+	fi
+
 	local CONFIG_DIR_PATH="$(dirname ${BASH_SOURCE[0]})/.bash.d"
 	declare -r -a SOURCE_FILES=(
 		"${CONFIG_DIR_PATH}/global.sh"
