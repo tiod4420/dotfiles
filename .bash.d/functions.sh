@@ -5,62 +5,64 @@
 functions()
 {
 
-# Update all system
-update_all()
-{
-	# Update OS
-	command -v update_system &> /dev/null && update_system
-	# Update brew
-	command -v update_brew &> /dev/null && update_brew
+if [ "true" = "$PDATABLE_CONFIG" ]; then
+	# Update all system
+	update_all()
+	{
+		# Update OS
+		command -v update_system &> /dev/null && update_system
+		# Update brew
+		command -v update_brew &> /dev/null && update_brew
+		# Update pip
+		command -v update_pip &> /dev/null && update_pip
+		# Update dotfiles
+		command -v update_dotfiles &> /dev/null && update_dotfiles
+	}
+
+	if [ "linux" = "$OS" ]; then
+		# Upgrade on Linux
+		update_system()
+		{
+			if command -v apt &> /dev/null; then
+				# Debian/Ubuntu
+				sudo apt update && sudo apt upgrade
+			elif command -v yum &> /dev/null; then
+				# RHEL/CentOS/Red Hat/Fedora
+				sudo yum update
+			elif command -v pacman &> /dev/null; then
+				# Arch Linux
+				sudo pacman --sync --refresh --sysupgrade
+			fi
+		}
+	elif [ "osx" = "$OS" ]; then
+		# Upgrade on OSX
+		update_system()
+		{
+			softwareupdate --install --all
+		}
+
+		# Update brew
+		update_brew()
+		{
+			if command -v brew &> /dev/null; then
+				brew update && brew upgrade && brew cleanup
+			fi
+		}
+	fi
+
 	# Update pip
-	command -v update_pip &> /dev/null && update_pip
-	# Update dotfiles
-	command -v update_dotfiles &> /dev/null && update_dotfiles
-}
-
-if [ "linux" = "$OS" ]; then
-	# Upgrade on Linux
-	update_system()
+	update_pip()
 	{
-		if command -v apt &> /dev/null; then
-			# Debian/Ubuntu
-			sudo apt update && sudo apt upgrade
-		elif command -v yum &> /dev/null; then
-			# RHEL/CentOS/Red Hat/Fedora
-			sudo yum update
-		elif command -v pacman &> /dev/null; then
-			# Arch Linux
-			sudo pacman --sync --refresh --sysupgrade
+		# Upgrade pip2
+		if command -v pip2 &> /dev/null; then
+			sudo pip2 install --upgrade pip
 		fi
-	}
-elif [ "osx" = "$OS" ]; then
-	# Upgrade on OSX
-	update_system()
-	{
-		softwareupdate --install --all
-	}
-
-	# Update brew
-	update_brew()
-	{
-		if command -v brew &> /dev/null; then
-			brew update && brew upgrade && brew cleanup
+		# Upgrade pip3
+		if command -v pip3 &> /dev/null; then
+			sudo pip3 install --upgrade pip;
 		fi
 	}
 fi
-
-# Update pip
-update_pip()
-{
-	# Upgrade pip2
-	if command -v pip2 &> /dev/null; then
-		sudo pip2 install --upgrade pip
-	fi
-	# Upgrade pip3
-	if command -v pip3 &> /dev/null; then
-		sudo pip3 install --upgrade pip;
-	fi
-}
 
 # Create function to update dotfiles
 # It cannot be used as a regular function as we need to resolve some path

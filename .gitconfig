@@ -34,9 +34,8 @@
 
 	# Shell functions
 	# List aliases
-	alias = "!f() { git config --get-regexp '^alias\\.' | " \
-		"sed -e 's/^alias\\.//' -e 's/\\ /\\ = \\ /';" \
-		"}; f"
+	alias = "!f() { git config --get-regexp \"^alias\\.\" | " \
+		"sed -r -e \"s/^alias\\.([^ ]*)\\s(.*)/alias \\1='\\2'/\"; }; f"
 	# Switch to a branch, creating it if necessary
 	go = "!f() { [ -n \"$1\" ] && " \
 		"(git checkout -b \"$1\" 2> /dev/null || " \
@@ -52,6 +51,8 @@
 		"GIT_EDITOR=\"git interpret-trailers --in-place " \
 		"--trailer='Co-authored-by: $1 <$2>'\" " \
 		"git commit --amend; }; f"
+	who = "!f() { echo \"$(git config --local user.name)\" " \
+		"\"<$(git config --local user.email)>\"; }; f" 
 
 	# Find functions
 	# Find branches containing commit
@@ -77,11 +78,11 @@
 
 [core]
 	# Use custom .gitattributes
-	attributesfile = ~/.git.d/gitattributes
+	attributesfile = ~/.git.d/gitattributes.default
 	# Avoid to display EOL differences
 	autocrlf = input
 	# Use custom .gitignore
-	excludesfile = ~/.git.d/gitignore
+	excludesfile = ~/.git.d/gitignore.default
 	# Make rebase safer on macOS
 	trustctime = false
 	# Speed up commands involving untracked files such as git status
