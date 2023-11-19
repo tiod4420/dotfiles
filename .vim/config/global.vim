@@ -43,7 +43,7 @@ set incsearch
 " Show ribbon for available options in command mode
 set wildmenu
 " Autocomplete menu in insert mode
-set completeopt=longest,menuone
+set completeopt=longest,menuone,popup
 
 " No backup files
 set nobackup

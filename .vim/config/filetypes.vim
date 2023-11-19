@@ -5,6 +5,8 @@ filetype plugin indent on
 
 " Default assembly syntax
 let g:asmsyntax="nasm"
+" Header (.h) files are C files
+let g:c_syntax_for_h=1
 " Default TeX syntax
 let g:tex_flavor="latex"
 " snipMate options
