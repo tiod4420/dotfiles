@@ -75,7 +75,7 @@ snippet epr
 snippet fmt
 	format!("${1}"${2})
 snippet wr
-	write!(${3:f}, "${1}"${2})
+	writeln!(${1:fmt}, "${2}"${0})?;
 snippet dbg
 	dbg!(${0:${VISUAL}})
 snippet dump

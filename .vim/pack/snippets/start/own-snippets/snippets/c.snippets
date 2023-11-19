@@ -42,9 +42,9 @@ snippet struct
 snippet cast
 	((${1:const uint8_t *})${0:$VISUAL})
 snippet pr
-	printf("${1:%s}${2:\\n}");
+	printf("${0}");
 snippet fpr
-	fprintf(${1:stderr}, "${2:%s}${3:\\n}");
+	fprintf(${1:stderr}, "${0}");
 snippet dump
 	for (size_t i = 0; i < ${1:${VISUAL:ptr}}_sz; ++i) {
 		printf("%02x", ${0:$1}[i]);
