@@ -195,6 +195,23 @@ join_array()
 	shift 2 && printf "%s" "$first" "${@/#/${delim}}"
 }
 
+run_tmux()
+{
+	local os_type
+
+	# Check if no short circuit for tmux
+	[ -e "${HOME}/.notmux" ] && return 1
+	[ -e "${HOME}/.notmux" ] && return 1
+
+	# Check if session is local
+	! is_local_host && return 1
+
+	# Check if Linux or BSD, and we are in graphical session
+	[ "osx" != "$(get_os_type)" ] && [ -z "$DISPLAY" ] && return 1
+
+	return 0
+}
+
 # Start ssh-agent if not started
 if check_has_cmd /usr/bin/ssh-agent; then
 	if [ -z "$SSH_AUTH_SOCK" ]; then
@@ -205,10 +222,7 @@ fi
 # Start tmux if local shell and not inside tmux
 if check_has_cmd tmux; then
 	if [ -z "$TMUX" ]; then
-		# Check if no short circuit for tmux
-		if [ ! -e "${HOME}/notmux" ] && [ ! -e "${HOME}/.notmux" ]; then
-			is_local_host && exec tmux
-		fi
+		run_tmux && exec tmux
 	fi
 fi
 
@@ -219,3 +233,4 @@ unset -f get_color get_color_code
 unset -f get_ls_version get_os_type
 unset -f is_local_host is_normal_user
 unset -f join_array
+unset -f run_tmux

@@ -47,7 +47,7 @@ deploy_file()
 
 	if [ -z "$file" ]; then
 		file=$(basename ${src})
-	elif [ "/" == "${file:0:1}" ]; then
+	elif [ "/" = "${file:0:1}" ]; then
 		dir=$(dirname ${file})
 		file=$(basename ${file})
 	fi
