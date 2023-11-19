@@ -49,8 +49,6 @@ aliases()
 
 	# Print each MANPATH entry on a separate line
 	alias manpath='man --path | tr ":" "\n"'
-	# Map command to one argument
-	alias map='xargs -n1'
 	# Print each PATH entry on a separate line
 	alias path='echo $PATH | tr ":" "\n"'
 	# Check what there is to do in current directory
