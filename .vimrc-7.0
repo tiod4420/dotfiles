@@ -1,0 +1,149 @@
+" Global settings
+
+" Works only for Vim
+set nocompatible
+" UTF8 encoding, without BOMB
+set encoding=utf-8 nobomb
+
+" Show line number
+set number
+" Show ruler at the bottom right
+set ruler
+" Show current typed command
+set showcmd
+" Show current mode
+set showmode
+" Change window's title
+set title
+
+" Enable screen interaction
+if has("mouse") | set mouse=a | endif
+" Backspace behaviour
+set backspace=indent,eol,start
+" Scrolls some lines before the bottom
+set scrolloff=3
+
+" Case insensitive search
+set ignorecase
+" Unless the search pattern has uppercase
+set smartcase
+" Highlight the matches
+set hlsearch
+" Highlight while typing the pattern
+set incsearch
+
+" Show ribbon for available options in command mode
+set wildmenu
+" Autocomplete menu in insert mode
+set completeopt=menuone,longest
+
+" No backup files
+set nobackup
+" No undo files
+set noundofile
+" Command mode history
+set history=256
+" In-memory undo levels
+set undolevels=256
+" Global color settings
+
+" Dark theme
+set background=dark
+" Syntax highlighting
+syntax on
+
+" Color scheme style
+colorscheme desert
+
+" Color of max column size indicator
+highlight ColorColumn ctermfg=15 ctermbg=1
+" Color in visual selection
+highlight Visual ctermfg=12 ctermbg=0
+" Color of search matches while typing
+highlight IncSearch ctermfg=15 ctermbg=1
+" Color of search matches
+highlight Search ctermfg=15 ctermbg=2
+" Color of extra whitespaces
+highlight ExtraWhitespace ctermbg=1
+
+" Global function definitions
+
+" Function to clear the search buffer
+function! ClearSearch()
+	call setreg("/", "", "v")
+endfunction
+
+" Enable some development mode display
+function! DevelopmentEnvironment(...)
+	" Set default value
+	let l:num_column = "80,100"
+	" Set parameters if exists
+	if a:0 > 0 | let l:ews_flags = a:1 | endif
+	if a:0 > 1 | let l:format_program = a:2 | endif
+
+	" Set auto indentation
+	setlocal autoindent
+	" Set column space
+	execute "setlocal colorcolumn=" . l:num_column
+	" Set formatting program if executable
+	if 1 == executable(expand(l:format_program))
+		execute "setlocal formatprg=" . expand(l:format_program)
+	endif
+endfunction
+
+" Global filetype settings
+
+" Filetype detection
+filetype plugin indent on
+
+" Default extra whitespace highlight
+let g:ews_flags="est"
+" Default TeX syntax
+let g:tex_flavor="latex"
+" Default assembly syntax
+let g:asmsyntax="nasm"
+
+if has("autocmd")
+	augroup Development
+		autocmd!
+
+		" sh
+		autocmd Filetype sh call DevelopmentEnvironment("est")
+		" C and C++
+		autocmd Filetype c,cpp call DevelopmentEnvironment("es", "clang-format")
+		" Assembly
+		autocmd Filetype nasm call DevelopmentEnvironment("esi")
+		" Python
+		autocmd Filetype python call DevelopmentEnvironment("e")
+		" Rust
+		autocmd Filetype rust call DevelopmentEnvironment("est", "rustfmt")
+		" Base64 file detection
+		autocmd BufNewFile,BufRead *.b64,*.base64,*.pem.*.crt setlocal filetype=base64
+	augroup END
+endif
+
+" Global shortcut mappings
+
+" Tab navigation
+nnoremap <C-h> :tabprevious<CR>
+nnoremap <C-j> :tabclose<CR>
+nnoremap <C-k> :tabnew<CR>
+nnoremap <C-l> :tabnext<CR>
+
+" Split window navigation
+nnoremap <Leader>v <C-w>v
+nnoremap <Leader>s <C-w>s
+nnoremap <Leader>j <C-w>j
+nnoremap <Leader>k <C-w>k
+nnoremap <Leader>h <C-w>h
+nnoremap <Leader>l <C-w>l
+nnoremap <Leader>= <C-w>=
+
+" Split window resize
+nnoremap <Up> <C-w>-
+nnoremap <Down> <C-w>+
+nnoremap <Left> <C-w><
+nnoremap <Right> <C-w>>
+
+" Clear search results
+nnoremap <Leader>/ :call ClearSearch()<CR>

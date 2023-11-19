@@ -252,14 +252,14 @@ cert()
 	local begin="-----BEGIN CERTIFICATE-----"
 	local end="-----END CERTIFICATE-----"
 
+	# Check if argument is provided
+	[ 0 -eq "$#" ] && return 0
+
 	# Get the full certificate chain or not
 	if [ "-a" = "$1" ] || [ "--all" = "$1" ]; then
 		all="-showcerts"
 		shift
 	fi
-
-	# Check if argument is provided
-	[ "$#" -lt 1 ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
 
 	# Add default port to 443 if not specified
 	if grep -vqE "^(.+):[[:digit:]]+$" <<< $1; then
@@ -284,6 +284,7 @@ fsize()
 
 	# Check if argument is provided
 	[ 1 -eq "$#" ] && [ -n "$dir" ] && dir=$1
+
 	# Check if -b is supported
 	args=$(du -b /dev/null &> /dev/null && echo '-sbh' || echo '-sh')
 	# Get the size of the directory or file
@@ -322,7 +323,8 @@ cloc()
 ff()
 {
 	# Check if argument is provided
-	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
+	[ 0 -eq "$#" ] && return 0
+	[ 1 -lt "$#" ] && (1>&2 echo "${FUNCNAME}: too many operands") && return 1
 	# Search for file execpted .git directory
 	find . -name "$1" --exclude-dir=".git" 2> /dev/null
 }
@@ -331,9 +333,28 @@ ff()
 ft()
 {
 	# Check if argument is provided
-	[ 1 -ne "$#" ] && (1>&2 echo "${FUNCNAME}: missing operand") && return 1
+	[ 0 -eq "$#" ] && return 0
+	[ 1 -lt "$#" ] && (1>&2 echo "${FUNCNAME}: too many operands") && return 1
 	# Search for text excepted .git directory
 	grep -R --color=always --exclude-dir=".git" "$1" "." 2> /dev/null | less
+}
+
+# Dump a file as a C array
+bin2c()
+{
+	xxd -i $1
+}
+
+# Make a hex dump of a file
+bin2hex()
+{
+	xxd -g1 $1
+}
+
+# Revert a hex dump
+hex2bin()
+{
+	xxd -r $1
 }
 
 }

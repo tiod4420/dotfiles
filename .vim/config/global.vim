@@ -42,6 +42,6 @@ set nobackup
 " No undo files
 set noundofile
 " Command mode history
-set history=4096
+set history=256
 " In-memory undo levels
 set undolevels=256
