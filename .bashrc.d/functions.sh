@@ -11,6 +11,7 @@ update_all()
 	elif [ 'osx' = "$(_os_name)" ]; then
 		# Upgrade brew
 		_has_brew && brew update && brew upgrade && brew cleanup
+		# TODO: softwareupdate --install --all
 	fi
 
 	# Upgrade pip2
