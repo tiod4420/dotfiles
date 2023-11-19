@@ -18,6 +18,8 @@
 	lo = log --pretty=oneline -n 30 --graph --abbrev-commit
 	# Update last commit with staged files without editing the message
 	oops = commit --amend --no-edit
+	# Update submodules
+	subupdate = submodule update
 	# Show diff summary
 	summary = diff --compact-summary
 	# Show local author

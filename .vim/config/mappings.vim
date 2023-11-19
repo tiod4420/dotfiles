@@ -13,7 +13,7 @@ nnoremap <Leader>e //e<CR>
 " Display path of the file
 nnoremap <Leader>p <C-G>
 " Call format program for whole file
-nnoremap <Leader>q gggqG
+nnoremap <Leader>q gggqG2<C-O>
 " Search and Replace local variable
 nnoremap <Leader>r :let refactor = '\V\<<C-R><C-w>\>'<CR>[[V%:s/<C-R>=refactor<CR>//gcI<left><left><left><left>
 " Search and Replace global variable
