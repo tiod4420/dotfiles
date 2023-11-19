@@ -1,9 +1,9 @@
---- .clang-format	2020-07-14 15:26:49.000000000 +0900
-+++ .clang-format-5.0	2020-07-14 15:27:28.000000000 +0900
+--- .clang-format	2020-07-18 02:43:08.000000000 +0900
++++ .clang-format-5	2020-07-18 02:43:09.000000000 +0900
 @@ -4,6 +4,7 @@
  AlignAfterOpenBracket: Align
  AlignConsecutiveAssignments: false
- AlignConsecutiveMacros: true
+ AlignConsecutiveDeclarations: false
 +AlignEscapedNewlines: Left # Unknown to clang-format-4.0
  AlignOperands: true
  AlignTrailingComments: false

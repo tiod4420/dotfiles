@@ -1,5 +1,5 @@
---- .clang-format	2020-07-14 15:27:28.000000000 +0900
-+++ .clang-format-6.0	2020-07-14 14:39:54.000000000 +0900
+--- .clang-format-5	2020-07-18 02:43:09.000000000 +0900
++++ .clang-format-6	2020-07-18 02:43:10.000000000 +0900
 @@ -28,6 +28,7 @@
      AfterObjCDeclaration: false
      AfterStruct: false
