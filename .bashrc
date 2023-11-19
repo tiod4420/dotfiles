@@ -205,7 +205,10 @@ fi
 # Start tmux if local shell and not inside tmux
 if check_has_cmd tmux; then
 	if [ -z "$TMUX" ]; then
-		is_local_host && exec tmux
+		# Check if no short circuit for tmux
+		if [ ! -e "${HOME}/notmux" ] && [ ! -e "${HOME}/.notmux" ]; then
+			is_local_host && exec tmux
+		fi
 	fi
 fi
 
