@@ -25,17 +25,17 @@ cert()
 	fi
 
 	# Add default port to 443 if not specified
-	if grep -vqE "^(.+):[[:digit:]]+$" <<< $1; then
+	if grep -vqE "^(.+):[[:digit:]]+$" <<< "$1"; then
 		server="${1}:443"
 	else
-		server=$1
+		server="$1"
 	fi
 
 	# Get server name if different than url
-	name=$([ -n "$2" ] && echo $2 || (cut -d':' -f 1 <<< ${server}))
+	name=$([ -n "$2" ] && echo "$2" || (cut -d':' -f 1 <<< "$server"))
 
 	# Get the certificates from the handshake connection of OpenSSL
-	openssl s_client -connect "$server" -servername "$name" $all \
+	openssl s_client -connect "$server" -servername "$name" "$all" \
 		2>&1 <<< "GET / HTTP/1.0\n\n" | sed -ne "/${begin}/,/${end}/p"
 }
 
@@ -67,7 +67,7 @@ disas()
 	done
 
 	shift $((OPTIND - 1))
-	binary=$1
+	binary="$1"
 
 	if [ -z "$binary" ] || [ -z "$objdump" ]; then
 		echo "usage: ${FUNCNAME} [-a ARCH] [-s SYMBOLS] BINARY" >&2
@@ -83,7 +83,7 @@ disas()
 
 	# Get target architecture
 	if [ -z "$arch" ]; then
-		if file ${binary} | grep -qi x86; then
+		if file "$binary" | grep -qi x86; then
 			arch=x86
 		fi
 	fi
@@ -123,7 +123,7 @@ epoch()
 	done
 
 	shift $((OPTIND - 1))
-	date=$1
+	date="$1"
 
 	# Get date flavour (GNU or BSD)
 	if date --version &> /dev/null; then
@@ -137,32 +137,6 @@ epoch()
 		bsd_epoch) date -u -j ${date:+-f "%F %T" "${date}"} +"%s";;
 		gnu_date)  date -u    ${date:+--date="@${date}"}    +"%F %T";;
 		bsd_date)  date -u -j ${date:+-r "${date}"}         +"%F %T";;
-	esac
-}
-
-# Extract usual archive formats
-extract()
-{
-	if [ ! -f "$1" ]; then
-		echo "${FUNCNAME}: '${1}' is not a regular file" >&2
-		return 1
-	fi
-
-	case $1 in
-		*.tar)              tar xvf $1;;
-		*.tgz  | *.tar.gz)  tar xzvf $1;;
-		*.tbz2 | *.tar.bz2) tar xjvf $1;;
-		*.txz  | *.tar.xz)  tar xJvf $1;;
-		*.bz2)              bunzip2 $1;;
-		*.exe)              cabextract $1;;
-		*.gz)               gunzip $1;;
-		*.rar)              unrar e $1;;
-		*.xz)               unxz $1;;
-		*.zip)              unzip $1;;
-		*.zst)              unzstd $1;;
-		*.Z)                uncompress $1;;
-		*.7z)               7z x $1;;
-		*)                  (1>&2 echo "${FUNCNAME}: '${1}' has unknown extraction method") && return 1;;
 	esac
 }
 
@@ -196,67 +170,10 @@ http()
 	fi
 }
 
-# Make a tar archive
-mktar()
-{
-	local dst
-
-	if [ ! -f "$1" -a ! -d "$1" ]; then
-		echo "${FUNCNAME}: '${1}' is not a regular file or directory" >&2
-		return 1
-	fi
-
-	dst=$(basename $1)
-
-	# Strip file extensions if regular file
-	if [ -f "$1" ]; then
-		dst=${dst%%.*}
-	fi
-
-	tar czvf "${dst}.tar.gz" $1
-}
-
 # Remove dupplicate lines, without sorting
 nodup()
 {
 	cat -n "$@" | sort -k2 -u | sort -k1 -n | cut -f2-
-}
-
-# Mirror website for local view
-webdump()
-{
-	if [ 1 -ne $# ]; then
-		echo "usage: ${FUNCNAME} URL" >&2
-		return 1
-	fi
-
-	# Recursively download the contents of a page
-	# -np: no parent
-	# -m: mirroring (-r -N -l inf --no-remove-listing)
-	#   -r: recursive
-	#   -N: turn on timestamping
-	#   -l: recursion depth
-	#   --no-remove-listing: don't remove temporary .listing files
-	# -k: convert links for local view
-	# -w: timeout in seconds
-	wget -np -m -k -w 5 -e robots=off $1
-}
-
-# Download media files from a web page
-webmedia()
-{
-	if [ 1 -ne $# ]; then
-		echo "usage: ${FUNCNAME} URL" >&2
-		return 1
-	fi
-
-	# Download media files from a page
-	# -nd: no directories
-	# -r: recursive
-	# -l: recursion depth
-	# -H: enable spanning across hosts
-	# -A: allowlist
-	wget -nd -r -l 1 -H -A png,gif,jpg,svg,jpeg,webm -e robots=off ${url}
 }
 
 }

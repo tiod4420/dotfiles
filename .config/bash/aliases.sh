@@ -43,6 +43,13 @@ aliases()
 	alias chfile="chmod u=rw,g=r,o=r"
 	alias chux="chmod u+x"
 
+	# Make tarball with automatic compression algorithm
+	alias mktar="tar cavf"
+	# Extract tarball
+	alias extar="tar xvf"
+	# List content of tarball
+	alias lstar="tar tvf"
+
 	# OpenSSL fast command
 	alias asn1parse="openssl asn1parse -i -dump"
 	alias b64enc="openssl base64"
@@ -63,6 +70,11 @@ aliases()
 
 	# Start a VirtualBox VM in headless mode
 	alias vmstart="VBoxManage startvm --type headless"
+
+	# Recursively download the contents of a page
+	alias webdump="wget -np -m -k -w 5 -e robots=off"
+	# Download media files from a web page
+	alias webmedia="wget -nd -r -l 1 -H -A png,gif,jpg,svg,jpeg,webm -e robots=off"
 
 	# Normalize open across Linux and OSX
 	! check_has_cmd open && check_has_cmd xdg-open && alias open="xdg-open";
