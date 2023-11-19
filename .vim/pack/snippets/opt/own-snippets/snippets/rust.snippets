@@ -6,35 +6,41 @@ snippet fn
 	fn ${1:function_name}(${2}) {
 	    ${0}
 	}
-snippet fnret
-	fn ${1:function_name}(${2}) -> ${3} {
-	    ${0}
-	}
 snippet struct
 	struct ${1:Struct} {
 	    ${2}
-	}
-snippet obj
-	pub struct ${1:Struct} {
-	    ${2}
-	}
-
-	impl${3} ${1} {
-	    pub fn new(${4}) -> Self {
-	        Self { ${0} }
-	    }
 	}
 snippet enum
 	enum ${1:Enum} {
 	    ${0}
 	}
+snippet object
+	struct ${1:Struct} {
+	    ${2}
+	}
+
+	impl ${1} {
+	    fn new(${3}) -> Self {
+	        Self { ${0} }
+	    }
+	}
 snippet impl
 	impl ${1} {
 	    ${0}
 	}
-snippet implfor
-	impl ${1} for ${2} {
-	    ${0}
+snippet deref
+	impl Deref for ${1} {
+	    type Target = ${2:T};
+
+	    fn deref(&self) -> &${2} {
+	        ${0}
+	    }
+	}
+snippet drop
+	impl Drop for ${1} {
+	    fn drop(&mut self) {
+	        ${0}
+	    }
 	}
 snippet mod
 	mod ${1:mod} {
@@ -52,8 +58,6 @@ snippet iflet
 	if let Some(${1}) = ${2} {
 	    ${0:$VISUAL}
 	}
-snippet todo
-	// TODO: ${0:$VISUAL}
 snippet pr
 	println!("${1}"${2});${0}
 snippet fmt
@@ -62,6 +66,10 @@ snippet epr
 	eprintln!("${1}"${2});${0}
 snippet dump
 	println!("{:#?}", ${1:$VISUAL});
+snippet todo
+	// TODO: ${0:$VISUAL}
+snippet <
+	<${1:T}>
 snippet opt
 	Option<${1}>
 snippet res
