@@ -86,6 +86,7 @@ call <SID>AddDevelopment("rust", '//', {
 			\ })
 
 call <SID>AddDevelopment("python", '#', {
+			\ "files": "*.sage",
 			\ "expandtab": { "shiftwidth": 4, "tabstop": 4 },
 			\ "keywordprg": "pydoc",
 			\ })
