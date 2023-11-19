@@ -19,7 +19,7 @@ global()
 	# Setup ssh-agent
 	if [ -z "$SSH_AUTH_SOCK" ]; then
 		# Init SSH agent
-		eval $(/usr/bin/ssh-agent &> /dev/null)
+		eval $(/usr/bin/ssh-agent 2> /dev/null)
 		# Kill SSH agent
 		trap "[ -n \"\$SSH_AGENT_PID\" ] && \
 			eval \$(/usr/bin/ssh-agent -k &> /dev/null)" EXIT

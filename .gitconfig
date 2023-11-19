@@ -158,7 +158,7 @@
 	# Do not guess user identity
 	useConfigOnly = true
 
-[url "https://github.com/"]
+[url "https://github.com"]
 	# URL shorthands for Github
 	insteadOf = "github://"
 
