@@ -5,7 +5,8 @@
 functions()
 {
 
-if [ "true" = "$PDATABLE_CONFIG" ]; then
+# Update functions only if possible (i.e admin on the system)
+if [ "true" = "$UPDATABLE_CONFIG" ]; then
 	# Update all system
 	update_all()
 	{
