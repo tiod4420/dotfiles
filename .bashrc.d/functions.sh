@@ -49,6 +49,208 @@ cleanup()
 	done
 }
 
+# Decryption function (Encrypt-then-MAC)
+decrypt()
+{
+	local ARG="" OPTIONS=""
+	local FILE_IN="" FILE_OUT=""
+	local PASSWORD="" PASSWORD_FILE=""
+	local FILE_TMP_ENC="" FILE_TMP_MAC=""
+	local PASSWORD_ENC="" PASSWORD_MAC=""
+	local RES=1
+
+	# Set traps to remove temporary files
+	trap "[ -f \"\$FILE_TMP_ENC\" ] && rm \$FILE_TMP_ENC; \
+		[ -f \"\$FILE_TMP_MAC\" ] && rm \$FILE_TMP_MAC" RETURN
+
+	# Parse options
+	while getopts ":i:k:o:p:" ARG; do
+		case $ARG in
+			'i')
+				FILE_IN=$OPTARG
+				;;
+			'k')
+				PASSWORD=$OPTARG
+				;;
+			'o')
+				FILE_OUT=$OPTARG
+				;;
+			'p')
+				PASSWORD_FILE=$OPTARG
+				;;
+			':')
+				echo "${FUNCNAME}: No parameter for -${OPTARG}"
+				return 1
+				;;
+			'?')
+				echo "${FUNCNAME}: Unknown command -${OPTARG}"
+				return 1
+				;;
+			*)
+				;;
+		esac
+	done
+
+	# Read password if provided from a file
+	if [ -n "$PASSWORD_FILE" ]; then
+		# Check that password is not set twice
+		if [ -n "$PASSWORD" ]; then
+			echo "${FUNCNAME}: password set twice"
+			return 1
+		fi
+		# Read password from file
+		PASSWORD=$(cat $PASSWORD_FILE)
+		RES=$?; [ 0 -ne "$RES" ] && return $RES
+	fi
+
+	# Cannot have no password file and no input file
+	[ -z "$FILE_IN" ] && [ -z "$PASSWORD" ] && return 1
+
+	# Get password if empty
+	if [ -z "$PASSWORD" ]; then
+		read -s -p "Enter password: " PASSWORD
+		RES=$?; [ 0 -ne "$RES" ] && return $RES
+		echo ""
+	fi
+
+	# Set actual passwords
+	PASSWORD_ENC="${PASSWORD}_ENC"
+	PASSWORD_MAC="${PASSWORD}_MAC"
+
+	# base64 decode
+	FILE_TMP_MAC=$(mktemp -p .)
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+	[ -n "$FILE_IN" ] && OPTIONS="-in $FILE_IN"
+	openssl base64 -d $OPTIONS -out $FILE_TMP_MAC
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	# Split the two files
+	FILE_TMP_ENC=$(mktemp -p .)
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+	tail --bytes=+65 $FILE_TMP_MAC > $FILE_TMP_ENC
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+	truncate --size=64 $FILE_TMP_MAC
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	# Check digest
+	cmp --silent $FILE_TMP_MAC \
+		<(openssl dgst -sha512 -hmac $PASSWORD_MAC -binary \
+		$FILE_TMP_ENC)
+	RES=$?; [ 0 -ne "$RES" ] && echo "$0: invalid MAC" && return $RES
+
+	# Decrypt input data
+	[ -n "$FILE_OUT" ] && OPTIONS="-out $FILE_OUT"
+	openssl enc -aes-256-cbc -d -k $PASSWORD_ENC -in $FILE_TMP_ENC $OPTIONS
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	return 0
+}
+
+# Encryption function (Encrypt-then-MAC)
+encrypt()
+{
+	local ARG="" OPTIONS=""
+	local FILE_IN="" FILE_OUT=""
+	local PASSWORD="" PASSWORD_FILE=""
+	local SALT=""
+	local FILE_TMP_ENC="" FILE_TMP_MAC=""
+	local PASSWORD_ENC="" PASSWORD_MAC=""
+	local RES=1
+
+	# Set traps to remove temporary files
+	trap "[ -f \"\$FILE_TMP_ENC\" ] && rm \$FILE_TMP_ENC; \
+		[ -f \"\$FILE_TMP_MAC\" ] && rm \$FILE_TMP_MAC" RETURN
+
+	# Parse options
+	while getopts ":i:k:o:p:s:" ARG; do
+		case $ARG in
+			'i')
+				FILE_IN=$OPTARG
+				;;
+			'k')
+				PASSWORD=$OPTARG
+				;;
+			'o')
+				FILE_OUT=$OPTARG
+				;;
+			'p')
+				PASSWORD_FILE=$OPTARG
+				;;
+			's')
+				SALT=$OPTARG
+				;;
+			':')
+				echo "${FUNCNAME}: No parameter for -${OPTARG}"
+				return 1
+				;;
+			'?')
+				echo "${FUNCNAME}: Unknown command -${OPTARG}"
+				return 1
+				;;
+			*)
+				;;
+		esac
+	done
+
+	# Read password if provided from a file
+	if [ -n "$PASSWORD_FILE" ]; then
+		# Check that password is not set twice
+		if [ -n "$PASSWORD" ]; then
+			echo "${FUNCNAME}: password set twice"
+			return 1
+		fi
+		# Read password from file
+		PASSWORD=$(cat $PASSWORD_FILE)
+		RES=$?; [ 0 -ne "$RES" ] && return $RES
+	fi
+
+	# Cannot have no password file and no input file
+	if [ -z "$FILE_IN" ] && [ -z "$PASSWORD" ]; then
+		return 1
+	fi
+
+	# Get password if empty
+	if [ -z "$PASSWORD" ]; then
+		read -s -p "Enter password: " PASSWORD
+		RES=$?; [ 0 -ne "$RES" ] && return $RES
+		echo ""
+	fi
+
+	# Set actual passwords
+	PASSWORD_ENC="${PASSWORD}_ENC"
+	PASSWORD_MAC="${PASSWORD}_MAC"
+
+	# Get salt if empty
+	if [ -z "$SALT" ]; then
+		SALT=$(hexdump -n 8 -e "4/4 \"%08x\"" /dev/random)
+		RES=$?; [ 0 -ne "$RES" ] && return $RES
+	fi
+
+	# Encrypt input data
+	OPTIONS=""
+	FILE_TMP_ENC=$(mktemp -p .)
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+	[ -n "$FILE_IN" ] && OPTIONS="-in $FILE_IN"
+	openssl enc -aes-256-cbc -e -k $PASSWORD_ENC -S $SALT \
+		$OPTIONS -out $FILE_TMP_ENC
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	# Compute digest
+	FILE_TMP_MAC=$(mktemp -p .)
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+	openssl dgst -sha512 -hmac $PASSWORD_MAC -binary \
+		$FILE_TMP_ENC > $FILE_TMP_MAC
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	# Concatenate the two files and base64 encode
+	OPTIONS=""
+	[ -n "$FILE_OUT" ] && OPTIONS="-out $FILE_OUT"
+	cat $FILE_TMP_MAC $FILE_TMP_ENC | openssl base64 $OPTIONS
+	RES=$?; [ 0 -ne "$RES" ] && return $RES
+
+	return 0
+}
+
 # Kindof universal extractor
 extract()
 {
