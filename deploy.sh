@@ -83,7 +83,7 @@ deploy_clang_format()
 {
 	local RES
 	local VERSION MAJOR
-	local FILE NEW_FILE PATCH_FILE
+	local FILE
 	local i
 
 	echo -n "Deploying clang-format configuration -- "
@@ -100,15 +100,9 @@ deploy_clang_format()
 	FILE=.clang-format
 
 	for i in $(seq "$MAJOR"); do
-		NEW_FILE="clang-format-${i}"
-		PATCH_FILE="${NEW_FILE}.patch"
-
-		[ ! -f "${PATCH_FILE}" ] && continue
-
-		patch -N -r /dev/null -o $NEW_FILE $FILE $PATCH_FILE &> /dev/null
-		RES=$?; [ 0 -ne $RES ] && exit 1
-
-		FILE=$NEW_FILE
+		if [ -f ".clang-format-${i}" ]; then
+			FILE=".clang-format-${i}"
+		fi
 	done
 
 	deploy_file -n .clang-format $FILE
