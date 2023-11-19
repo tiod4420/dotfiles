@@ -81,7 +81,7 @@ call <SID>AddDevelopment("rust", '//', {
 			\ "colorcolumn":"80,120",
 			\ "formatprg": "rustfmt",
 			\ "keywordprg": "rusty-man",
-			\ "extra": "nnoremap <Leader>q :RustFmt<CR>",
+			\ "extra": "nnoremap <buffer> <Leader>q :RustFmt<CR>",
 			\ })
 
 call <SID>AddDevelopment("python", '#', {
