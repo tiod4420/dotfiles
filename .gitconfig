@@ -1,0 +1,159 @@
+[alias]
+	# Command shortcuts
+	br = branch --all -vv
+	ci = commit
+	cl = clone --recursive
+	co = checkout
+	dc  = diff --cached -- .
+	dl  = diff -- .
+	lo = log --pretty=oneline -n 30 --graph --abbrev-commit
+	ps = push
+	pu = pull --recurse-submodules
+	re = rebase
+	st = status -s
+
+	# Longer aliases
+	# Edit last commit message
+	amend = commit --amend
+	# Allow git git git...
+	git = !exec git
+	# Show custom graph.
+	graph = log --pretty=custom --graph
+	# Last commit log
+	last = log -1 HEAD
+	# Update last commit with staged files without editing the message
+	oops = commit --amend --no-edit
+	# Display local commit not pushed to origin
+	local = log origin/master..master --abbrev-commit --pretty=custom
+	# List all remotes
+	remotes = remote -v
+	# List contributors.
+	summary = shortlog --email --numbered --summary
+	# Remove file(s) from Git but not from disk
+	untrack = rm --cache --
+
+	# Shell functions
+	# List aliases
+	alias = "!f() { git config --get-regexp '^alias\\.' | " \
+		"sed -e 's/^alias\\.//' -e 's/\\ /\\ = \\ /';" \
+		"}; f"
+	# Switch to a branch, creating it if necessary
+	go = "!f() { [ -n \"$1\" ] && " \
+		"(git checkout -b \"$1\" 2> /dev/null || " \
+		"git checkout \"$1\");" \
+		"}; f"
+	# Delete tag and retag current commit
+	retag = "!f() { git tag -d \"$1\" &> /dev/null && git tag \"$1\"; }; f"
+	# Credit an author on the latest commit.
+	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
+		"git commit --amend --author \"$1 <$2>\" -C HEAD; }; f"
+	# Credit a co-author on the latest commit.
+	coauthor = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
+		"GIT_EDITOR=\"git interpret-trailers --in-place " \
+		"--trailer='Co-authored-by: $1 <$2>'\" " \
+		"git commit --amend; }; f"
+
+	# Find functions
+	# Find branches containing commit
+	fb = "!f() { git branch -a --contains $1; }; f"
+	# Find commits by commit message
+	fm = "!f() { git log --pretty=custom --decorate --date=short " \
+		"--grep=\"$1\"; }; f"
+	# Find commits by source code
+	fs = "!f() { git log --pretty=custom --decorate --date=short " \
+		"-S\"$1\"; }; f"
+	# Find tags containing commit
+	ft = "!f() { git describe --always --contains $1; }; f"
+
+	# Remove/Undo functions
+	# Remove last commits (by default it removes the last commit).
+	rlc = "!f() { declare n=\"${1:-1}\"; git reset --hard \"HEAD~$n\"; }; f"
+	# Undo last commits (by default it undoes the last commit).
+	ulc = "!f() { declare n=\"${1:-1}\"; git reset --soft \"HEAD~$n\"; }; f"
+
+[apply]
+	# Detect whitespace errors when applying a patch
+	whitespace = fix
+
+[core]
+	# Use custom .gitattributes
+	attributesfile = ~/.gitattributes
+	# Avoid to display EOL differences
+	autocrlf = input
+	# Use custom .gitignore
+	excludesfile = ~/.gitignore
+	# Make rebase safer on macOS
+	trustctime = false
+	# Speed up commands involving untracked files such as git status
+	untrackedCache = true
+	# Default editor
+	editor = vim
+	# Default pager
+	pager = 'less -R'
+
+[color]
+	# Use colors in commands that are capable when tty is a terminal
+	ui = auto
+
+[color "branch"]
+	# Current branch
+	current = green
+	# Local branches
+	local = yellow
+	# Remote branches
+	remote = red
+	# Upstream branch
+	upstream = blue
+
+[color "diff"]
+	# File header
+	frag = blue
+	# Diff metadata
+	meta = magenta
+	# Added content
+	new = green
+	# New moved content
+	newMoved = yellow
+	# Removed content
+	old = red
+	# Previous moved content
+	oldMoved = blue
+
+[color "status"]
+	# Added files
+	added = green 
+	# Name of the branch
+	branch = cyan
+	# Modified files
+	changed = yellow
+	# Untracked files
+	untracked = red
+
+[diff]
+	# Use better, descriptive initials (c, i, w) instead of a/b
+	mnemonicPrefix = true
+	# Detect copies as well as renames
+	renames = copies
+	# Show blocks of moved text differently than adds/deletes
+	colorMoved = zebra
+
+[diff "bin"]
+	# Use hexdump to diff binary files
+	textconv = hexdump -v -C
+
+[pretty]
+	# Custom pretty display for log, etc...
+	custom = "%C(green)%h%C(red)%d %C(yellow)%ar %C(white)%s %C(cyan)(%an)"
+
+[push]
+	# Push relevant annotated tags when pushing branches out
+	followTags = true
+
+[user]
+	# Do not guess user identity
+	useConfigOnly = true
+
+[include]
+	# Load extra configuration file that is not commited
+	# [!] Load after all other settings so it can override previous config
+	path = ~/.gitconfig.local
