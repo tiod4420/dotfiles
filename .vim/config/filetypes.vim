@@ -110,7 +110,7 @@ augroup Development
 
 	call <SID>AddDevelopment("asm,nasm", ';')
 	call <SID>AddDevelopment("sh,bash", '#')
-	call <SID>AddDevelopment("tex", '%')
+	call <SID>AddDevelopment("tex", '%', { "expandtab": { "shiftwidth": 4, "tabstop": 4 } })
 	call <SID>AddDevelopment("vim", '"')
 	call <SID>AddDevelopment("cmake,make,tmux,toml", '#')
 augroup end
