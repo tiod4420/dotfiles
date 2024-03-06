@@ -10,7 +10,7 @@ global()
 	esac
 
 	# Add Rust development environment to PATH
-	add_path "${HOME}/.cargo/bin"
+	check_has_cmd cargo || add_path "${HOME}/.cargo/bin"
 
 	# Append to the Bash history file, rather than overwriting it
 	shopt -s histappend 2> /dev/null
