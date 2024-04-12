@@ -2,4 +2,4 @@
 #
 # Bash configuration for login shells
 
-[ -f "${HOME}/.bashrc" ] && [ -r "${HOME}/.bashrc" ] && source "${HOME}/.bashrc"
+[ -f "${HOME}/.bashrc" ] && source "${HOME}/.bashrc"

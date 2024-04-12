@@ -98,7 +98,9 @@ setup_port()
 	check_has_cmd __git_ps1 || check_and_source "${port_prefix}/share/git/contrib/completion/git-prompt.sh"
 
 	# Setup MacPorts PATH
-	add_path -f "${port_prefix}/bin" "${port_prefix}/libexec/gnubin"
+	add_path -f "${port_prefix}/bin"
+	add_path -f "${port_prefix}/sbin"
+	add_path -f "${port_prefix}/libexec/gnubin"
 }
 
 global
