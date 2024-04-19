@@ -2,8 +2,6 @@
 	# List aliases
 	alias = "!f() { git config --get-regexp \"^alias\\.\" | " \
 		"sed -r -e \"s/^alias\\.([^ ]*)\\s(.*)/alias \\1='\\2'/\"; }; f"
-	# Edit last commit message
-	amend = commit --amend
 	# Set author of repository
 	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && " \
 		"git config --local user.name \"$1\" && " \
@@ -22,6 +20,8 @@
 	reauthor = commit --amend --no-edit --reset-author
 	# List remotes
 	remotes = remote --verbose
+	# Edit last commit message
+	reword = commit --amend
 	# Show commit log stats
 	stat = log --compact-summary
 	# Show diff summary
