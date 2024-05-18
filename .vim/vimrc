@@ -35,7 +35,7 @@ if &term =~ "^tmux"
 endif
 
 " Source all the configuration files
-for file in [ "global.vim", "theme.vim", "functions.vim", "filetypes.vim", "mappings.vim" ]
+for file in [ "global.vim", "functions.vim", "filetypes.vim", "mappings.vim", "theme.vim" ]
 	call CheckAndSource(config_dir_path . "/" . file)
 endfor
 unlet file
