@@ -1,0 +1,32 @@
+import = [
+    "~/.config/alacritty/base16-alacritty/colors/base16-gruvbox-dark-medium-256.toml",
+]
+
+[window]
+startup_mode = "Maximized"
+
+[scrolling]
+history = 0
+
+[cursor.style]
+blinking = "Always"
+
+[mouse]
+hide_when_typing = true
+
+[keyboard]
+bindings = [
+    # New window
+    { key = "N", mods = "Control|Shift", action = "CreateNewWindow"  },
+    { key = "Q", mods = "Control|Shift", action = "Quit"             },
+    # Font size
+    { key = "0", mods = "Control",       action = "ResetFontSize"    },
+    { key = "-", mods = "Control",       action = "DecreaseFontSize" },
+    { key = "=", mods = "Control",       action = "IncreaseFontSize" },
+    # Copy / Paste
+    { key = "C", mods = "Control|Shift", action = "Copy"             },
+    { key = "V", mods = "Control|Shift", action = "Paste"            },
+    # Search
+    { key = "B", mods = "Control|Shift", action = "SearchBackward"   },
+    { key = "F", mods = "Control|Shift", action = "SearchForward"    },
+]
