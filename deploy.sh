@@ -353,15 +353,8 @@ setup_clang_format()
 	version=$(version_get clang-format)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Identify highest version that matches
-	file=.clang-format
-
-	for i in $(seq ${version%%\.*}); do
-		[ -f ".clang-format-${i}" ] && file=".clang-format-${i}"
-	done
-
 	# Deploy configuration
-	deploy_target "$file" "${HOME}/.clang-format"
+	deploy_target .clang-format "${HOME}/.clang-format"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	return 0
