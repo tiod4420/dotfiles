@@ -22,6 +22,8 @@
 	remotes = remote --verbose
 	# Edit last commit message
 	reword = commit --amend
+	# Show root directory
+	root = rev-parse --show-toplevel
 	# Show commit log stats
 	stat = log --compact-summary
 	# Show diff summary

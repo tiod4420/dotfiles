@@ -48,7 +48,7 @@ bashrc()
 	fi
 
 	# Load generic configuration files
-	for file in "global.sh" "exports.sh" "functions.sh" "aliases.sh" "prompt.sh"; do
+	for file in "global.sh" "exports.sh" "aliases.sh" "prompt.sh"; do
 		check_and_source "${config_dir_path}/${file}"
 	done
 

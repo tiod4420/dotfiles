@@ -69,6 +69,15 @@ aliases()
 	# Search all occurences of command in PATH
 	alias findpath="which -a"
 
+	# Remove duplicated lines
+	alias nodup='(cat -n | sort -k2 -u | sort -k1 -n | cut -f 2-)'
+
+	# Local HTTP server
+	alias http='python -m http.server'
+
+	# List duplicated files based on their hash value
+	alias lsdupes='fdupes -r'
+
 	# Normalize open across Linux and OSX
 	! check_has_cmd open && check_has_cmd xdg-open && alias open="xdg-open";
 }
