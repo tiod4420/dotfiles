@@ -2,27 +2,57 @@
 #
 # Global settings
 
-global()
+_make_bsdls_colors()
 {
-	case "$os_type" in
-		linux) setup_linux;;
-		macos) setup_macos;;
-	esac
+	local lscolors
 
-	# Add Rust development environment to PATH
-	check_has_cmd cargo || add_path "${HOME}/.cargo/bin"
+	# Directory
+	lscolors+="ex"
+	# Symbolic link
+	lscolors+="gx"
+	# Socket
+	lscolors+="dx"
+	# Pipe
+	lscolors+="bx"
+	# Executable
+	lscolors+="cx"
+	# Block special
+	lscolors+="Bx"
+	# Character special
+	lscolors+="Cx"
+	# Executable with setuid bit set
+	lscolors+="ab"
+	# Executable with setgid bit set
+	lscolors+="ad"
+	# Directory writable to others, with sticky bit
+	lscolors+="ae"
+	# Directory writable to others, without sticky bit
+	lscolors+="af"
 
-	# Append to the Bash history file, rather than overwriting it
-	shopt -s histappend 2> /dev/null
-	# Doesn't directly use history substitution
-	shopt -s histverify 2> /dev/null
-	# Set VI command line editing mode
-	set -o vi
-	# Set the binding to vi mode
-	set keymap vi
+	echo ${lscolors}
 }
 
-setup_linux()
+_make_gcc_colors()
+{
+	local gcc_colors=(
+		"locus=$(get_color -m gcc -o brwhite)"
+		"error=$(get_color -m gcc red)"
+		"warning=$(get_color -m gcc yellow)"
+		"note=$(get_color -m gcc blue)"
+		"quote=$(get_color -m gcc green)"
+	)
+
+	join_array ":" ${gcc_colors[@]}
+}
+
+_make_gnuls_colors()
+{
+	local dir_colors="${config_dir_path}/dircolors"
+	check_has_file "$dir_colors" || dir_colors=""
+	dircolors -b ${dir_colors} | sed -n "s/^LS_COLORS='\(.*\)';/\1/p"
+}
+
+_setup_linux()
 {
 	# Setup bash autocomplete
 	check_and_source "/usr/share/bash-completion/bash_completion"
@@ -35,7 +65,7 @@ setup_linux()
 	check_has_cmd __git_ps1 || check_and_source "/usr/lib/git-core/git-sh-prompt"
 }
 
-setup_macos()
+_setup_macos()
 {
 	# Force fresh path
 	if [ -x /usr/libexec/path_helper ]; then
@@ -45,14 +75,14 @@ setup_macos()
 
 	if check_has_cmd brew; then
 		# Setup Homebrew
-		setup_brew
+		_setup_brew
 	elif check_has_cmd /opt/local/bin/port; then
 		# Setup MacPorts
-		setup_port
+		_setup_port
 	fi
 }
 
-setup_brew()
+_setup_brew()
 {
 	local brew_prefix
 	local brew_path
@@ -86,7 +116,7 @@ setup_brew()
 	done
 }
 
-setup_port()
+_setup_port()
 {
 	local port_prefix
 
@@ -103,7 +133,66 @@ setup_port()
 	add_path -f "${port_prefix}/libexec/gnubin"
 }
 
-global
-unset -f global
-unset -f setup_linux setup_macos
-unset -f setup_brew setup_port
+case "$os_type" in
+	linux) _setup_linux;;
+	macos) _setup_macos;;
+esac
+
+# Add Rust development environment to PATH
+check_has_cmd cargo || add_path "${HOME}/.cargo/bin"
+
+# Append to the Bash history file, rather than overwriting it
+shopt -s histappend 2> /dev/null
+# Doesn't directly use history substitution
+shopt -s histverify 2> /dev/null
+# Set VI command line editing mode
+set -o vi
+# Set the binding to vi mode
+set keymap vi
+
+# Set language preferences
+export LANG="en_US.UTF-8"
+# Set locale preferences
+export LC_ALL="en_US.UTF-8"
+
+# Set groff options for colored less and man
+export GROFF_NO_SGR=1
+# Make vim the default editor.
+export EDITOR="vim"
+# Make less the default pager
+export PAGER="less"
+# Make less the default man pager
+export MANPAGER="less"
+
+# Increase Bash history size
+export HISTSIZE="32768"
+# Increase Bash history file size
+export HISTFILESIZE=$HISTSIZE
+# Omit duplicates and commands that begin with a space from history.
+export HISTCONTROL="ignoreboth"
+
+# Get number of colors of the terminal
+if [ "$term_colors" -ge 256 ]; then
+	# Retrieve LS version from here, as path might change during setup
+	case "$ls_version" in
+		gnu) export LS_COLORS=$(_make_gnuls_colors);;
+		bsd) export CLICOLOR=1 LSCOLORS=$(_make_bsdls_colors);;
+	esac
+
+	# Set GCC messages colors
+	export GCC_COLORS=$(_make_gcc_colors)
+
+	# Set GTest colors
+	export GTEST_COLOR=1
+
+	# Set man colors
+	export MANPAGER="less -R --use-color -Ddb -Duy -DSkw -DPkw"
+fi
+
+unset -f _make_bsdls_colors
+unset -f _make_gcc_colors
+unset -f _make_gnuls_colors
+unset -f _setup_linux
+unset -f _setup_macos
+unset -f _setup_brew
+unset -f _setup_port

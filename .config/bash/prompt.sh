@@ -2,6 +2,34 @@
 #
 # Prompt creation
 
+build_ps1_prefix()
+{
+	local user_style
+	local host_style
+
+	# Check if user is root
+	is_normal_user && user_style=cyan || user_style=red
+	# Check if host is local
+	is_local_host && host_style=blue || host_style=yellow
+
+	get_color -m ps1 ${user_style} "\u"
+	get_color -m ps1 reset "@"
+	get_color -m ps1 ${host_style} "\h"
+	get_color -m ps1 reset " \w"
+}
+
+build_ps1_suffix()
+{
+	echo -n "\n$ "
+	get_color -m ps1 reset
+}
+
+build_ps2()
+{
+	echo -n "> "
+	get_color -m ps1 reset
+}
+
 prompt()
 {
 	local vi_ins_string
@@ -36,34 +64,6 @@ prompt()
 	bind "set show-mode-in-prompt on"
 	bind "set vi-ins-mode-string \"${vi_ins_string}\""
 	bind "set vi-cmd-mode-string \"${vi_cmd_string}\""
-}
-
-build_ps1_prefix()
-{
-	local user_style
-	local host_style
-
-	# Check if user is root
-	is_normal_user && user_style=cyan || user_style=red
-	# Check if host is local
-	is_local_host && host_style=blue || host_style=yellow
-
-	get_color -m ps1 ${user_style} "\u"
-	get_color -m ps1 reset "@"
-	get_color -m ps1 ${host_style} "\h"
-	get_color -m ps1 reset " \w"
-}
-
-build_ps1_suffix()
-{
-	echo -n "\n$ "
-	get_color -m ps1 reset
-}
-
-build_ps2()
-{
-	echo -n "> "
-	get_color -m ps1 reset
 }
 
 prompt
