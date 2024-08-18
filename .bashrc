@@ -45,6 +45,34 @@ bashrc()
 		check_and_exec -h /opt/local/bin/ tmux
 	fi
 
+	if _bashrc_has_colors; then
+		declare -A _bashrc_colors=(
+			[reset]='0'
+			[black]='38;5;0'
+			[red]='38;5;1'
+			[green]='38;5;2'
+			[yellow]='38;5;3'
+			[blue]='38;5;4'
+			[magenta]='38;5;5'
+			[cyan]='38;5;6'
+			[white]='38;5;7'
+			[brblack]='38;5;8'
+			[brred]='38;5;9'
+			[brgreen]='38;5;10'
+			[bryellow]='38;5;11'
+			[brblue]='38;5;12'
+			[brmagenta]='38;5;13'
+			[brcyan]='38;5;14'
+			[brwhite]='38;5;15'
+			[color16]='38;5;16'
+			[color17]='38;5;17'
+			[color18]='38;5;18'
+			[color19]='38;5;19'
+			[color20]='38;5;20'
+			[color21]='38;5;21'
+		)
+	fi
+
 	# Load generic configuration files
 	check_and_source "${config_dir_path}/global.sh"
 	check_and_source "${config_dir_path}/aliases.sh"
@@ -177,7 +205,7 @@ check_and_exec()
 	cmd="$1"
 	shift
 
-	if check_has_cmd "$cmd"; then
+	if _bashrc_has_cmd "$cmd"; then
 		exec "$cmd" "$@"
 	else
 		# Check if command could be in hinted PATH
@@ -193,7 +221,7 @@ check_and_source()
 	check_has_file "$1" && source "$1"
 }
 
-check_has_cmd()
+_bashrc_has_cmd()
 {
 	command -v "$@" &> /dev/null
 }
@@ -322,16 +350,6 @@ is_ide_term()
 	return 1
 }
 
-is_local_host()
-{
-	[ -z "$SSH_CLIENT" ] && [ -z "$SSH_TTY" ]
-}
-
-is_normal_user()
-{
-	[ "root" != "$USER" ]
-}
-
 join_array()
 {
 	local delim=$1
@@ -353,7 +371,7 @@ run_tmux()
 	fi
 
 	# Check if session is remote
-	if ! is_local_host; then
+	if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
 		return 1
 	fi
 
@@ -390,12 +408,20 @@ run_ssh_agent()
 	return 0
 }
 
+_bashrc_has_colors()
+{
+	local tput_colors=$(tput colors 2> /dev/null)
+	[ "${tput_colors:-0}" -ge 256 ]
+}
+
 bashrc
 unset -f bashrc
 unset -f add_man add_path
 unset -f check_and_exec check_and_source
-unset -f check_has_cmd check_has_file
+unset -f _bashrc_has_cmd check_has_file
 unset -f get_color get_color_code
-unset -f is_ide_term is_local_host is_normal_user
+unset -f is_ide_term
 unset -f join_array
 unset -f run_tmux run_ssh_agent
+unset -f _bashrc_has_colors
+unset -v _bashrc_colors

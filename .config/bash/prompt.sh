@@ -1,71 +1,38 @@
 #!/usr/bin/env bash
-#
-# Prompt creation
 
-build_ps1_prefix()
+_prompt_color()
 {
-	local user_style
-	local host_style
-
-	# Check if user is root
-	is_normal_user && user_style=cyan || user_style=red
-	# Check if host is local
-	is_local_host && host_style=blue || host_style=yellow
-
-	get_color -m ps1 ${user_style} "\u"
-	get_color -m ps1 reset "@"
-	get_color -m ps1 ${host_style} "\h"
-	get_color -m ps1 reset " \w"
+	! _bashrc_has_colors && return
+	echo "${2:-\[}\e[${_bashrc_colors[${1:-reset}]}m${3:-\]}"
 }
 
-build_ps1_suffix()
-{
-	echo -n "\n$ "
-	get_color -m ps1 reset
-}
+# Configure __git_ps1
+_bashrc_has_colors && GIT_PS1_SHOWCOLORHINTS=yes
+GIT_PS1_SHOWSTASHSTATE=yes
+GIT_PS1_SHOWDIRTYSTATE=yes
 
-build_ps2()
-{
-	echo -n "> "
-	get_color -m ps1 reset
-}
+# Set PS1
+PS1=""
+PS1+=$(_prompt_color $([ "$USER" != "root" ] && echo cyan || echo red))
+PS1+="\u"
+PS1+=$(_prompt_color reset)
+PS1+="@"
+PS1+=$(_prompt_color $([ -z "$SSH_CLIENT" ] && echo magenta || echo yellow))
+PS1+="\h"
+PS1+=$(_prompt_color reset)
+PS1+=" \w"
+PS1+=$(_bashrc_has_cmd __git_ps1 && echo '$(__git_ps1 " -- %s")')
+PS1+="\n$ "
+PS1+=$(_prompt_color reset)
 
-prompt()
-{
-	local vi_ins_string
-	local vi_cmd_string
+# Set PS2
+PS2="> $(_prompt_color reset)"
 
-	# Setup PS1 and PS@, depending if there is colors and __git_ps1
-	if [ "$term_colors" -lt 256 ]; then
-		PS1="\u@\h \w\n "
-		PS2=" "
-
-		vi_ins_string="$"
-		vi_cmd_string="*"
-	else
-		local ps1_prefix=$(build_ps1_prefix)
-		local ps1_suffix=$(build_ps1_suffix)
-
-		if check_has_cmd __git_ps1; then
-			local gitformat=" -- %s"
-			GIT_PS1_SHOWCOLORHINTS=1
-			PROMPT_COMMAND="__git_ps1 '${ps1_prefix}' '${ps1_suffix}' '${gitformat}'"
-		else
-			PS1="${ps1_prefix}${ps1_suffix}"
-		fi
-
-		PS2=$(build_ps2)
-
-		vi_ins_string="\1$(get_color white)\2"
-		vi_cmd_string="\1$(get_color red)\2"
-	fi
-
-	# Set vi editing mode string
+# Set vi editing mode strings
+if _bashrc_has_colors; then
 	bind "set show-mode-in-prompt on"
-	bind "set vi-ins-mode-string \"${vi_ins_string}\""
-	bind "set vi-cmd-mode-string \"${vi_cmd_string}\""
-}
+	bind "set vi-ins-mode-string \"$(_prompt_color reset '\1' '\2')\""
+	bind "set vi-cmd-mode-string \"$(_prompt_color red '\1' '\2')\""
+fi
 
-prompt
-unset -f prompt
-unset -f build_ps1_prefix build_ps1_suffix build_ps2
+unset -f _prompt_color

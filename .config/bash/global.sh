@@ -58,11 +58,11 @@ _setup_linux()
 	check_and_source "/usr/share/bash-completion/bash_completion"
 	# Try to source git-prompt.sh if not already done
 	# Arch Linux
-	check_has_cmd __git_ps1 || check_and_source "/usr/share/git/completion/git-prompt.sh"
+	_bashrc_has_cmd __git_ps1 || check_and_source "/usr/share/git/completion/git-prompt.sh"
 	# CentOS
-	check_has_cmd __git_ps1 || check_and_source "/usr/share/git-core/contrib/completion/git-prompt.sh"
+	_bashrc_has_cmd __git_ps1 || check_and_source "/usr/share/git-core/contrib/completion/git-prompt.sh"
 	# Debian
-	check_has_cmd __git_ps1 || check_and_source "/usr/lib/git-core/git-sh-prompt"
+	_bashrc_has_cmd __git_ps1 || check_and_source "/usr/lib/git-core/git-sh-prompt"
 }
 
 _setup_macos()
@@ -73,10 +73,10 @@ _setup_macos()
 		eval $(/usr/libexec/path_helper -s)
 	fi
 
-	if check_has_cmd brew; then
+	if _bashrc_has_cmd brew; then
 		# Setup Homebrew
 		_setup_brew
-	elif check_has_cmd /opt/local/bin/port; then
+	elif _bashrc_has_cmd /opt/local/bin/port; then
 		# Setup MacPorts
 		_setup_port
 	fi
@@ -95,7 +95,7 @@ _setup_brew()
 
 	# Setup bash autocomplete
 	check_and_source "${brew_prefix}/opt/bash-completion/etc/profile.d/bash_completion.sh"
-	check_has_cmd __git_ps1 || check_and_source "${brew_prefix}/etc/bash_completion.d/git-prompt.sh"
+	_bashrc_has_cmd __git_ps1 || check_and_source "${brew_prefix}/etc/bash_completion.d/git-prompt.sh"
 
 	# Set Homebrew formulas to PATH and MANPATH
 	for formula in "coreutils" "findutils" "gnu-sed" "grep" "openssl"; do
@@ -125,7 +125,7 @@ _setup_port()
 
 	# Setup bash autocomplete
 	check_and_source "${port_prefix}/etc/profile.d/bash_completion.sh"
-	check_has_cmd __git_ps1 || check_and_source "${port_prefix}/share/git/contrib/completion/git-prompt.sh"
+	_bashrc_has_cmd __git_ps1 || check_and_source "${port_prefix}/share/git/contrib/completion/git-prompt.sh"
 
 	# Setup MacPorts PATH
 	add_path -f "${port_prefix}/bin"
@@ -139,7 +139,7 @@ case "$os_type" in
 esac
 
 # Add Rust development environment to PATH
-check_has_cmd cargo || add_path "${HOME}/.cargo/bin"
+_bashrc_has_cmd cargo || add_path "${HOME}/.cargo/bin"
 
 # Append to the Bash history file, rather than overwriting it
 shopt -s histappend 2> /dev/null
