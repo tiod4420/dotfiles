@@ -8,32 +8,20 @@
 bashrc()
 {
 	local config_dir_path
-	local os_type
+	local os_name
 	local file
-	local ls_version
-	local term_colors
 
 	# Get config directory
 	config_dir_path=${XDG_CONFIG_HOME:-"${HOME}/.config"}/bash
 
 	# Get OS type
 	case "$(uname | tr "[:upper:]" "[:lower:]")" in
-		linux*) os_type=linux;;
-		darwin*) os_type=macos;;
-		*bsd*) os_type=bsd;;
-		msys*) os_type=windows;;
-		*) os_type=unknown;;
+		linux*) os_name=linux;;
+		darwin*) os_name=macos;;
+		*bsd*) os_name=bsd;;
+		msys*) os_name=windows;;
+		*) os_name=unknown;;
 	esac
-
-	# Get ls type
-	if ls --color -d . &> /dev/null; then
-		ls_version=gnu
-	elif ls -G -d . &> /dev/null; then
-		ls_version=bsd
-	fi
-
-	# Get number of colors of the terminal
-	term_colors=$(tput colors 2> /dev/null || echo 0)
 
 	# Start ssh-agent if conditions are met
 	if run_ssh_agent; then
@@ -48,6 +36,7 @@ bashrc()
 	if _bashrc_has_colors; then
 		declare -A _bashrc_colors=(
 			[reset]='0'
+			[bold]='1'
 			[black]='38;5;0'
 			[red]='38;5;1'
 			[green]='38;5;2'
@@ -73,13 +62,29 @@ bashrc()
 		)
 	fi
 
+	# vi mode
+	set -o vi
+
+	# Append history to the file, to avoid multiple sessions erasing data
+	shopt -s histappend 2> /dev/null
+	# Don't execute directly history substitutions
+	shopt -s histverify 2> /dev/null
+
+	# TODO
+	[ "$os_name" == "linux" ] && _setup_linux
+	[ "$os_name" == "macos" ] && _setup_macos
+
+	# Add Rust development environment to PATH
+	! _bashrc_has_cmd cargo && add_path "${HOME}/.cargo/bin"
+
 	# Load generic configuration files
-	check_and_source "${config_dir_path}/global.sh"
-	check_and_source "${config_dir_path}/aliases.sh"
+	check_and_source "${config_dir_path}/env.sh"
 	check_and_source "${config_dir_path}/prompt.sh"
+	check_and_source "${config_dir_path}/aliases.sh"
 
 	# Load local configuration files that are not commited
 	# [!] Load after all other settings so it can override previous config
+	# TODO: execute with order
 	for file in ${config_dir_path}/local/*.sh; do
 		check_and_source "$file"
 	done
@@ -231,112 +236,6 @@ check_has_file()
 	[ -f "$1" ] && [ -r "$1" ]
 }
 
-get_color()
-{
-	# Option parameters
-	local OPTARG OPTIND
-	local OPTERR=0
-	local opts
-	# Color attributes
-	local is_bold=0
-	local is_dim=0
-	local is_underline=0
-	local is_reverse=0
-	local fg_color
-	local bg_color
-	# Output string
-	local mode
-	local color_str
-	local e
-	local msg
-
-	# Parsing options
-	while getopts "b:doim:ru" opts $@; do
-		case "$opts" in
-			b) bg_color=$OPTARG;;
-			d) is_dim=1;;
-			i) is_italic=1;;
-			m) mode=$OPTARG;;
-			o) is_bold=1;;
-			r) is_reverse=1;;
-			u) is_underline=1;;
-			*) return 1;;
-		esac
-	done
-
-	shift $((OPTIND -1))
-	fg_color=$1
-	msg=$2
-
-	# Process color string
-	if [ "reset" = "$fg_color" ]; then
-		color_str=$(get_color_code reset)
-	else
-		local -a colors=$(
-		[ 1 -eq $is_bold ] && get_color_code bold
-		[ 1 -eq $is_dim ] && get_color_code dim;
-		[ 1 -eq $is_reverse ] && get_color_code reverse;
-		[ 1 -eq $is_underline ] && get_color_code underline;
-		[ -n "$fg_color" ] && get_color_code ${fg_color} "fg"
-		[ -n "$bg_color" ] && get_color_code ${bg_color} "bg"
-	)
-
-	color_str=$(join_array ";" ${colors[@]})
-	fi
-
-	# Process string
-	if [ -n "$color_str" -a "gcc" != "$mode" ]; then
-		color_str="\e[${color_str}m"
-
-		case "$mode" in
-			less) e=e;;
-			ps1) color_str="\[${color_str}\]";;
-		esac
-	fi
-
-	# Print even if empty to have status code
-	echo -n${e-} "${color_str-}${msg-}"
-}
-
-get_color_code()
-{
-	local color=$1
-	local mode=$2
-
-	[ "bg" != "$mode" ] && mode=38 || mode=48
-
-	case "$color" in
-		reset) echo "0";;
-		bold) echo "1";;
-		dim) echo "2";;
-		underline) echo "4";;
-		reverse) echo "7";;
-		color00 | black) echo "${mode};5;0";;
-		color01 | red) echo "${mode};5;1";;
-		color02 | green) echo "${mode};5;2";;
-		color03 | yellow) echo "${mode};5;3";;
-		color04 | blue) echo "${mode};5;4";;
-		color05 | magenta) echo "${mode};5;5";;
-		color06 | cyan) echo "${mode};5;6";;
-		color07 | white) echo "${mode};5;7";;
-		color08 | brblack) echo "${mode};5;8";;
-		color09 | brred) echo "${mode};5;9";;
-		color10 | brgreen) echo "${mode};5;10";;
-		color11 | bryellow) echo "${mode};5;11";;
-		color12 | brblue) echo "${mode};5;12";;
-		color13 | brmagenta) echo "${mode};5;13";;
-		color14 | brcyan) echo "${mode};5;14";;
-		color15 | brwhite) echo "${mode};5;15";;
-		color16 | orange) echo "${mode};5;16";;
-		color17 | brown) echo "${mode};5;17";;
-		color18) echo "${mode};5;18";;
-		color19) echo "${mode};5;19";;
-		color20) echo "${mode};5;20";;
-		color21) echo "${mode};5;21";;
-		*) echo "";;
-	esac
-}
-
 is_ide_term()
 {
 	# Checks for IntelliJ IDEA
@@ -376,7 +275,7 @@ run_tmux()
 	fi
 
 	# Check if OS is Linux or BSD, and if we are in graphical session
-	if [ "macos" != "$os_type" ] && [ -z "$DISPLAY" ]; then
+	if [ "macos" != "$os_name" ] && [ -z "$DISPLAY" ]; then
 		return 1
 	fi
 
@@ -414,14 +313,94 @@ _bashrc_has_colors()
 	[ "${tput_colors:-0}" -ge 256 ]
 }
 
+_setup_linux()
+{
+	# Setup bash autocomplete
+	check_and_source "/usr/share/bash-completion/bash_completion"
+
+	# Try to source git-prompt.sh
+	# Arch Linux
+	! _bashrc_has_cmd __git_ps1 && check_and_source "/usr/share/git/completion/git-prompt.sh"
+	# CentOS
+	! _bashrc_has_cmd __git_ps1 && check_and_source "/usr/share/git-core/contrib/completion/git-prompt.sh"
+	# Debian
+	! _bashrc_has_cmd __git_ps1 && check_and_source "/usr/lib/git-core/git-sh-prompt"
+}
+
+_setup_macos()
+{
+	# Force fresh path
+	if [ -x /usr/libexec/path_helper ]; then
+		PATH=""
+		eval $(/usr/libexec/path_helper -s)
+	fi
+
+	_bashrc_has_cmd brew && _setup_homebrew
+	_bashrc_has_cmd /opt/local/bin/port && _setup_macports
+}
+
+_setup_homebrew()
+{
+	local brew_prefix
+	local brew_path
+	local brew_bin
+	local brew_man
+	local formula
+
+	# Get Homebrew installation path
+	brew_prefix="$(brew --brew_prefix)"
+
+	# Setup bash autocomplete
+	check_and_source "${brew_prefix}/opt/bash-completion/etc/profile.d/bash_completion.sh"
+	! _bashrc_has_cmd __git_ps1 && check_and_source "${brew_prefix}/etc/bash_completion.d/git-prompt.sh"
+
+	# Set Homebrew formulas to PATH and MANPATH
+	for formula in "coreutils" "findutils" "gnu-sed" "grep" "openssl"; do
+		brew_path="${brew_prefix}/opt/${formula}"
+
+		# Skip if path doesn't exist
+		[ ! -d "$brew_path" ] && continue
+
+		brew_bin="${brew_path}/libexec/gnubin"
+		[ ! -d "$brew_bin" ] && brew_bin="${brew_path}/bin"
+
+		brew_man="${brew_path}/libexec/gnuman"
+		[ ! -d "$brew_man" ] && brew_man="${brew_path}/man"
+
+		# Add only if not already in PATH or MANPATH
+		add_path -f "$brew_bin"
+		add_man -f "$brew_man"
+	done
+}
+
+_setup_macports()
+{
+	local port_prefix
+
+	# Set MacPorts installation path
+	port_prefix="/opt/local"
+
+	# Setup bash autocomplete
+	check_and_source "${port_prefix}/etc/profile.d/bash_completion.sh"
+	! _bashrc_has_cmd __git_ps1 && check_and_source "${port_prefix}/share/git/contrib/completion/git-prompt.sh"
+
+	# Setup MacPorts PATH
+	add_path -f "${port_prefix}/bin"
+	add_path -f "${port_prefix}/sbin"
+	add_path -f "${port_prefix}/libexec/gnubin"
+}
+
 bashrc
 unset -f bashrc
 unset -f add_man add_path
 unset -f check_and_exec check_and_source
 unset -f _bashrc_has_cmd check_has_file
-unset -f get_color get_color_code
 unset -f is_ide_term
 unset -f join_array
 unset -f run_tmux run_ssh_agent
 unset -f _bashrc_has_colors
 unset -v _bashrc_colors
+unset -f _setup_linux
+unset -f _setup_macos
+unset -f _setup_homebrew
+unset -f _setup_macports
