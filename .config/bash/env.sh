@@ -19,7 +19,7 @@ export HISTIGNORE='clear:exit:ls:ll:ls -l:la:ls -la:tree:bg:fg:cd:..:cd ..:popd'
 ! _bashrc_has_colors && return
 
 # ls colors
-eval $(dircolors -b $(dirname ${BASH_SOURCE[0]})/dircolors)
+eval $(dircolors -b $(dirname ${BASH_SOURCE[0]})/dircolors.db)
 
 # gcc colors
 GCC_COLORS=""
