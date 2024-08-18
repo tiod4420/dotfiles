@@ -30,8 +30,6 @@ bashrc()
 		ls_version=gnu
 	elif ls -G -d . &> /dev/null; then
 		ls_version=bsd
-	else
-		ls_version=unknown
 	fi
 
 	# Get number of colors of the terminal
@@ -48,9 +46,9 @@ bashrc()
 	fi
 
 	# Load generic configuration files
-	for file in "global.sh" "aliases.sh" "prompt.sh"; do
-		check_and_source "${config_dir_path}/${file}"
-	done
+	check_and_source "${config_dir_path}/global.sh"
+	check_and_source "${config_dir_path}/aliases.sh"
+	check_and_source "${config_dir_path}/prompt.sh"
 
 	# Load local configuration files that are not commited
 	# [!] Load after all other settings so it can override previous config
