@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+# Readline editing mode as vi
+set -o vi
+
+# Append history to the file, to avoid parallel shells erasing each other
+shopt -s histappend 2> /dev/null
+
+# History substitutions are not executed directly, but added to the line
+shopt -s histverify 2> /dev/null
+
 # Locale
 export LANG=en_US.UTF-8
 

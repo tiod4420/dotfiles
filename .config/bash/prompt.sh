@@ -8,8 +8,6 @@ _prompt_color()
 
 # Configure __git_ps1
 _bashrc_has_colors && GIT_PS1_SHOWCOLORHINTS=yes
-GIT_PS1_SHOWSTASHSTATE=yes
-GIT_PS1_SHOWDIRTYSTATE=yes
 
 # Set PS1
 PS1=""
