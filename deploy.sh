@@ -360,19 +360,6 @@ setup_clang_format()
 	return 0
 }
 
-setup_ctags()
-{
-	local RES
-
-	echo "Deploying ctags configuration"
-
-	# Deploy configuration
-	deploy -c ctags
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
 setup_gdb()
 {
 	local RES
@@ -565,10 +552,6 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 setup_clang_format
-RES=$?; [ 0 -ne $RES ] && exit 1
-echo ""
-
-setup_ctags
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 

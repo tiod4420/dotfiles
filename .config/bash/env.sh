@@ -17,6 +17,7 @@ export BROWSER=firefox
 export EDITOR=vim
 export MANPAGER=less
 export PAGER=less
+export VISUAL=vim
 
 # History settings
 export HISTSIZE=20000

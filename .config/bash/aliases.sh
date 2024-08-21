@@ -6,6 +6,7 @@
 # Easier navigation
 alias ..='cd ..'
 alias ...='cd ../..'
+alias gd='cd $(git root || echo .)'
 
 # Safe cp and mv
 alias cp='cp -i'
@@ -50,15 +51,17 @@ alias lstar='tar tvf'
 alias mktar='tar caf'
 alias untar='tar xvf'
 
-# Duplicates aliases
-alias lsdupes='fdupes -r'
-alias nodupes='(cat -n | sort -k 2 -u | sort -k 1 -n | cut -f 2-)'
-
+# Count occurences of similar lines
+alias count='sort | uniq -c | sort -nr'
 # Hexdump of data (can be reversed with -r)
 alias dump='xxd -g 1'
-# Rank history commands by usage
-alias histtop='history | sed -E "s/^ *[0-9]+ +//" | sort | uniq -c | sort -nr'
+# Filter file to keep only last extension
+alias fileext='sed -nE "s/^.*[^/]\.([^./]+)$/\1/p"'
+# List history commands without prefix number
+alias hist='history | sed -nE "s/^[[:space:]]*[0-9]+[[:space:]]+//p"'
 # Map list of arguments
 alias map='xargs -n1'
+# Remove dupplicated lines while keeping order
+alias nodupes='(cat -n | sort -k 2 -u | sort -k 1 -n | cut -f 2-)'
 # ROT13 data
 alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'

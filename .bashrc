@@ -17,7 +17,7 @@ _bashrc_add_path()
 	if [ -d "$dir" ]; then
 		case ":$path:" in
 			*:"$dir":*) ;;
-			*) path=$dir${path:+:$path}
+			*) path=$dir${path:+:$path} ;;
 		esac
 	fi
 
@@ -130,9 +130,9 @@ _bashrc_setup_macos()
 
 	# Setup MacPorts PATH and MANPATH
 	# Reverse order as we push at front
-	PATH=$(_bashrc_add_path $prefix/libexec/gnubin)
-	PATH=$(_bashrc_add_path $prefix/sbin)
-	PATH=$(_bashrc_add_path $prefix/bin)
+	PATH=$(_bashrc_add_path $PATH $prefix/libexec/gnubin)
+	PATH=$(_bashrc_add_path $PATH $prefix/sbin)
+	PATH=$(_bashrc_add_path $PATH $prefix/bin)
 	export PATH
 
 	MANPATH=$(_bashrc_add_path $MANPATH $prefix/share/man)
@@ -164,7 +164,7 @@ _bashrc_try_source $_bashrc_config_dir/aliases.sh
 _bashrc_try_source $_bashrc_config_dir/env.sh
 _bashrc_try_source $_bashrc_config_dir/prompt.sh
 
-# Bash globbing should be sorted alphabetically
+# Local configuration (globbing should sort alphabetically)
 for file in $_bashrc_config_dir/local/*.sh; do
 	_bashrc_try_source $file
 done
