@@ -30,13 +30,22 @@ alias todo='ft TODO'
 alias lsman='man --path | tr ":" "\n"'
 alias lspath='echo $PATH | tr ":" "\n"'
 
-# OpenSSL aliases
+# gdb aliases
+alias gef='gdb -ex start-gef'
+alias peda='gdb -ex start-peda'
+alias pwndbg='gdb -ex start-pwndbg'
+
+# openssl aliases
 alias asn1parse='openssl asn1parse -i -dump'
 alias base64='openssl base64'
 alias csr='openssl req -text -noout'
 alias x509='openssl x509 -text -noout'
 
-# tarball aliases
+# python3 aliases
+alias http='python3 -m http.server'
+alias json-format='python3 -m json.tool'
+
+# tar aliases
 alias lstar='tar tvf'
 alias mktar='tar caf'
 alias untar='tar xvf'
@@ -44,10 +53,6 @@ alias untar='tar xvf'
 # Duplicates aliases
 alias lsdupes='fdupes -r'
 alias nodupes='(cat -n | sort -k 2 -u | sort -k 1 -n | cut -f 2-)'
-
-# Python3 aliases
-alias http='python3 -m http.server'
-alias json-format='python3 -m json.tool'
 
 # Hexdump of data (can be reversed with -r)
 alias dump='xxd -g 1'

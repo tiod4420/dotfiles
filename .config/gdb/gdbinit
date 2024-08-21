@@ -1,12 +1,54 @@
 set disassembly-flavor intel
 
 python
+
 import os
 
-search_path = [ "/usr/share", "/opt/peda" ]
+SEARCH_PATH = [
+        "/usr/share",
+        "/opt",
+        ]
 
-for path in search_path:
-	peda_script = os.path.join(path, "peda", "peda.py")
+class StartCommand(gdb.Command):
+    def __init__(self, name, script):
+        # Search for file
+        paths = map(lambda base: os.path.join(base, script), SEARCH_PATH)
+        found_paths = list(filter(os.path.isfile, paths))
 
-	if os.path.exists(peda_script) and os.path.isfile(peda_script):
-		gdb.execute('source %s' % peda_script)
+        # Instantiate command
+        self._name = name
+        self._script = script
+        self._script_path = found_paths[0] if len(found_paths) != 0 else None
+        self._is_init = False
+
+        super(StartCommand, self).__init__(self._name, gdb.COMMAND_USER)
+
+    def invoke(self, arg, from_tty):
+        self.dont_repeat()
+
+        if not self._script_path:
+            print(f"{self._name}: could not find init script {self._script}")
+        elif self._is_init:
+            print(f"{self._name}: {self._script} already sourced")
+        else:
+            gdb.execute(f"source {self._script_path}")
+            self._is_init = True
+
+class StartGEF(StartCommand):
+    """Start GEF (https://github.com/pwndbg/pwndbg)"""
+    def __init__ (self):
+        super(StartGEF, self).__init__("start-gef", "gef/gef.py")
+
+class StartPeda(StartCommand):
+    """Start PEDA (https://github.com/longld/peda)"""
+    def __init__ (self):
+        super(StartPeda, self).__init__("start-peda", "peda/peda.py")
+
+class StartPwndbg(StartCommand):
+    """Start Pwndbg (https://github.com/pwndbg/pwndbg)"""
+    def __init__ (self):
+        super(StartPwndbg, self).__init__("start-pwndbg", "pwndbg/gdbinit.py")
+
+StartGEF()
+StartPeda()
+StartPwndbg()
