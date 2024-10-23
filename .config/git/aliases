@@ -1,0 +1,38 @@
+[alias]
+	# List aliases
+	alias = config get --all --show-names --regexp "^alias\\."
+
+	# Set author of repository
+	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
+	name = "!f() { [ -n \"$1\" ] && git config set --local user.name \"$1\"  || git config get --local user.name; }; f"
+	email = "!f() { [ -n \"$1\" ] && git config set --local user.email \"$1\"  || git config get --local user.email; }; f"
+	# Show local author
+	whoami = "!f() { echo \"$(git config --local user.name) <$(git config --local user.email)>\"; }; f"
+
+	# List contributors
+	authors = shortlog --numbered --email --summary
+	# List branches
+	branches = branch --all --verbose --verbose
+	# List remotes
+	remotes = remote --verbose
+	# List tags
+	tags = tag --list -n1
+
+	# List commits logs
+	lo = log --oneline --graph -n30
+	# Log last commit
+	last = log --stat -n1
+	# Show commit log stats
+	stat = log --compact-summary
+	# Show diff summary
+	summary = diff --compact-summary
+
+	# Edit author of the current commit
+	reauthor = commit --amend --no-edit --reset-author
+	# Edit last commit message
+	reword = commit --amend
+	# Update last commit with staged files without editing the message
+	oops = commit --amend --no-edit
+
+	# Show root directory
+	root = rev-parse --show-toplevel

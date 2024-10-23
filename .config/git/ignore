@@ -1,31 +1,31 @@
 # Linux
 *~
 
-# OSX
-._*
-.AppleDouble
+# macOS
+
+## General
 .DS_Store
-.localized
+.AppleDouble
 .LSOverride
-.Spotlight-V100
-.Trashes
-Icon
+
+## Thumbnails
+._*
 
 # Windows
-Desktop.ini
-ehthumbs.db
+
+## General
+[Dd]esktop.ini
+
+## Thumbnails
 Thumbs.db
+ehthumbs.db
 
 # Vim
-%*
-*.sw[a-z]
-*.un~
+
+## Swap files
+*.sw[a-p]
+## Session files
+Session.vim
+Sessionx.vim
+## Netrw history
 .netrwhist
-session.vim
-
-# Compiled files
-*.o
-*.pyc
-
-# Ctags
-tags

@@ -1,0 +1,15 @@
+[color]
+	# Automatically detect if we can use colors
+	ui = auto
+
+[color "diff"]
+	# Meta information
+	meta = reverse
+	# Function in hunk header
+	func = blue
+
+[color "status"]
+	# Files that are changed but not added
+	changed = yellow
+	# Files with unmerged changes
+	unmerged = magenta
