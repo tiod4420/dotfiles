@@ -1,5 +1,6 @@
+[general]
 import = [
-    "~/.config/alacritty/base16-alacritty/colors/base16-gruvbox-dark-medium-256.toml",
+    "./base16-alacritty/colors/base16-gruvbox-dark-medium-256.toml",
 ]
 
 [window]
