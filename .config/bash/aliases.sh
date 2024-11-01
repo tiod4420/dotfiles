@@ -6,7 +6,7 @@
 # Easier navigation
 alias ..='cd ..'
 alias ...='cd ../..'
-alias gd='cd $(git root || echo .)'
+alias gd='cd $(git rev-parse --show-toplevel || echo .)'
 
 # Safe cp and mv
 alias cp='cp -i'
@@ -52,7 +52,7 @@ alias mktar='tar caf'
 alias untar='tar xvf'
 
 # Count occurences of similar lines
-alias count='sort | uniq -c | sort -nr'
+alias count='(sort | uniq -c | sort -nr)'
 # Hexdump of data (can be reversed with -r)
 alias dump='xxd -g 1'
 # Filter file to keep only last extension
