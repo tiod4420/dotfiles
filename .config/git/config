@@ -17,6 +17,8 @@
 	textconv = xxd -g 1
 
 [fetch]
+	# Parallel fetch operations, using a `reasonable default`
+	parallel = 0
 	# Update remote branches as well
 	prune = true
 
@@ -27,6 +29,10 @@
 [pull]
 	# Fast-forward merges only
 	ff = only
+
+[submodule]
+	# Parallel fetch/clone of submodules, using a `reasonable default`
+	fetchJobs = 0
 
 [user]
 	# Do not guess user identity

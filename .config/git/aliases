@@ -4,7 +4,7 @@
 	# Amend last commit message
 	reword = commit --amend --only
 	# Amend authorship of the last commit
-	reauthor = commit --amend --no-edit --only --reset-author
+	reauthor = commit --amend --only --no-edit --reset-author
 
 	# Diff out of a working tree
 	dini = diff --no-index
@@ -61,7 +61,7 @@
 	# Amend commit to sign it with GPG
 	sign = commit --amend --no-edit --only --gpg-sign
 	# Rebase commits and re-sign them
-	resign = rebase --exec='gpg sign'
+	resign = rebase --exec='git sign'
 	# Verify GPG signature of a commit or a tag
 	verify = !"f() { case $(git cat-file -t \"$1\") in commit) git verify-commit -v \"$1\";; tag) git verify-tag -v \"$1\";; esac; }; f"
 

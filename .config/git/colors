@@ -3,8 +3,6 @@
 	ui = auto
 
 [color "diff"]
-	# Meta information
-	meta = reverse
 	# Function in hunk header
 	func = blue
 
