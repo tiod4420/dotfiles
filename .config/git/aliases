@@ -1,38 +1,82 @@
 [alias]
+	# Amend last commit with staged files
+	oops = commit --amend --no-edit
+	# Amend last commit message
+	reword = commit --amend --only
+	# Amend authorship of the last commit
+	reauthor = commit --amend --no-edit --only --reset-author
+
+	# Diff out of a working tree
+	dini = diff --no-index
+	# Diff staged files
+	staged = diff --staged
+	# Diff summary between two commits
+	summary = diff --compact-summary
+
+	# Log commits as a graph
+	graph = log --graph --oneline
+	# Log only commit hashes
+	hashes = log --format='%H'
+	# Log summary of last N commits
+	last = !"f() { git log --compact-summary --max-count=${1:-1}; }; f"
+	# Log last 30 commits as a graph
+	lo = graph --max-count=30
+	# Log commits that I authored
+	mine = !git log --author $(git config get user.email)
+	# Log commits as a simplified graph
+	simple = graph --simplify-by-decoration --simplify-merges
+
+	# Show HEAD information
+	head = show HEAD
+	# Show summary of given commit
+	info = show --compact-summary
+	# Show short tag of object
+	sha = show --no-patch --format='%h'
+
 	# List aliases
-	alias = config get --all --show-names --regexp "^alias\\."
-
-	# Set author of repository
-	author = "!f() { [ -n \"$1\" ] && [ -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
-	name = "!f() { [ -n \"$1\" ] && git config set --local user.name \"$1\"  || git config get --local user.name; }; f"
-	email = "!f() { [ -n \"$1\" ] && git config set --local user.email \"$1\"  || git config get --local user.email; }; f"
-	# Show local author
-	whoami = "!f() { echo \"$(git config --local user.name) <$(git config --local user.email)>\"; }; f"
-
-	# List contributors
-	authors = shortlog --numbered --email --summary
+	alias = config get --all --show-names --regexp ^alias\\.
+	# List authors
+	authors = shortlog --summary --email --numbered
 	# List branches
 	branches = branch --all --verbose --verbose
 	# List remotes
 	remotes = remote --verbose
-	# List tags
-	tags = tag --list -n1
+	# List stashes
+	stashes = stash list
+	# List tags sorted by refname
+	tags = tag --list --sort=v:refname --format='%(align:8)%(refname:short)%(end) %(color:green)(%(objecttype)) %(color:yellow)%(objectname:short) %(color:default)%(subject)'
 
-	# List commits logs
-	lo = log --oneline --graph -n30
-	# Log last commit
-	last = log --stat -n1
-	# Show commit log stats
-	stat = log --compact-summary
-	# Show diff summary
-	summary = diff --compact-summary
+	# Get local author
+	whoami = !"f() { echo \"$(git config get user.name) <$(git config get user.email)>\"; }; f"
+	# Set local author
+	iam = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config set --local user.name \"$1\" && git config set --local user.email \"$2\"; }; f"
 
-	# Edit author of the current commit
-	reauthor = commit --amend --no-edit --reset-author
-	# Edit last commit message
-	reword = commit --amend
-	# Update last commit with staged files without editing the message
-	oops = commit --amend --no-edit
+	# Create a WIP commit
+	wip = !"f() { git add --all && git commit -m \"WIP${1:+ -- $*}\"; }; f"
+	# Restore a WIP commit
+	unwip = !"f() { git show --no-patch --format='%s' | grep -qE '^WIP( -- .*)?$' && git undo; }; f"
 
-	# Show root directory
+	# List commits as a graph, with their GPG signature status
+	gpg = graph --pretty='%C(auto)%h %C(bold blue)%G?%C(reset) %C(auto)%(decorate) %s'
+	# Amend commit to sign it with GPG
+	sign = commit --amend --no-edit --only --gpg-sign
+	# Rebase commits and re-sign them
+	resign = rebase --exec='gpg sign'
+	# Verify GPG signature of a commit or a tag
+	verify = !"f() { case $(git cat-file -t \"$1\") in commit) git verify-commit -v \"$1\";; tag) git verify-tag -v \"$1\";; esac; }; f"
+
+	# Clone then initialize submodules
+	cloneall = clone --recurse-submodules
+	# Show ignored files
+	ignored = status --ignored
+	# Print git root directory
 	root = rev-parse --show-toplevel
+
+	# Squash commits since given revision
+	squash = !"f() { git reset --hard $1 && git merge --squash ORIG_HEAD && git commit; }; f"
+	# Reset last N commits
+	undo = !"f() { git reset HEAD~$1; }; f"
+	# Restore staged changes of a file
+	unstage = restore --staged
+	# Pop most recent stash
+	unstash = stash pop
