@@ -22,7 +22,7 @@
 	# Log last 30 commits as a graph
 	lo = graph --max-count=30
 	# Log commits that I authored
-	mine = !git log --author $(git config get user.email)
+	mine = !git log --author $(git config user.email)
 	# Log commits as a simplified graph
 	simple = graph --simplify-by-decoration --simplify-merges
 
@@ -34,7 +34,7 @@
 	sha = show --no-patch --format='%h'
 
 	# List aliases
-	alias = config get --all --show-names --regexp ^alias\\.
+	alias = config --get-regexp '^alias\\.'
 	# List authors
 	authors = shortlog --summary --email --numbered
 	# List branches
@@ -47,9 +47,9 @@
 	tags = tag --list --sort=v:refname --format='%(align:8)%(refname:short)%(end) %(color:green)(%(objecttype)) %(color:yellow)%(objectname:short) %(color:default)%(subject)'
 
 	# Get local author
-	whoami = !"f() { echo \"$(git config get user.name) <$(git config get user.email)>\"; }; f"
+	whoami = !"f() { echo \"$(git config user.name) <$(git config user.email)>\"; }; f"
 	# Set local author
-	iam = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config set --local user.name \"$1\" && git config set --local user.email \"$2\"; }; f"
+	iam = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
 
 	# Create a WIP commit
 	wip = !"f() { git add --all && git commit -m \"WIP${1:+ -- $*}\"; }; f"
