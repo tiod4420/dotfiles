@@ -72,6 +72,8 @@
 	# Print git root directory
 	root = rev-parse --show-toplevel
 
+	# Automatic rebase and squash
+	fixup = rebase --autosquash
 	# Squash commits since given revision
 	squash = !"f() { git reset --hard $1 && git merge --squash ORIG_HEAD && git commit; }; f"
 	# Reset last N commits
