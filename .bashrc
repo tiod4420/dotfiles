@@ -56,7 +56,7 @@ _bashrc_is_ssh_agent()
 	[ -n "$SSH_AUTH_SOCK" ] && return
 
 	# Check if there is the difuse file
-	[ -e ~/no-ssh-agent ] && return
+	[ -e ~/nossh ] && return
 
 	false
 }
@@ -70,7 +70,7 @@ _bashrc_is_tmux()
 	[ -n "$SSH_CLIENT" -o -n "$SSH_CONNECTION" -o -n "$SSH_TTY" ] && return
 
 	# Check if there is the difuse file
-	[ -e ~/no-tmux ] && return
+	[ -e ~/notmux ] && return
 
 	false
 }
@@ -157,12 +157,12 @@ esac
 # Start tmux, without attaching to a session in case we need a fresh shell
 ! _bashrc_is_tmux && _bashrc_try_exec tmux
 
-# Load configuration files
+# Source configuration files
 _bashrc_config_dir=${XDG_CONFIG_HOME:-~/.config}/bash
 
-_bashrc_try_source $_bashrc_config_dir/aliases.sh
-_bashrc_try_source $_bashrc_config_dir/env.sh
-_bashrc_try_source $_bashrc_config_dir/prompt.sh
+for file in global.sh aliases.sh prompt.sh; do
+	_bashrc_try_source $_bashrc_config_dir/$file
+done
 
 # Local configuration (globbing should sort alphabetically)
 for file in $_bashrc_config_dir/local/*.sh; do
