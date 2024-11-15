@@ -1,38 +1,45 @@
 [alias]
+	## Commit
 	# Amend last commit with staged files
 	oops = commit --amend --no-edit
 	# Amend last commit message
 	reword = commit --amend --only
 	# Amend authorship of the last commit
-	reauthor = commit --amend --only --no-edit --reset-author
+	reauthor = oops --only --reset-author
 
+	## Diff
+	# Diff summary between two commits
+	changes = diff --compact-summary
 	# Diff out of a working tree
-	dini = diff --no-index
+	difi = diff --no-index
 	# Diff staged files
 	staged = diff --staged
-	# Diff summary between two commits
-	summary = diff --compact-summary
 
+	## Log
 	# Log commits as a graph
 	graph = log --graph --oneline
 	# Log only commit hashes
 	hashes = log --format='%H'
 	# Log summary of last N commits
-	last = !"f() { git log --compact-summary --max-count=${1:-1}; }; f"
+	last = !"f() { git summary --max-count=${1:-1}; }; f"
 	# Log last 30 commits as a graph
 	lo = graph --max-count=30
 	# Log commits that I authored
 	mine = !git log --author $(git config user.email)
 	# Log commits as a simplified graph
 	simple = graph --simplify-by-decoration --simplify-merges
+	# Log summary of commits
+	summary = log --compact-summary
 
+	## Show
 	# Show HEAD information
 	head = show HEAD
 	# Show summary of given commit
 	info = show --compact-summary
-	# Show short tag of object
+	# Show short hash of object
 	sha = show --no-patch --format='%h'
 
+	## Lists
 	# List aliases
 	alias = config --get-regexp '^alias\\.'
 	# List authors
@@ -46,39 +53,48 @@
 	# List tags sorted by refname
 	tags = tag --list --sort=v:refname --format='%(align:8)%(refname:short)%(end) %(color:green)(%(objecttype)) %(color:yellow)%(objectname:short) %(color:default)%(subject)'
 
+	## Authorship
 	# Get local author
 	whoami = !"f() { echo \"$(git config user.name) <$(git config user.email)>\"; }; f"
 	# Set local author
 	iam = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
 
+	## WIP commits
 	# Create a WIP commit
 	wip = !"f() { git add --all && git commit -m \"WIP${1:+ -- $*}\"; }; f"
 	# Restore a WIP commit
 	unwip = !"f() { git show --no-patch --format='%s' | grep -qE '^WIP( -- .*)?$' && git undo; }; f"
 
+	## GPG signature
 	# List commits as a graph, with their GPG signature status
 	gpg = graph --pretty='%C(auto)%h %C(bold blue)%G?%C(reset) %C(auto)%(decorate) %s'
 	# Amend commit to sign it with GPG
-	sign = commit --amend --no-edit --only --gpg-sign
+	sign = oops --only --gpg-sign
+	# Amend commit to remove GPG signature
+	unsign = oops --only --no-gpg-sign
 	# Rebase commits and re-sign them
 	resign = rebase --exec='git sign'
 	# Verify GPG signature of a commit or a tag
 	verify = !"f() { case $(git cat-file -t \"$1\") in commit) git verify-commit -v \"$1\";; tag) git verify-tag -v \"$1\";; esac; }; f"
 
-	# Clone then initialize submodules
-	cloneall = clone --recurse-submodules
-	# Show ignored files
-	ignored = status --ignored
-	# Print git root directory
-	root = rev-parse --show-toplevel
-
-	# Automatic rebase and squash
-	fixup = rebase --autosquash
-	# Squash commits since given revision
-	squash = !"f() { git reset --hard $1 && git merge --squash ORIG_HEAD && git commit; }; f"
+	## Undo
 	# Reset last N commits
 	undo = !"f() { git reset HEAD~$1; }; f"
 	# Restore staged changes of a file
 	unstage = restore --staged
+
+	## Misc
+	# Clone with all submodules
+	clo = clone --recurse-submodules
+	# Automatic rebase and squash of fixup commits
+	fixup = rebase --autosquash
+	# Show ignored files
+	ignored = status --ignored
+	# Print git root directory
+	root = rev-parse --show-toplevel
+	# Squash commits since given revision
+	squash = !"f() { git reset --hard $1 && git merge --squash ORIG_HEAD && git commit; }; f"
+	# Update all submodules
+	sup = submodule update --init --recursive
 	# Pop most recent stash
 	unstash = stash pop
