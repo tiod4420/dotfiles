@@ -11,3 +11,7 @@
 	changed = yellow
 	# Files with unmerged changes
 	unmerged = magenta
+
+[pretty]
+	# Almost same as oneline, but with GPG signature
+	gpg = "%C(auto)%h %C(bold blue)%G?%C(reset) %C(auto)%(decorate) %s"

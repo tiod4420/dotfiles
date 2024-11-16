@@ -67,7 +67,7 @@
 
 	## GPG signature
 	# List commits as a graph, with their GPG signature status
-	gpg = graph --pretty='%C(auto)%h %C(bold blue)%G?%C(reset) %C(auto)%(decorate) %s'
+	gpg = graph --pretty=gpg
 	# Amend commit to sign it with GPG
 	sign = oops --only --gpg-sign
 	# Amend commit to remove GPG signature
