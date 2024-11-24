@@ -1,3 +1,5 @@
+# Alacritty configuration
+
 [general]
 import = [
     "./base16-alacritty/colors/base16-gruvbox-dark-medium-256.toml",

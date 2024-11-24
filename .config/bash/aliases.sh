@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# Alias settings
 
 # Normalize open across Linux and OSX
 ! _bashrc_has_cmd open && alias open='xdg-open';

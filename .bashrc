@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# Bash configuration
 
 declare -A _bashrc_colors=(
 	[reset]='0'         [bold]='1'           [black]='38;5;0'    [red]='38;5;1'
@@ -157,14 +159,15 @@ esac
 # Start tmux, without attaching to a session in case we need a fresh shell
 ! _bashrc_is_tmux && _bashrc_try_exec tmux
 
-# Source configuration files
+# Set Bash config base directory
 _bashrc_config_dir=${XDG_CONFIG_HOME:-~/.config}/bash
 
-for file in global.sh aliases.sh prompt.sh; do
-	_bashrc_try_source $_bashrc_config_dir/$file
-done
+# Source configuration files
+_bashrc_try_source $_bashrc_config_dir/global.sh
+_bashrc_try_source $_bashrc_config_dir/aliases.sh
+_bashrc_try_source $_bashrc_config_dir/prompt.sh
 
-# Local configuration (globbing should sort alphabetically)
+# Source local configuration files (globbing should sort alphabetically)
 for file in $_bashrc_config_dir/local/*.sh; do
 	_bashrc_try_source $file
 done

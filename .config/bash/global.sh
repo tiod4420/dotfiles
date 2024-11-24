@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# Global and environment variable settings
 
 # Readline editing mode as vi
 set -o vi

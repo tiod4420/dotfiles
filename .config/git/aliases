@@ -1,3 +1,5 @@
+# Alias settings
+
 [alias]
 	## Commit
 	# Amend last commit with staged files

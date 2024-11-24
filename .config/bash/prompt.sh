@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+#
+# Prompt settings
 
 _prompt_color()
 {

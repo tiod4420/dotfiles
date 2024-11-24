@@ -1,0 +1,52 @@
+# Global settings
+
+[core]
+	# Use vim as editor
+	editor = vim
+	# Use less as pager
+	pager = less
+
+[diff]
+	# Show blocks of moved text differently than adds/deletes
+	colorMoved = true
+	# Use better, descriptive initials (c, i, w) instead of a/b
+	mnemonicPrefix = true
+	# Detect copies as well as renames
+	renames = copies
+
+[diff "bin"]
+	# Use xxd to diff binary files
+	textconv = xxd -g 1
+
+[fetch]
+	# Parallel fetch operations, using a `reasonable default`
+	parallel = 0
+	# Update remote branches as well
+	prune = true
+
+[merge]
+	# Use vimdiff as merge tool
+	tool = vimdiff
+
+[pull]
+	# Fast-forward merges only
+	ff = only
+
+[submodule]
+	# Parallel fetch/clone of submodules, using a `reasonable default`
+	fetchJobs = 0
+
+[user]
+	# Do not guess user identity
+	useConfigOnly = true
+
+# URL shorthand for GitHub
+[url "https://github.com/"]
+	insteadOf = github://
+
+# Git LFS filters
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
