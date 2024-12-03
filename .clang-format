@@ -8,6 +8,7 @@ IndentWidth: 8
 ContinuationIndentWidth: 8
 # Alignment and breaks
 AlignConsecutiveMacros: true
+AllowShortFunctionsOnASingleLine: false
 BreakBeforeBraces: Linux
 BreakStringLiterals: false
 Cpp11BracedListStyle: false
