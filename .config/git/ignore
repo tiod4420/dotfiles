@@ -26,8 +26,3 @@ ehthumbs.db
 
 ## Swap files
 *.sw[a-p]
-## Session files
-Session.vim
-Sessionx.vim
-## Netrw history
-.netrwhist
