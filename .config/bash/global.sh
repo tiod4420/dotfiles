@@ -7,7 +7,6 @@ set -o vi
 
 # Append history to the file, to avoid parallel shells erasing each other
 shopt -s histappend 2> /dev/null
-
 # History substitutions are not executed directly, but added to the line
 shopt -s histverify 2> /dev/null
 
@@ -48,3 +47,12 @@ export GTEST_COLOR=1
 # man colors
 export GROFF_NO_SGR=1
 export MANPAGER='less -R --use-color -Ddb -Duy -DSkw -DPkw'
+
+# Try to source bash-completion (source it after setting LANG for MacOS)
+if [ -z "$BASH_COMPLETION_VERSINFO" ]; then
+	for file in "${_bashrc_bash_completion[@]}"; do
+		_bashrc_try_source $file && break
+	done
+fi
+
+unset -v file
