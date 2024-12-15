@@ -1,50 +1,26 @@
 " Vim configuration
 
-function! CheckAndSource(file_path)
-	if filereadable(a:file_path)
-		execute "source " a:file_path
-	endif
+function! s:CheckAndSource(file_path)
+  if filereadable(a:file_path)
+    execute "source " . a:file_path
+  endif
 endfunction
 
-" Get path of config directory
-let config_dir_path=fnamemodify(expand($MYVIMRC), ':p:h') . '/config'
+" Set Vim config base directory
+let s:vimrc_config_dir=fnamemodify(expand($MYVIMRC), ':p:h') . '/config'
 
-" For Windows version only
-if has('win32') || has('win64')
-	" Force 256 colors
-	set t_Co=256
+" Source configuration files
+call s:CheckAndSource(s:vimrc_config_dir . "/global.vim")
+call s:CheckAndSource(s:vimrc_config_dir . "/bindings.vim")
+call s:CheckAndSource(s:vimrc_config_dir . "/functions.vim")
+call s:CheckAndSource(s:vimrc_config_dir . "/filetypes.vim")
+call s:CheckAndSource(s:vimrc_config_dir . "/theme.vim")
 
-	" Remove Windows style path
-	set runtimepath-=~/vimfiles
-	set runtimepath-=~/vimfiles/after
-	set packpath-=~/vimfiles
-	set packpath-=~/vimfiles/after
-
-	set runtimepath^=~/.vim
-	set runtimepath+=~/.vim/after
-	set packpath^=~/.vim
-	set packpath+=~/.vim/after
-endif
-
-" Fix tmux term capabilities
-if &term =~ "^tmux"
-	if exists('&t_ST')
-		if &t_ST == "" | let &t_ST = "\e[22;2t" | endif
-		if &t_RT == "" | let &t_RT = "\e[23;2t" | endif
-	endif
-endif
-
-" Source all the configuration files
-for file in [ "global.vim", "functions.vim", "filetypes.vim", "mappings.vim", "theme.vim" ]
-	call CheckAndSource(config_dir_path . "/" . file)
-endfor
-unlet file
-
-" Load local configuration files that are not commited
-" [!] Load after all other settings so it can override previous config
-for file in split(expand(config_dir_path . "/local/*.vim"), "\n")
-	call CheckAndSource(file)
+" Source local configuration files
+for s:file in sort(split(expand(s:vimrc_config_dir . "/local/*.vim"), "\n"))
+  call s:CheckAndSource(s:file)
 endfor
 
-unlet config_dir_path
-delfunction CheckAndSource
+unlet s:file
+unlet s:vimrc_config_dir
+delfunction s:CheckAndSource

@@ -1,62 +1,36 @@
 " Global settings
 
-" Works only for Vim
+" Disable Vi compatibility
 set nocompatible
-" Disable modeline
+" Disable modelines (commands in top of file)
 set nomodeline
-" UTF8 encoding, without BOMB
-set encoding=utf-8 nobomb
+" Set encoding to UTF-8
+set encoding=utf-8
 
-" Enable screen interaction
+" Enable mouse support
 if has("mouse") | set mouse=a | endif
-" Enable SGR-style mouse handling
+" Enable SGR mouse events (to work with columns after 233)
 if has("mouse_sgr") | set ttymouse=sgr | endif
-" Enable title changes
+" Set terminal window title
 if has ("title") | set title | endif
 
-" Set auto indentation
-set autoindent
-" Backspace behaviour
-set backspace=indent,eol,start
-" Set column space
-set colorcolumn=80,100
-" Show line number
-set number
-" Show ruler at the bottom right
-set ruler
-" Scrolls some lines before the bottom
-set scrolloff=2
-" Show current typed command
-set showcmd
-" Show current mode
-set showmode
-
-" Case insensitive search
-set ignorecase
-" Unless the search pattern has uppercase
-set smartcase
-" Highlight the matches
-set hlsearch
-" Highlight while typing the pattern
-set incsearch
-
-" Show ribbon for available options in command mode
-set wildmenu
-" Autocomplete menu in insert mode
-set completeopt=longest,menuone
-
-" No backup files
+" Disable backup files
 set nobackup
-" No undo files
+" Disable undo files
 set noundofile
-" Command mode history
-set history=4096
-" In-memory undo levels
-set undolevels=4096
+" Set undo levels
+set undolevels=5000
 
-" Disable banner
-let g:netrw_banner=0
-" Display tree view
-let g:netrw_liststyle=3
-" Open files is like preview
-let g:netrw_browse_split=3
+" Highlight search matches
+set hlsearch
+" Highlight matches while typing
+if has("reltime") | set incsearch | endif
+
+" Enable auto-indentation
+set autoindent
+" Enable backspacing over everything (insert mode)
+set backspace=indent,eol,start
+" Set completion options
+set completeopt=menuone,preview,longest
+" Disable octal number recognition
+set nrformats-=octal

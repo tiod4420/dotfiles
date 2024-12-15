@@ -1,23 +1,27 @@
-" Color settings
+" Theme settings
 
-" Dark theme
+" Show column markers at 80 and 100
+set colorcolumn=80,100
+" Show current line indicator
+set cursorline
+" Show line numbers in left margin
+set number
+" Show cursor position in the status line
+set ruler
+" Show a few lines of context around the cursor
+set scrolloff=2
+" Show incomplete commands in the status line
+set showcmd
+" Show current mode in the status line
+set showmode
+
+" Enable dark background colors (before syntax)
 set background=dark
-" Syntax highlighting
-syntax on
+" Enable syntax highlight
+if &t_Co > 2 | syntax on | endif
 
-" Color scheme style
-try
-	colorscheme gruvbox
-catch
-	colorscheme desert
+" Set color scheme
+try | colorscheme gruvbox | catch | colorscheme desert | endtry
 
-	" Color of max column size indicator
-	highlight ColorColumn ctermbg=DarkGray
-	" Color of search matches while typing
-	highlight IncSearch ctermfg=White ctermbg=DarkBlue
-	" Color of search matches
-	highlight Search ctermfg=White ctermbg=DarkGreen
-endtry
-
-" Color of extra whitespaces
-highlight link ExtraWhiteSpace ErrorMsg
+" Highlight white space errors
+highlight link WhiteSpaceError ErrorMsg
