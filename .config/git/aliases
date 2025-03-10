@@ -18,6 +18,8 @@
 	staged = diff --staged
 
 	## Log
+	# Log changes on a single file
+	changes = log --patch --find-renames --follow --stat
 	# Log commits as a graph
 	graph = log --graph --oneline
 	# Log only commit hashes
