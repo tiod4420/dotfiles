@@ -18,12 +18,12 @@
 	staged = diff --staged
 
 	## Log
-	# Log changes on a single file
-	changes = log --patch --find-renames --follow --stat
 	# Log commits as a graph
 	graph = log --graph --oneline
 	# Log only commit hashes
 	hashes = log --format='%H'
+	# Log changes on a single file
+	history = log --patch --find-renames --follow --stat
 	# Log summary of last N commits
 	last = !"f() { git summary --max-count=${1:-1}; }; f"
 	# Log last 30 commits as a graph
