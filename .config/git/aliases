@@ -36,6 +36,8 @@
 	summary = log --compact-summary
 
 	## Show
+	# Show commit of reference
+	desc  = rev-list --max-count=1 --oneline
 	# Show HEAD information
 	head = show HEAD
 	# Show summary of given commit
@@ -45,9 +47,7 @@
 
 	## Lists
 	# List aliases
-	alias = config --get-regexp '^alias\\.'
-	# List authors
-	authors = shortlog --summary --email --numbered
+	alias = !git config --get-regexp '^alias\\.' | sort
 	# List branches
 	branches = branch --all --verbose --verbose
 	# List remotes
@@ -58,10 +58,12 @@
 	tags = tag --list --sort=v:refname --format='%(align:8)%(refname:short)%(end) %(color:green)(%(objecttype)) %(color:yellow)%(objectname:short) %(color:default)%(subject)'
 
 	## Authorship
-	# Get local author
+	# List authors
+	who = shortlog --summary --email --numbered
+	# List current author
 	whoami = !"f() { echo \"$(git config user.name) <$(git config user.email)>\"; }; f"
 	# Set local author
-	iam = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
+	su = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
 
 	## WIP commits
 	# Create a WIP commit
