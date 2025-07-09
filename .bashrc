@@ -114,10 +114,7 @@ _bashrc_try_source()
 	[ -f "$1" ] && source "$1"
 }
 
-# Don't source bashrc if not required
-! _bashrc_run_bashrc && return
-
-# Setup PATH to have programs available early
+# Set PATH first to have minimal setup even if _bashrc_run_bashrc is false
 case "$OSTYPE" in
 	darwin*)
 		# Force fresh PATH
@@ -145,6 +142,9 @@ case "$OSTYPE" in
 esac
 
 ! _bashrc_has_cmd cargo && _bashrc_try_source ~/.cargo/env
+
+# Check if bashrc should be sourced
+! _bashrc_run_bashrc && return
 
 # Start ssh-agent, it should terminates when bash exit
 _bashrc_run_ssh_agent && _bashrc_try_exec ssh-agent ${SHELL:-bash}
