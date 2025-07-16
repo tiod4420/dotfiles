@@ -60,18 +60,23 @@ _bashrc_has_colors()
 	[ "$(tput colors 2> /dev/null || echo 0)" -ge 256 ]
 }
 
+_bashrc_is_ide()
+{
+	# Terminal is IntelliJ IDEA
+	[ -n "$INTELLIJ_ENVIRONMENT_READER" ] && return 0
+	[ "$TERMINAL_EMULATOR" = "JetBrains-JediTerm" ] && return 0
+
+	# Terminal is Visual Studio Code
+	[ -n "$VSCODE_PID" ] && return 0
+	[ "$TERM_PROGRAM" = "vscode" ] && return 0
+
+	false
+}
+
 _bashrc_run_bashrc()
 {
 	# Check if interactive shell, should be enough according to the manual
 	[ -z "$PS1" ] && return 1
-
-	# Shell is from IntelliJ IDEA
-	[ -n "$INTELLIJ_ENVIRONMENT_READER" ] && return 1
-	[ "$TERMINAL_EMULATOR" = "JetBrains-JediTerm" ] && return 1
-
-	# Shell is from Visual Studio Code
-	[ -n "$VSCODE_PID" ] && return 1
-	[ "$TERM_PROGRAM" = "vscode" ] && return 1
 
 	# Check if there is the difuse file
 	[ -e ~/nobashrc ] && return 1
@@ -146,11 +151,14 @@ esac
 # Check if bashrc should be sourced
 ! _bashrc_run_bashrc && return
 
-# Start ssh-agent, it should terminates when bash exit
-_bashrc_run_ssh_agent && _bashrc_try_exec ssh-agent ${SHELL:-bash}
+# Check if we are running from an IDE
+if ! _bashrc_is_ide; then
+	# Start ssh-agent, it should terminates when bash exit
+	_bashrc_run_ssh_agent && _bashrc_try_exec ssh-agent ${SHELL:-bash}
 
-# Start tmux, without attaching to a session in case we need a fresh shell
-_bashrc_run_tmux && _bashrc_try_exec tmux
+	# Start tmux, without attaching to a session in case we need a fresh shell
+	_bashrc_run_tmux && _bashrc_try_exec tmux
+fi
 
 # Source configuration files
 _bashrc_try_source $_bashrc_config_dir/global.sh
@@ -171,6 +179,7 @@ unset -v file
 unset -f _bashrc_add_path
 unset -f _bashrc_has_cmd
 unset -f _bashrc_has_colors
+unset -f _bashrc_is_ide
 unset -f _bashrc_run_bashrc
 unset -f _bashrc_run_ssh_agent
 unset -f _bashrc_run_tmux
