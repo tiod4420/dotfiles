@@ -90,6 +90,8 @@
 	unstage = restore --staged
 
 	## Misc
+	# Mirror repository to backup remote
+	backup = !"f() { git push --mirror ${1:-backup}; }; f"
 	# Clone with all submodules
 	clo = clone --recurse-submodules
 	# Automatic rebase and squash of fixup commits
