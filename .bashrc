@@ -112,7 +112,7 @@ _bashrc_run_ssh_agent()
 	[ -n "$SSH_AUTH_SOCK" ] && return 1
 
 	# Check if we can create agent socket
-	! [ -d "$HOME/.ssh/agent" -a -x "$HOME/.ssh/agent" ] && return 1
+	[ -d "$HOME/.ssh/agent" -a ! -x "$HOME/.ssh/agent" ] && return 1
 
 	true
 }
