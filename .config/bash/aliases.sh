@@ -67,3 +67,20 @@ alias map='xargs -n1'
 alias nodupes='(cat -n | sort -k 2 -u | sort -k 1 -n | cut -f 2-)'
 # ROT13 data
 alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'
+
+# Open notes directory
+notes() {
+	local dir=${NOTES_DIR:-$HOME}
+	local file=${1:-todo}
+
+	if [ ! -f "$dir/$file" ]; then
+		# Try to lowercase the name and add .md extension
+		local new_file=${file,,?}.md
+
+		if [ -f "$dir/$new_file" ]; then
+			file=$new_file
+		fi
+	fi
+
+	vim "$dir/$file"
+}
