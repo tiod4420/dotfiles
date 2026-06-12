@@ -30,15 +30,15 @@ export HISTIGNORE='clear:exit:ls:ll:ls -l:la:ls -la:tree:bg:fg:cd:..:cd ..:popd'
 ! _bashrc_has_colors && return
 
 # ls colors
-eval $(dircolors -b $(dirname ${BASH_SOURCE[0]})/dircolors.db)
+eval $(dircolors -b "$(dirname "${BASH_SOURCE[0]}")/dircolors.db")
 
 # gcc colors
 GCC_COLORS=""
-GCC_COLORS+="locus=${_bashrc_colors[bold]};${_bashrc_colors[brwhite]}"
-GCC_COLORS+=":error=${_bashrc_colors[red]}"
-GCC_COLORS+=":warning=${_bashrc_colors[yellow]}"
-GCC_COLORS+=":note=${_bashrc_colors[blue]}"
-GCC_COLORS+=":quote=${_bashrc_colors[green]}"
+GCC_COLORS+="locus=${_BASHRC_COLORS[bold]};${_BASHRC_COLORS[brwhite]}"
+GCC_COLORS+=":error=${_BASHRC_COLORS[red]}"
+GCC_COLORS+=":warning=${_BASHRC_COLORS[yellow]}"
+GCC_COLORS+=":note=${_BASHRC_COLORS[blue]}"
+GCC_COLORS+=":quote=${_BASHRC_COLORS[green]}"
 export GCC_COLORS
 
 # googletest colors
@@ -50,8 +50,8 @@ export MANPAGER='less -R --use-color -Ddb -Duy -DSkw -DPkw'
 
 # Try to source bash-completion (source it after setting LANG for MacOS)
 if [ -z "$BASH_COMPLETION_VERSINFO" ]; then
-	for file in "${_bashrc_bash_completion[@]}"; do
-		_bashrc_try_source $file && break
+	for file in "${_BASHRC_BASH_COMPLETION[@]}"; do
+		_bashrc_try_source "$file" && break
 	done
 fi
 

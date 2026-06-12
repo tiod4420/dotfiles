@@ -2,9 +2,6 @@
 #
 # Alias settings
 
-# Normalize open across Linux and OSX
-! _bashrc_has_cmd open && alias open='xdg-open';
-
 # Easier navigation
 alias ..='cd ..'
 alias ...='cd ../..'
@@ -67,6 +64,14 @@ alias map='xargs -n1'
 alias nodupes='(cat -n | sort -k 2 -u | sort -k 1 -n | cut -f 2-)'
 # ROT13 data
 alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'
+
+# Normalize open across Linux and OSX
+! _bashrc_has_cmd open && alias open='xdg-open';
+
+# clear doesn't clear tmux scrollback buffer on macOS
+case "$OSTYPE" in
+	darwin*) [ -n "$TMUX" ] && alias clear='clear && tmux clear-history' ;;
+esac
 
 # Open notes directory
 notes() {

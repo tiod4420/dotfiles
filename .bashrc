@@ -3,10 +3,10 @@
 # Bash configuration
 
 # Bash config base directory
-_bashrc_config_dir=${XDG_CONFIG_HOME:-~/.config}/bash
+_BASHRC_CONFIG_DIR=${XDG_CONFIG_HOME:-$HOME/.config}/bash
 
 # TTY color codes
-declare -A _bashrc_colors=(
+declare -A _BASHRC_COLORS=(
 	[reset]='0'         [bold]='1'           [black]='38;5;0'    [red]='38;5;1'
 	[green]='38;5;2'    [yellow]='38;5;3'    [blue]='38;5;4'     [magenta]='38;5;5'
 	[cyan]='38;5;6'     [white]='38;5;7'     [brblack]='38;5;8'  [brred]='38;5;9'
@@ -16,22 +16,26 @@ declare -A _bashrc_colors=(
 )
 
 # Bash completion paths
-declare -a _bashrc_bash_completion=(
+declare -a _BASHRC_BASH_COMPLETION=(
 	# Arch Linux
 	/usr/share/bash-completion/bash_completion
-	# MacOS
+	# Homebrew
+	/opt/homebrew/etc/profile.d/bash_completion.sh
+	# MacPorts
 	/opt/local/etc/profile.d/bash_completion.sh
 )
 
 # Git prompt paths
-declare -a _bashrc_git_prompt=(
+declare -a _BASHRC_GIT_PROMPT=(
 	# Arch Linux
 	/usr/share/git/completion/git-prompt.sh
 	# CentOS
 	/usr/share/git-core/contrib/completion/git-prompt.sh
 	# Debian
 	/usr/lib/git-core/git-sh-prompt
-	# MacOS
+	# Homebrew
+	/opt/homebrew/etc/bash_completion.d/git-prompt.sh
+	# MacPorts
 	/opt/local/share/git/contrib/completion/git-prompt.sh
 )
 
@@ -79,7 +83,7 @@ _bashrc_run_bashrc()
 	[ -z "$PS1" ] && return 1
 
 	# Check if there is the difuse file
-	[ -e ~/nobashrc ] && return 1
+	[ -e "$HOME/nobashrc" ] && return 1
 
 	true
 }
@@ -90,7 +94,7 @@ _bashrc_run_ssh_agent()
 	[ -n "$SSH_AUTH_SOCK" ] && return 1
 
 	# Check if there is the difuse file
-	[ -e ~/nossh ] && return 1
+	[ -e "$HOME/nossh" ] && return 1
 
 	true
 }
@@ -104,9 +108,54 @@ _bashrc_run_tmux()
 	[ -n "$SSH_CLIENT" -o -n "$SSH_CONNECTION" -o -n "$SSH_TTY" ] && return 1
 
 	# Check if there is the difuse file
-	[ -e ~/notmux ] && return 1
+	[ -e "$HOME/notmux" ] && return 1
 
 	true
+}
+
+_bashrc_setup_path()
+{
+	case "$OSTYPE" in
+		darwin*)
+			# Force fresh PATH
+			[ -x /usr/libexec/path_helper ] && eval $(unset PATH && /usr/libexec/path_helper -s)
+
+			if _bashrc_has_cmd /opt/homebrew/bin/brew; then
+				# Setup Homebrew environment
+				eval "$(/opt/homebrew/bin/brew shellenv bash)"
+
+				# Setup Homebrew GNU binary PATH (reverse order as we push front)
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/python/libexec/bin")
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/man-db/libexec/bin")
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/make/libexec/gnubin")
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/grep/libexec/gnubin")
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/gnu-tar/libexec/gnubin")
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin")
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin")
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin")
+				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin")
+				export PATH
+			elif _bashrc_has_cmd /opt/local/bin/port; then
+				# Setup MacPorts PATH (reverse order as we push front)
+				PATH=$(_bashrc_add_path "$PATH" "/opt/local/libexec/gnubin")
+				PATH=$(_bashrc_add_path "$PATH" "/opt/local/sbin")
+				PATH=$(_bashrc_add_path "$PATH" "/opt/local/bin")
+				export PATH
+
+				# Setup MacPorts MANPATH
+				MANPATH=$(_bashrc_add_path "$MANPATH" "/opt/local/share/man")
+				export MANPATH
+			fi
+			;;
+		linux*)
+			# Nothing to do
+			;;
+		*)
+			echo "Are we GNU Hurd yet?"
+			;;
+	esac
+
+	! _bashrc_has_cmd cargo && _bashrc_try_source "$HOME/.cargo/env"
 }
 
 _bashrc_try_exec()
@@ -120,58 +169,30 @@ _bashrc_try_source()
 }
 
 # Set PATH first to have minimal setup even if _bashrc_run_bashrc is false
-case "$OSTYPE" in
-	darwin*)
-		# Force fresh PATH
-		[ -x /usr/libexec/path_helper ] && eval $(unset PATH && /usr/libexec/path_helper -s)
-
-		# Set MacPorts installation path
-		! _bashrc_has_cmd /opt/local/bin/port && return
-
-		# Setup MacPorts PATH (reverse order as we are pushing front)
-		PATH=$(_bashrc_add_path $PATH /opt/local/libexec/gnubin)
-		PATH=$(_bashrc_add_path $PATH /opt/local/sbin)
-		PATH=$(_bashrc_add_path $PATH /opt/local/bin)
-		export PATH
-
-		# Setup MacPorts MANPATH
-		MANPATH=$(_bashrc_add_path $MANPATH /opt/local/share/man)
-		export MANPATH
-		;;
-	linux*)
-		# Nothing to do
-		;;
-	*)
-		echo "Are we GNU Hurd yet?"
-		;;
-esac
-
-! _bashrc_has_cmd cargo && _bashrc_try_source ~/.cargo/env
+_bashrc_setup_path
 
 # Check if bashrc should be sourced
 ! _bashrc_run_bashrc && return
-
 # Check if we are running from an IDE
-if ! _bashrc_is_ide; then
-	# Start ssh-agent, it should terminates when bash exit
-	_bashrc_run_ssh_agent && _bashrc_try_exec ssh-agent ${SHELL:-bash}
+_bashrc_is_ide && return
 
-	# Start tmux, without attaching to a session in case we need a fresh shell
-	_bashrc_run_tmux && _bashrc_try_exec tmux
-fi
+# Start ssh-agent, it should terminates when bash exit
+_bashrc_run_ssh_agent && _bashrc_try_exec ssh-agent "${SHELL:-bash}"
+# Start tmux, without attaching to a session in case we need a fresh shell
+_bashrc_run_tmux && _bashrc_try_exec tmux
 
 # Source configuration files
-_bashrc_try_source $_bashrc_config_dir/global.sh
-_bashrc_try_source $_bashrc_config_dir/aliases.sh
-_bashrc_try_source $_bashrc_config_dir/prompt.sh
+_bashrc_try_source "$_BASHRC_CONFIG_DIR/global.sh"
+_bashrc_try_source "$_BASHRC_CONFIG_DIR/aliases.sh"
+_bashrc_try_source "$_BASHRC_CONFIG_DIR/prompt.sh"
 
 # Source local configuration file
-_bashrc_try_source $_bashrc_config_dir/local.sh
+_bashrc_try_source "$_BASHRC_CONFIG_DIR/local.sh"
 
-unset -v _bashrc_config_dir
-unset -v _bashrc_colors
-unset -v _bashrc_bash_completion
-unset -v _bashrc_git_prompt
+unset -v _BASHRC_CONFIG_DIR
+unset -v _BASHRC_COLORS
+unset -v _BASHRC_BASH_COMPLETION
+unset -v _BASHRC_GIT_PROMPT
 unset -v file
 
 unset -f _bashrc_add_path
@@ -181,5 +202,6 @@ unset -f _bashrc_is_ide
 unset -f _bashrc_run_bashrc
 unset -f _bashrc_run_ssh_agent
 unset -f _bashrc_run_tmux
+unset -f _bashrc_setup_path
 unset -f _bashrc_try_exec
 unset -f _bashrc_try_source

@@ -4,12 +4,12 @@
 
 _prompt_color()
 {
-	_bashrc_has_colors && echo "\e[${_bashrc_colors[$1]}m"
+	_bashrc_has_colors && echo "\e[${_BASHRC_COLORS[$1]}m"
 }
 
 # Try to source git-prompt.sh
-for file in "${_bashrc_git_prompt[@]}"; do
-	_bashrc_try_source $file && break
+for file in "${_BASHRC_GIT_PROMPT[@]}"; do
+	_bashrc_try_source "$file" && break
 done
 
 # Configure git prompt
