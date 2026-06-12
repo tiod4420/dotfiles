@@ -79,36 +79,39 @@ _bashrc_is_ide()
 
 _bashrc_run_bashrc()
 {
-	# Check if interactive shell, should be enough according to the manual
-	[ -z "$PS1" ] && return 1
-
 	# Check if there is the difuse file
 	[ -e "$HOME/nobashrc" ] && return 1
+
+	# Check if interactive shell, should be enough according to the manual
+	[ -z "$PS1" ] && return 1
 
 	true
 }
 
 _bashrc_run_ssh_agent()
 {
+	# Check if there is the difuse file
+	[ -e "$HOME/nossh" ] && return 1
+
 	# Check if already running ssh-agent
 	[ -n "$SSH_AUTH_SOCK" ] && return 1
 
-	# Check if there is the difuse file
-	[ -e "$HOME/nossh" ] && return 1
+	# Check if we can create agent socket
+	! [ -d "$HOME/.ssh/agent" -a -x "$HOME/.ssh/agent" ] && return 1
 
 	true
 }
 
 _bashrc_run_tmux()
 {
+	# Check if there is the difuse file
+	[ -e "$HOME/notmux" ] && return 1
+
 	# Check if already running tmux
 	[ -n "$TMUX" ] && return 1
 
 	# Check if we are in an ssh session
 	[ -n "$SSH_CLIENT" -o -n "$SSH_CONNECTION" -o -n "$SSH_TTY" ] && return 1
-
-	# Check if there is the difuse file
-	[ -e "$HOME/notmux" ] && return 1
 
 	true
 }
