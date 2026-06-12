@@ -16,11 +16,8 @@ call s:CheckAndSource(s:vimrc_config_dir . "/functions.vim")
 call s:CheckAndSource(s:vimrc_config_dir . "/filetypes.vim")
 call s:CheckAndSource(s:vimrc_config_dir . "/theme.vim")
 
-" Source local configuration files
-for s:file in sort(split(expand(s:vimrc_config_dir . "/local/*.vim"), "\n"))
-  call s:CheckAndSource(s:file)
-endfor
+" Source local configuration file
+call s:CheckAndSource(s:vimrc_config_dir . "/local.vim")
 
-unlet s:file
 unlet s:vimrc_config_dir
 delfunction s:CheckAndSource
