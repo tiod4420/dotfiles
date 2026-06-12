@@ -43,12 +43,13 @@ _bashrc_add_path()
 {
 	local mode=back
 	local path
+	local new_path
 	local dir
 
 	# Push front or back of PATH
 	case "$1" in
-		-f) mode=front && shift ;;
-		-b) mode=back && shift ;;
+		-f|--front) mode=front && shift ;;
+		-b|--back) mode=back && shift ;;
 	esac
 
 	# Get path
@@ -60,11 +61,17 @@ _bashrc_add_path()
 		! [ -d "$dir" ] && continue
 
 		case ":$path:" in
-			*":$dir:"*) ;;
-			*) path=${path:+:$path}$dir ;;
-			*) path=${path:+$path:}$dir ;;
+			*:"$dir":*) ;;
+			*) new_path=${new_path:+$new_path:}$dir ;;
 		esac
 	done
+
+	# Push new path to front or back
+	if [ "$mode" = "front" ]; then
+		path=$new_path${path:+:$path}
+	else
+		path=${path:+$path:}$new_path
+	fi
 
 	echo "$path"
 }
@@ -143,7 +150,7 @@ _bashrc_setup_path()
 				eval "$(/opt/homebrew/bin/brew shellenv bash)"
 
 				# Setup PATH
-				PATH=$(_bashrc_add_path -f "$PATH" \
+				PATH=$(_bashrc_add_path --front "$PATH" \
 					"${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin" \
 					"${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin" \
 					"${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin" \
@@ -157,7 +164,7 @@ _bashrc_setup_path()
 				export PATH
 			elif _bashrc_has_cmd /opt/local/bin/port; then
 				# Setup PATH
-				PATH=$(_bashrc_add_path -f "$PATH" \
+				PATH=$(_bashrc_add_path --front "$PATH" \
 					"/opt/local/bin" \
 					"/opt/local/sbin" \
 					"/opt/local/libexec/gnubin" \
@@ -165,7 +172,7 @@ _bashrc_setup_path()
 				export PATH
 
 				# Setup MANPATH
-				MANPATH=$(_bashrc_add_path -f "$MANPATH" "/opt/local/share/man")
+				MANPATH=$(_bashrc_add_path --front "$MANPATH" "/opt/local/share/man")
 				export MANPATH
 			fi
 			;;
