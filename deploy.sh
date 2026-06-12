@@ -309,6 +309,9 @@ setup_alacritty()
 	deploy -c alacritty
 	RES=$?; [ 0 -ne $RES ] && exit 1
 
+	deploy -c -d alacritty/base16-alacritty
+	RES=$?; [ 0 -ne $RES ] && exit 1
+
 	return 0
 }
 
@@ -331,10 +334,6 @@ setup_bash()
 
 	# Deploy configuration
 	deploy -c bash
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Create local configuration directory
-	mkdir -p "${CONFIG_DIR_PATH}/bash/local"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	return 0
@@ -509,10 +508,6 @@ setup_vim()
 
 	# Deploy configuration
 	deploy .vim/config
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Create local configuration directory
-	mkdir -p "${HOME}/.vim/config/local"
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	# Deploy plugins
