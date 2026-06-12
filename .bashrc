@@ -165,10 +165,8 @@ _bashrc_try_source $_bashrc_config_dir/global.sh
 _bashrc_try_source $_bashrc_config_dir/aliases.sh
 _bashrc_try_source $_bashrc_config_dir/prompt.sh
 
-# Source local configuration files (globbing should sort alphabetically)
-for file in $_bashrc_config_dir/local/*.sh; do
-	_bashrc_try_source $file
-done
+# Source local configuration file
+_bashrc_try_source $_bashrc_config_dir/local.sh
 
 unset -v _bashrc_config_dir
 unset -v _bashrc_colors
