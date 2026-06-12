@@ -41,17 +41,32 @@ declare -a _BASHRC_GIT_PROMPT=(
 
 _bashrc_add_path()
 {
-	local path="$1"
-	local dir="$2"
+	local mode=back
+	local path
+	local dir
 
-	if [ -d "$dir" ]; then
+	# Push front or back of PATH
+	case "$1" in
+		-f) mode=front && shift ;;
+		-b) mode=back && shift ;;
+	esac
+
+	# Get path
+	path=$1
+	shift
+
+	# Add each of the directories
+	for dir in "$@"; do
+		! [ -d "$dir" ] && continue
+
 		case ":$path:" in
-			*:"$dir":*) ;;
-			*) path=$dir${path:+:$path} ;;
+			*":$dir:"*) ;;
+			*) path=${path:+:$path}$dir ;;
+			*) path=${path:+$path:}$dir ;;
 		esac
-	fi
+	done
 
-	echo $path
+	echo "$path"
 }
 
 _bashrc_has_cmd()
@@ -127,26 +142,30 @@ _bashrc_setup_path()
 				# Setup Homebrew environment
 				eval "$(/opt/homebrew/bin/brew shellenv bash)"
 
-				# Setup Homebrew GNU binary PATH (reverse order as we push front)
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/python/libexec/bin")
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/man-db/libexec/bin")
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/make/libexec/gnubin")
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/grep/libexec/gnubin")
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/gnu-tar/libexec/gnubin")
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin")
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin")
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin")
-				PATH=$(_bashrc_add_path "$PATH" "${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin")
+				# Setup PATH
+				PATH=$(_bashrc_add_path -f "$PATH" \
+					"${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin" \
+					"${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin" \
+					"${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin" \
+					"${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin" \
+					"${HOMEBREW_PREFIX}/opt/gnu-tar/libexec/gnubin" \
+					"${HOMEBREW_PREFIX}/opt/grep/libexec/gnubin" \
+					"${HOMEBREW_PREFIX}/opt/make/libexec/gnubin" \
+					"${HOMEBREW_PREFIX}/opt/man-db/libexec/bin" \
+					"${HOMEBREW_PREFIX}/opt/python/libexec/bin" \
+				)
 				export PATH
 			elif _bashrc_has_cmd /opt/local/bin/port; then
-				# Setup MacPorts PATH (reverse order as we push front)
-				PATH=$(_bashrc_add_path "$PATH" "/opt/local/libexec/gnubin")
-				PATH=$(_bashrc_add_path "$PATH" "/opt/local/sbin")
-				PATH=$(_bashrc_add_path "$PATH" "/opt/local/bin")
+				# Setup PATH
+				PATH=$(_bashrc_add_path -f "$PATH" \
+					"/opt/local/bin" \
+					"/opt/local/sbin" \
+					"/opt/local/libexec/gnubin" \
+				)
 				export PATH
 
-				# Setup MacPorts MANPATH
-				MANPATH=$(_bashrc_add_path "$MANPATH" "/opt/local/share/man")
+				# Setup MANPATH
+				MANPATH=$(_bashrc_add_path -f "$MANPATH" "/opt/local/share/man")
 				export MANPATH
 			fi
 			;;
