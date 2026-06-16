@@ -69,9 +69,7 @@ alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'
 ! _bashrc_has_cmd open && alias open='xdg-open';
 
 # clear doesn't clear tmux scrollback buffer on macOS
-case "$OSTYPE" in
-	darwin*) [ -n "$TMUX" ] && alias clear='clear && tmux clear-history' ;;
-esac
+[ "$_BASHRC_OSTYPE" = "macos" ] && alias clear='clear && tmux clear-history'
 
 # Open notes directory
 notes() {

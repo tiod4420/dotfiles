@@ -5,6 +5,15 @@
 # Bash config base directory
 _BASHRC_CONFIG_DIR=${XDG_CONFIG_HOME:-$HOME/.config}/bash
 
+# Set normalized OS name
+case "$OSTYPE" in
+	linux*) _BASHRC_OSTYPE=linux ;;
+	darwin*) _BASHRC_OSTYPE=macos ;;
+	mingw*|msys*|cygwin*) _BASHRC_OSTYPE=windows ;;
+	*bsd*) _BASHRC_OSTYPE=bsd ;;
+	*) echo "Are we GNU Hurd yet?" ;;
+esac
+
 # TTY color codes
 declare -A _BASHRC_COLORS=(
 	[reset]='0'         [bold]='1'           [black]='38;5;0'    [red]='38;5;1'
@@ -140,50 +149,47 @@ _bashrc_run_tmux()
 
 _bashrc_setup_path()
 {
-	case "$OSTYPE" in
-		darwin*)
-			# Force fresh PATH
-			[ -x /usr/libexec/path_helper ] && eval $(unset PATH && /usr/libexec/path_helper -s)
+	if [ "$_BASHRC_OSTYPE" = "macos" ]; then
+		# Force fresh PATH
+		[ -x /usr/libexec/path_helper ] && eval $(unset PATH && /usr/libexec/path_helper -s)
 
-			if _bashrc_has_cmd /opt/homebrew/bin/brew; then
-				# Setup Homebrew environment
-				eval "$(/opt/homebrew/bin/brew shellenv bash)"
+		if _bashrc_has_cmd /opt/homebrew/bin/brew; then
+			# Setup Homebrew environment
+			eval "$(/opt/homebrew/bin/brew shellenv bash)"
 
-				# Setup PATH
-				PATH=$(_bashrc_add_path --front "$PATH" \
-					"${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin" \
-					"${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin" \
-					"${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin" \
-					"${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin" \
-					"${HOMEBREW_PREFIX}/opt/gnu-tar/libexec/gnubin" \
-					"${HOMEBREW_PREFIX}/opt/grep/libexec/gnubin" \
-					"${HOMEBREW_PREFIX}/opt/make/libexec/gnubin" \
-					"${HOMEBREW_PREFIX}/opt/man-db/libexec/bin" \
-					"${HOMEBREW_PREFIX}/opt/python/libexec/bin" \
-				)
-				export PATH
-			elif _bashrc_has_cmd /opt/local/bin/port; then
-				# Setup PATH
-				PATH=$(_bashrc_add_path --front "$PATH" \
-					"/opt/local/bin" \
-					"/opt/local/sbin" \
-					"/opt/local/libexec/gnubin" \
-				)
-				export PATH
+			# Setup PATH
+			PATH=$(_bashrc_add_path --front "$PATH" \
+				"${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin" \
+				"${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin" \
+				"${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin" \
+				"${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin" \
+				"${HOMEBREW_PREFIX}/opt/gnu-tar/libexec/gnubin" \
+				"${HOMEBREW_PREFIX}/opt/grep/libexec/gnubin" \
+				"${HOMEBREW_PREFIX}/opt/make/libexec/gnubin" \
+				"${HOMEBREW_PREFIX}/opt/man-db/libexec/bin" \
+				"${HOMEBREW_PREFIX}/opt/python/libexec/bin" \
+			)
+		elif _bashrc_has_cmd /opt/local/bin/port; then
+			# Setup PATH
+			PATH=$(_bashrc_add_path --front "$PATH" \
+				"/opt/local/bin" \
+				"/opt/local/sbin" \
+				"/opt/local/libexec/gnubin" \
+			)
 
-				# Setup MANPATH
-				MANPATH=$(_bashrc_add_path --front "$MANPATH" "/opt/local/share/man")
-				export MANPATH
-			fi
-			;;
-		linux*)
-			# Nothing to do
-			;;
-		*)
-			echo "Are we GNU Hurd yet?"
-			;;
-	esac
+			# Setup MANPATH
+			MANPATH=$(_bashrc_add_path --front "$MANPATH" "/opt/local/share/man")
+		fi
 
+		# Add Firefox to PATH
+		PATH=$(_bashrc_add_path --back "$PATH" "/Applications/Firefox.app/Contents/MacOS")
+
+		# Export new PATH and MANPATH
+		export PATH
+		export MANPATH
+	fi
+
+	# Add Rust binaries to PATH
 	! _bashrc_has_cmd cargo && _bashrc_try_source "$HOME/.cargo/env"
 }
 
@@ -218,10 +224,11 @@ _bashrc_try_source "$_BASHRC_CONFIG_DIR/prompt.sh"
 # Source local configuration file
 _bashrc_try_source "$_BASHRC_CONFIG_DIR/local.sh"
 
-unset -v _BASHRC_CONFIG_DIR
-unset -v _BASHRC_COLORS
 unset -v _BASHRC_BASH_COMPLETION
+unset -v _BASHRC_COLORS
+unset -v _BASHRC_CONFIG_DIR
 unset -v _BASHRC_GIT_PROMPT
+unset -v _BASHRC_OSTYPE
 unset -v file
 
 unset -f _bashrc_add_path

@@ -47,6 +47,7 @@ export GTEST_COLOR=1
 # man colors
 export GROFF_NO_SGR=1
 export MANPAGER='less -R --use-color -Ddb -Duy -DSkw -DPkw'
+[ "$_BASHRC_OSTYPE" = "macos" ] && export MANOPT='-E ascii'
 
 # Try to source bash-completion (source it after setting LANG for MacOS)
 if [ -z "$BASH_COMPLETION_VERSINFO" ]; then
