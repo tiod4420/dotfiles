@@ -95,19 +95,6 @@ _bashrc_has_colors()
 	[ "$(tput colors 2> /dev/null || echo 0)" -ge 256 ]
 }
 
-_bashrc_is_ide()
-{
-	# Terminal is IntelliJ IDEA
-	[ -n "$INTELLIJ_ENVIRONMENT_READER" ] && return 0
-	[ "$TERMINAL_EMULATOR" = "JetBrains-JediTerm" ] && return 0
-
-	# Terminal is Visual Studio Code
-	[ -n "$VSCODE_PID" ] && return 0
-	[ "$TERM_PROGRAM" = "vscode" ] && return 0
-
-	false
-}
-
 _bashrc_run_bashrc()
 {
 	# Check if there is the difuse file
@@ -116,19 +103,13 @@ _bashrc_run_bashrc()
 	# Check if interactive shell, should be enough according to the manual
 	[ -z "$PS1" ] && return 1
 
-	true
-}
+	# Check if we are running from IntelliJ IDEA
+	[ -n "$INTELLIJ_ENVIRONMENT_READER" ] && return 1
+	[ "$TERMINAL_EMULATOR" = "JetBrains-JediTerm" ] && return 1
 
-_bashrc_run_ssh_agent()
-{
-	# Check if there is the difuse file
-	[ -e "$HOME/nossh" ] && return 1
-
-	# Check if already running ssh-agent
-	[ -n "$SSH_AUTH_SOCK" ] && return 1
-
-	# Check if we can create agent socket
-	[ -d "$HOME/.ssh/agent" -a ! -x "$HOME/.ssh/agent" ] && return 1
+	# Check if we are running from Visual Studio Code
+	[ -n "$VSCODE_PID" ] && return 1
+	[ "$TERM_PROGRAM" = "vscode" ] && return 1
 
 	true
 }
@@ -203,17 +184,14 @@ _bashrc_try_source()
 	[ -f "$1" ] && source "$1"
 }
 
-# Set PATH first to have minimal setup even if _bashrc_run_bashrc is false
+# Set PATH first, to have minimum valid environment
 _bashrc_setup_path
 
 # Check if bashrc should be sourced
 ! _bashrc_run_bashrc && return
-# Check if we are running from an IDE
-_bashrc_is_ide && return
 
-# Start ssh-agent, it should terminates when bash exit
-_bashrc_run_ssh_agent && _bashrc_try_exec ssh-agent "${SHELL:-bash}"
-# Start tmux, without attaching to a session in case we need a fresh shell
+# Check if tmux should be run
+# Not attaching to existing session in case we need a fresh shell
 _bashrc_run_tmux && _bashrc_try_exec tmux
 
 # Source configuration files
@@ -234,9 +212,7 @@ unset -v file
 unset -f _bashrc_add_path
 unset -f _bashrc_has_cmd
 unset -f _bashrc_has_colors
-unset -f _bashrc_is_ide
 unset -f _bashrc_run_bashrc
-unset -f _bashrc_run_ssh_agent
 unset -f _bashrc_run_tmux
 unset -f _bashrc_setup_path
 unset -f _bashrc_try_exec
