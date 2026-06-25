@@ -48,7 +48,6 @@ alias json-format='python3 -m json.tool'
 
 # tar aliases
 alias lstar='tar tvf'
-alias mktar='tar caf'
 alias untar='tar xvf'
 
 # Count occurences of similar lines
@@ -70,7 +69,7 @@ alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'
 # List unique lines only
 alias soun='sort | uniq'
 # Search for SyncThing conflicts
-alias syncoops='find . -name "*.sync-conflict.*"'
+alias syncoops='find $HOME -name "*.sync-conflict.*"'
 # Trim line from front and back spaces
 alias trim='sed -nE "s/^[[:space:]]*(.*[^[:space:]])[[:space:]]*$/\1/p"'
 

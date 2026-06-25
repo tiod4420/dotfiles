@@ -7,15 +7,18 @@ calc() {
 	python -c "from math import *; print($*)"
 }
 
-# Hash a file line by line
-fhash() {
-	local file=$1
-	local nl=$(wc -l "$file")
+# Highlight a pattern in a file
+highlight() {
+	local pattern=$1
+	shift
+	# Match pattern, or end of line, so only pattern is colored
+	grep "\($pattern\)\|$" "$@"
+}
 
-	# Compute SHA256 from start to i^th line
-	for i in $(seq ${nl:-0}); do
-		head -n $i "$file" | sha256sum
-	done
+# Make a .tar.gz archive from a list of anything
+mktar() {
+	local file=$(basename "$1")
+	tar czvf $file.tar.gz "$@"
 }
 
 # Open notes directory
@@ -40,10 +43,13 @@ plot() {
 	gnuplot -e "set terminal $terminal; plot '$file' using 0:1 with linespoints;"
 }
 
-# rg --passthru but with grep
-cgrep() {
-	local pattern=$1
-	shift
-	# Match pattern, or end of line, so only pattern is colored
-	grep "\($pattern\)\|$" "$@"
+# Hash a file line by line
+shaline() {
+	local file=$1
+	local nl=$(wc -l < "$file")
+
+	# Compute SHA256 from start to i^th line
+	for i in $(seq ${nl:-0}); do
+		head -n $i "$file" | sha256sum | cut -d' ' -f1
+	done
 }
