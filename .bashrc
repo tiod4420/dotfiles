@@ -197,6 +197,7 @@ _bashrc_run_tmux && _bashrc_try_exec tmux
 # Source configuration files
 _bashrc_try_source "$_BASHRC_CONFIG_DIR/global.sh"
 _bashrc_try_source "$_BASHRC_CONFIG_DIR/aliases.sh"
+_bashrc_try_source "$_BASHRC_CONFIG_DIR/functions.sh"
 _bashrc_try_source "$_BASHRC_CONFIG_DIR/prompt.sh"
 
 # Source local configuration file

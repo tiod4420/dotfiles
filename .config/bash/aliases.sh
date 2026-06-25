@@ -23,6 +23,7 @@ alias ip='ip --color=auto'
 
 # Search aliases
 alias ff='find . -name'
+alias fh='history | grep'
 alias ft='grep -RIi --exclude-dir={.git,build}'
 alias todo='ft TODO'
 
@@ -56,6 +57,8 @@ alias count='(sort | uniq -c | sort -nr)'
 alias dump='xxd -g 1'
 # Filter file to keep only last extension
 alias fileext='sed -nE "s/^.*[^/]\.([^./]+)$/\1/p"'
+# Git diff out of repository
+alias gdiff='git diff --no-index'
 # List history commands without prefix number
 alias hist='history | sed -nE "s/^[[:space:]]*[0-9]+[[:space:]]+//p"'
 # Map list of arguments
@@ -64,26 +67,15 @@ alias map='xargs -n1'
 alias nodupes='(cat -n | sort -k 2 -u | sort -k 1 -n | cut -f 2-)'
 # ROT13 data
 alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'
+# List unique lines only
+alias soun='sort | uniq'
+# Search for SyncThing conflicts
+alias syncoops='find . -name "*.sync-conflict.*"'
+# Trim line from front and back spaces
+alias trim='sed -nE "s/^[[:space:]]*(.*[^[:space:]])[[:space:]]*$/\1/p"'
 
 # Normalize open across Linux and OSX
 ! _bashrc_has_cmd open && alias open='xdg-open';
 
 # clear doesn't clear tmux scrollback buffer on macOS
 [ "$_BASHRC_OSTYPE" = "macos" ] && alias clear='clear && tmux clear-history'
-
-# Open notes directory
-notes() {
-	local dir=${NOTES_DIR:-$HOME}
-	local file=${1:-todo}
-
-	if [ ! -f "$dir/$file" ]; then
-		# Try to lowercase the name and add .md extension
-		local new_file=${file,,?}.md
-
-		if [ -f "$dir/$new_file" ]; then
-			file=$new_file
-		fi
-	fi
-
-	vim "$dir/$file"
-}
