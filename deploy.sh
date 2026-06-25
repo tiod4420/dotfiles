@@ -280,6 +280,9 @@ version_get()
 		ssh)
 			ssh -V 2>&1 | sed -E "s/.*OpenSSH_(${d})\.(${d})p(${d}).*/\1.\2p\3/"
 			;;
+		tldr)
+			tldr --version  | sed -E "s/tealdeer[[:space:]]*(${d}\.${d}\.${d})/\1/"
+			;;
 		tmux)
 			tmux -V | sed -E "s/.*tmux (${d})\.(${d}).*/\1.\2/"
 			;;
@@ -364,7 +367,7 @@ setup_gdb()
 	local RES
 	local version
 
-	echo -n "Deploying gdb configuration"
+	echo -n "Deploying gdb configuration -- "
 
 	# Get version
 	version=$(version_get gdb)
@@ -437,6 +440,24 @@ setup_ssh()
 
 	# Set file permissions
 	chmod 600 ${HOME}/.ssh/*
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	return 0
+}
+
+setup_tealdeer()
+{
+	local RES
+	local version
+
+	echo -n "Deploying tealdeer configuration -- "
+
+	# Get version
+	version=$(version_get tldr)
+	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
+
+	# Deploy configuration
+	deploy -c tealdeer
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	return 0
@@ -563,6 +584,10 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 setup_ssh
+RES=$?; [ 0 -ne $RES ] && exit 1
+echo ""
+
+setup_tealdeer
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 

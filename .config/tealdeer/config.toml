@@ -1,0 +1,20 @@
+# Automatic updates
+[updates]
+auto_update = true
+
+# Style
+[style.description]
+bold = true
+
+[style.command_name]
+foreground = "yellow"
+
+[style.example_text]
+foreground = "cyan"
+bold = true
+
+[style.example_code]
+foreground = "magenta"
+
+[style.example_variable]
+foreground = "white"
