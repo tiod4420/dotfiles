@@ -6,18 +6,16 @@
 	oops = commit --amend --no-edit
 	# Amend last commit message
 	reword = commit --amend --only
-	# Amend authorship of the last commit
-	reauthor = oops --only --reset-author
 
 	## Diff
 	# Diff summary between two commits
 	changes = diff --compact-summary
-	# Diff out of a working tree
-	difi = diff --no-index
 	# Diff staged files
 	staged = diff --staged
 
 	## Log
+	# Show number of commits per month
+	activity = !"f() { git log --format=%ad --date=format:%Y-%m ${1:+--since=\"$1\"} | sort | uniq -c; }; f"
 	# Log commits as a graph
 	graph = log --graph --oneline
 	# Log only commit hashes
@@ -34,16 +32,52 @@
 	simple = graph --simplify-by-decoration --simplify-merges
 	# Log summary of commits
 	summary = log --compact-summary
+	# Log what files are been edited the most
+	whatsup = !"f() { git log --format= --name-only ${1:+--since=\"$1\"} | sort | uniq -c | sort -nr; }; f"
+
+	## Rebase
+	# Rebase and auto-squash fixup commits
+	fixup = rebase --autosquash
+	# Rebase and re-author commits
+	reauthor = rebase --exec='git oops --only --reset-author'
+	# Rebase and re-sign commits
+	resign = rebase --exec='git oops --only --gpg-sign'
+
+	## Reset
+	# Hard reset
+	hard = reset --hard
+	# Soft reset
+	soft = reset --soft
 
 	## Show
-	# Show commit of reference
-	desc  = rev-list --max-count=1 --oneline
 	# Show HEAD information
 	head = show HEAD
 	# Show summary of given commit
 	info = show --compact-summary
 	# Show short hash of object
 	sha = show --no-patch --format='%h'
+
+	## Authorship
+	# List authors
+	authors = shortlog --summary --numbered --email --group=author
+	# List committers
+	committers = shortlog --summary --numbered --email --group=committer
+	# List authors (again)
+	who = authors
+	# List current author
+	whoami = !"f() { echo \"$(git config user.name) <$(git config user.email)>\"; }; f"
+	# Set local author
+	su = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
+
+	## GPG signature
+	# List commits as a graph, with their GPG signature status
+	gpg = graph --pretty=gpg
+	# Amend commit to sign it with GPG
+	sign = oops --only --gpg-sign
+	# Amend commit to remove GPG signature
+	unsign = oops --only --no-gpg-sign
+	# Verify GPG signature of a commit or a tag
+	verify = !"f() { case $(git cat-file -t \"$1\") in commit) git verify-commit -v \"$1\";; tag) git verify-tag -v \"$1\";; esac; }; f"
 
 	## Lists
 	# List aliases
@@ -57,13 +91,11 @@
 	# List tags sorted by refname
 	tags = tag --list --sort=v:refname --format='%(align:8)%(refname:short)%(end) %(color:green)(%(objecttype)) %(color:yellow)%(objectname:short) %(color:default)%(subject)'
 
-	## Authorship
-	# List authors
-	who = shortlog --summary --email --numbered
-	# List current author
-	whoami = !"f() { echo \"$(git config user.name) <$(git config user.email)>\"; }; f"
-	# Set local author
-	su = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
+	## Undo
+	# Reset last N commits
+	undo = !"f() { git reset HEAD~$1; }; f"
+	# Restore staged changes of a file
+	unstage = restore --staged
 
 	## WIP commits
 	# Create a WIP commit
@@ -71,38 +103,16 @@
 	# Restore a WIP commit
 	unwip = !"f() { git show --no-patch --format='%s' | grep -qE '^WIP( -- .*)?$' && git undo; }; f"
 
-	## GPG signature
-	# List commits as a graph, with their GPG signature status
-	gpg = graph --pretty=gpg
-	# Amend commit to sign it with GPG
-	sign = oops --only --gpg-sign
-	# Amend commit to remove GPG signature
-	unsign = oops --only --no-gpg-sign
-	# Rebase commits and re-sign them
-	resign = rebase --exec='git sign'
-	# Verify GPG signature of a commit or a tag
-	verify = !"f() { case $(git cat-file -t \"$1\") in commit) git verify-commit -v \"$1\";; tag) git verify-tag -v \"$1\";; esac; }; f"
-
-	## Undo
-	# Reset last N commits
-	undo = !"f() { git reset HEAD~$1; }; f"
-	# Restore staged changes of a file
-	unstage = restore --staged
-
 	## Misc
+	# Show commit of reference
+	desc  = rev-list --max-count=1 --oneline
 	# Mirror repository to backup remote
-	backup = !"f() { git push --mirror ${1:-backup}; }; f"
-	# Clone with all submodules
-	clo = clone --recurse-submodules
-	# Automatic rebase and squash of fixup commits
-	fixup = rebase --autosquash
-	# Show ignored files
-	ignored = status --ignored
+	mirror = !"f() { git push --mirror ${1:-backup}; }; f"
 	# Print git root directory
 	root = rev-parse --show-toplevel
 	# Squash commits since given revision
 	squash = !"f() { git reset --hard $1 && git merge --squash ORIG_HEAD && git commit; }; f"
-	# Update all submodules
-	sup = submodule update --init --recursive
 	# Pop most recent stash
 	unstash = stash pop
+	# Show ignored files
+	untracked = status --ignored

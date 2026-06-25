@@ -6,4 +6,4 @@
 	path = ./aliases
 	path = ./colors
 	# Source local configuration file
-	path = ./config.local
+	path = ./local
