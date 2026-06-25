@@ -69,12 +69,13 @@ alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'
 # List unique lines only
 alias soun='sort | uniq'
 # Search for SyncThing conflicts
-alias syncoops='find $HOME -name "*.sync-conflict.*"'
+alias syncoops='[ -d "$SYNCTHING_DIR" ] && find $SYNCTHING_DIR -name "*.sync-conflict.*"'
 # Trim line from front and back spaces
 alias trim='sed -nE "s/^[[:space:]]*(.*[^[:space:]])[[:space:]]*$/\1/p"'
 
 # Normalize open across Linux and OSX
 ! _bashrc_has_cmd open && alias open='xdg-open';
+
 
 # clear doesn't clear tmux scrollback buffer on macOS
 [ "$_BASHRC_OSTYPE" = "macos" ] && alias clear='clear && tmux clear-history'
