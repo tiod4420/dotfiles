@@ -7,18 +7,20 @@ calc() {
 	python -c "from math import *; print($*)"
 }
 
-# Highlight a pattern in a file
-highlight() {
-	local pattern=$1
-	shift
-	# Match pattern, or end of line, so only pattern is colored
-	grep "\($pattern\)\|$" "$@"
+# Search for files without NL at end of file
+crlf() {
+	find "${1:-.}" -type f -exec grep -q "$(printf \\r)" {} \; -print
 }
 
 # Make a .tar.gz archive from a list of anything
 mktar() {
 	local file=$(basename "$1")
 	tar czvf $file.tar.gz "$@"
+}
+
+# Search for files without NL at end of file
+nonl() {
+	find "${1:-.}" -type f -not -exec sh -c '[ -z "$(tail -c1 $0)" ]' {} \; -print
 }
 
 # Open notes directory
