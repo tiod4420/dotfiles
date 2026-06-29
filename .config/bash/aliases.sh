@@ -67,7 +67,7 @@ alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'
 # List unique lines only
 alias soun='sort | uniq'
 # Search for SyncThing conflicts
-alias syncoops='[ -d "$SYNCTHING_DIR" ] && find $SYNCTHING_DIR -name "*.sync-conflict.*"'
+alias syncoops='[ -d "$SYNCTHING_DIR" ] && find $SYNCTHING_DIR -name "*.sync-conflict*"'
 # Search for TODOs
 alias todo='ft "\<TODO\>"'
 # Trim line from front and back spaces
