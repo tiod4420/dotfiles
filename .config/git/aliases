@@ -89,7 +89,7 @@
 	# List stashes
 	stashes = stash list
 	# List tags sorted by refname
-	tags = tag --list --sort=v:refname --format='%(align:8)%(refname:short)%(end) %(color:green)(%(objecttype)) %(color:yellow)%(objectname:short) %(color:default)%(subject)'
+	tags = tag --list --sort=-v:refname --format='%(align:8)%(refname:short)%(end) %(color:green)(%(objecttype)) %(color:yellow)%(objectname:short) %(color:default)%(subject)'
 
 	## Undo
 	# Reset last N commits
