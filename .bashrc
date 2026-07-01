@@ -85,6 +85,25 @@ _bashrc_add_path()
 	echo "$path"
 }
 
+_bashrc_exec_tmux()
+{
+	# Skip if tmux is not installed
+	! _bashrc_has_cmd tmux && return
+
+	# Skip if there is the sentinel defuse file
+	[ -e "$HOME/notmux" ] && return
+
+	# Skip if already running tmux
+	[ -n "$TMUX" ] && return
+
+	# Skip if inside an SSH session
+	[ -n "$SSH_CLIENT" -o -n "$SSH_CONNECTION" -o -n "$SSH_TTY" ] && return
+
+	# Exec tmux
+	# Not attaching to existing session in case a fresh terminal is needed
+	exec tmux
+}
+
 _bashrc_has_cmd()
 {
 	command -v "$1" &> /dev/null
@@ -95,37 +114,24 @@ _bashrc_has_colors()
 	[ "$(tput colors 2> /dev/null || echo 0)" -ge 256 ]
 }
 
-_bashrc_run_bashrc()
+_bashrc_is_enabled()
 {
-	# Check if there is the difuse file
+	# Skip if there is the sentinel defuse file
 	[ -e "$HOME/nobashrc" ] && return 1
 
-	# Check if interactive shell, should be enough according to the manual
+	# Skip if not interactive shell
+	# Bash sets PS1 if the shell is interactive, according to manual
 	[ -z "$PS1" ] && return 1
 
-	# Check if we are running from IntelliJ IDEA
+	# Skip if running from IntelliJ IDEA
 	[ -n "$INTELLIJ_ENVIRONMENT_READER" ] && return 1
 	[ "$TERMINAL_EMULATOR" = "JetBrains-JediTerm" ] && return 1
 
-	# Check if we are running from Visual Studio Code
+	# Skip if running from Visual Studio Code
 	[ -n "$VSCODE_PID" ] && return 1
 	[ "$TERM_PROGRAM" = "vscode" ] && return 1
 
-	true
-}
-
-_bashrc_run_tmux()
-{
-	# Check if there is the difuse file
-	[ -e "$HOME/notmux" ] && return 1
-
-	# Check if already running tmux
-	[ -n "$TMUX" ] && return 1
-
-	# Check if we are in an ssh session
-	[ -n "$SSH_CLIENT" -o -n "$SSH_CONNECTION" -o -n "$SSH_TTY" ] && return 1
-
-	true
+	return 0
 }
 
 _bashrc_setup_path()
@@ -174,11 +180,6 @@ _bashrc_setup_path()
 	! _bashrc_has_cmd cargo && _bashrc_try_source "$HOME/.cargo/env"
 }
 
-_bashrc_try_exec()
-{
-	_bashrc_has_cmd "$1" && exec "$@"
-}
-
 _bashrc_try_source()
 {
 	[ -f "$1" ] && source "$1"
@@ -187,21 +188,19 @@ _bashrc_try_source()
 # Set PATH first, to have minimum valid environment
 _bashrc_setup_path
 
-# Check if bashrc should be sourced
-! _bashrc_run_bashrc && return
+if _bashrc_is_enabled; then
+	# Exec tmux if needed
+	_bashrc_exec_tmux
 
-# Check if tmux should be run
-# Not attaching to existing session in case we need a fresh shell
-_bashrc_run_tmux && _bashrc_try_exec tmux
+	# Source configuration files
+	_bashrc_try_source "$_BASHRC_CONFIG_DIR/global.sh"
+	_bashrc_try_source "$_BASHRC_CONFIG_DIR/aliases.sh"
+	_bashrc_try_source "$_BASHRC_CONFIG_DIR/functions.sh"
+	_bashrc_try_source "$_BASHRC_CONFIG_DIR/prompt.sh"
 
-# Source configuration files
-_bashrc_try_source "$_BASHRC_CONFIG_DIR/global.sh"
-_bashrc_try_source "$_BASHRC_CONFIG_DIR/aliases.sh"
-_bashrc_try_source "$_BASHRC_CONFIG_DIR/functions.sh"
-_bashrc_try_source "$_BASHRC_CONFIG_DIR/prompt.sh"
-
-# Source local configuration file
-_bashrc_try_source "$_BASHRC_CONFIG_DIR/local.sh"
+	# Source local configuration file
+	_bashrc_try_source "$_BASHRC_CONFIG_DIR/local.sh"
+fi
 
 unset -v _BASHRC_BASH_COMPLETION
 unset -v _BASHRC_COLORS
@@ -211,10 +210,9 @@ unset -v _BASHRC_OSTYPE
 unset -v file
 
 unset -f _bashrc_add_path
+unset -f _bashrc_exec_tmux
 unset -f _bashrc_has_cmd
 unset -f _bashrc_has_colors
-unset -f _bashrc_run_bashrc
-unset -f _bashrc_run_tmux
+unset -f _bashrc_is_enabled
 unset -f _bashrc_setup_path
-unset -f _bashrc_try_exec
 unset -f _bashrc_try_source
