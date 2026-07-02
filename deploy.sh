@@ -374,11 +374,12 @@ setup_gdb()
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
 	# Deploy configuration
+	deploy -c gdb
+	RES=$?; [ 0 -ne $RES ] && return 1
+
 	if version_lt "$version" 11.1; then
-		deploy_target .config/gdb/gdbinit "${HOME}/.gdbinit"
-		RES=$?; [ 0 -ne $RES ] && return 1
-	else
-		deploy -c gdb
+		# XDG_CONFIG_HOME not supported before 11.1
+		ln -s $CONFIG_DIR_PATH/gdb/gdbinit $HOME/.gdbinit
 		RES=$?; [ 0 -ne $RES ] && return 1
 	fi
 
@@ -438,8 +439,8 @@ setup_ssh()
 	deploy .ssh
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Set file permissions
-	chmod 600 ${HOME}/.ssh/*
+	# Set directory permissions
+	chmod 700 ${HOME}/.ssh/
 	RES=$?; [ 0 -ne $RES ] && return 1
 
 	return 0
