@@ -57,38 +57,49 @@ declare -a _BASHRC_GIT_PROMPT=(
 )
 
 _bashrc_add_path() {
-	local mode=back
+	local mode=pathfront
 	local path
 	local new_path
 	local dir
 
-	# Push front or back of PATH
+	# Add to PATH or MANPATH, front or back
 	case "$1" in
-		-f|--front) mode=front && shift ;;
-		-b|--back) mode=back && shift ;;
+		-p|--path) mode=pathfront && shift ;;
+		-P|--PATH) mode=pathback && shift ;;
+		-m|--manpath) mode=manfront && shift ;;
+		-M|--MANPATH) mode=manback && shift ;;
 	esac
 
-	# Get path
-	path=$1 && shift
+	# Get original path
+	case "$mode" in
+		path*) path=$PATH ;;
+		man*) path=$MANPATH ;;
+	esac
 
-	# Add each of the directories
+	# Add directories to new path
 	for dir in "$@"; do
 		! [ -d "$dir" ] && continue
 
 		case ":$path:" in
 			*:"$dir":*) ;;
-			*) new_path=${new_path:+$new_path:}$dir ;;
+			*) new_path+=":$dir" ;;
 		esac
 	done
 
-	# Push new path to front or back
-	if [ "$mode" = "front" ]; then
-		path=$new_path${path:+:$path}
-	else
-		path=${path:+$path:}$new_path
-	fi
+	# Early return if nothing to add
+	[ -z "$new_path" ] && return
 
-	echo "$path"
+	# Update front or back
+	case "$mode" in
+		*front) path="${new_path#:}:$path" ;;
+		*back) path="$path:${new_path#:}" ;;
+	esac
+
+	# Update PATH or MANPATH
+	case "$mode" in
+		path*) PATH=$path ;;
+		man*) MANPATH=$path ;;
+	esac
 }
 
 _bashrc_exec_tmux() {
@@ -146,7 +157,7 @@ _bashrc_setup_path() {
 			eval "$(/opt/homebrew/bin/brew shellenv bash)"
 
 			# Setup PATH
-			PATH=$(_bashrc_add_path --front "$PATH" \
+			_bashrc_add_path --path  \
 				"${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin" \
 				"${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin" \
 				"${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin" \
@@ -155,26 +166,17 @@ _bashrc_setup_path() {
 				"${HOMEBREW_PREFIX}/opt/grep/libexec/gnubin" \
 				"${HOMEBREW_PREFIX}/opt/make/libexec/gnubin" \
 				"${HOMEBREW_PREFIX}/opt/man-db/libexec/bin" \
-				"${HOMEBREW_PREFIX}/opt/python/libexec/bin" \
-			)
+				"${HOMEBREW_PREFIX}/opt/python/libexec/bin"
 		elif _bashrc_has_cmd /opt/local/bin/port; then
-			# Setup PATH
-			PATH=$(_bashrc_add_path --front "$PATH" \
-				"/opt/local/bin" \
-				"/opt/local/sbin" \
-				"/opt/local/libexec/gnubin" \
-			)
-
-			# Setup MANPATH
-			MANPATH=$(_bashrc_add_path --front "$MANPATH" "/opt/local/share/man")
+			# Setup PATH and MANPATH
+			_bashrc_add_path --path "/opt/local/bin" "/opt/local/sbin" "/opt/local/libexec/gnubin"
+			_bashrc_add_path --manpath "/opt/local/share/man"
+			# Export MANPATH in case it wasn't yet
+			export MANPATH
 		fi
 
 		# Add Firefox to PATH
-		PATH=$(_bashrc_add_path --back "$PATH" "/Applications/Firefox.app/Contents/MacOS")
-
-		# Export new PATH and MANPATH
-		export PATH
-		export MANPATH
+		_bashrc_add_path --PATH "/Applications/Firefox.app/Contents/MacOS"
 	fi
 
 	# Add Rust binaries to PATH
