@@ -104,6 +104,8 @@
 	unwip = !"f() { git show --no-patch --format='%s' | grep -qE '^WIP( -- .*)?$' && git undo; }; f"
 
 	## Misc
+	# Find branches containing commit
+	contains = branch --all --contains
 	# Show commit of reference
 	desc  = rev-list --max-count=1 --oneline
 	# Mirror repository to backup remote
