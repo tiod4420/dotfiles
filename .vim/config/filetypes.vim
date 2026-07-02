@@ -85,12 +85,12 @@ augroup Development
   call <SID>AddDevelopment("rust", '//', {
         \ "files": "*.lalrpop",
         \ "colorcolumn":"80,120",
-        \ "formatprg": "rustfmt",
         \ "extra": "nnoremap <buffer> <Leader>q :RustFmt<CR>",
         \ })
 
   call <SID>AddDevelopment("python", '#', {
         \ "files": "*.sage",
+        \ "formatprg": "ruff\\ format\\ -",
         \ "expandtab": { "shiftwidth": 4, "tabstop": 4 },
         \ "keywordprg": "pydoc",
         \ })
@@ -110,7 +110,7 @@ augroup Development
 
   call <SID>AddDevelopment("asm,nasm", ';')
   call <SID>AddDevelopment("sh,bash", '#')
-  call <SID>AddDevelopment("tex", '%', { "expandtab": { "shiftwidth": 4, "tabstop": 4 } })
+  call <SID>AddDevelopment("tex", '%', { "expandtab": { "shiftwidth": 2, "tabstop": 2 } })
   call <SID>AddDevelopment("vim", '"')
   call <SID>AddDevelopment("cmake,make,tmux,toml", '#')
 augroup end

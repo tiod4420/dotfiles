@@ -26,11 +26,14 @@ set hlsearch
 " Highlight matches while typing
 if has("reltime") | set incsearch | endif
 
+" Search ignores case
+set ignorecase
+" Search ignores case only if lowecase letters only
+set smartcase
+
 " Enable auto-indentation
 set autoindent
 " Enable backspacing over everything (insert mode)
 set backspace=indent,eol,start
-" Set completion options
-set completeopt=menuone,preview,longest
 " Disable octal number recognition
 set nrformats-=octal
