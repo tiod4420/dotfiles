@@ -12,6 +12,21 @@ crlf() {
 	find "${1:-.}" -type f -exec grep -q "$(printf \\r)" {} \; -print
 }
 
+# Convert Epoch timestamp to date or reverse
+epoch() {
+	local mode=epoch
+
+	# Parse parameters
+	case "$1" in
+		-r|--revert) mode=revert && shift ;;
+	esac
+
+	case "$mode" in
+		epoch) date --date "${1:-now}" +%s ;;
+		revert) date --date "@${1:-0}" +%FT%T ;;
+	esac
+}
+
 # Make a .tar.gz archive from a list of anything
 mktar() {
 	local file=$(basename "$1")
@@ -35,6 +50,11 @@ notes() {
 	fi
 
 	vim "$dir/$file"
+}
+
+# Display date in sort of ISO 8601 format
+now() {
+	date --date "${1:-now}" +%FT%T
 }
 
 # Plot data with gnuplot
