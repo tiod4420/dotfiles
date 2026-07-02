@@ -188,6 +188,31 @@ _bashrc_setup_path()
 	! _bashrc_has_cmd cargo && _bashrc_try_source "$HOME/.cargo/env"
 }
 
+_bashrc_ssh_agent()
+{
+	local file=${XDG_RUNTIME_DIR:-$HOME/.ssh}/ssh-agent.env
+
+	# Skip if ssh is not installed
+	! _bashrc_has_cmd ssh && return
+
+	# Skip if there is the sentinel defuse file
+	[ -e "$HOME/nossh" ] && return
+
+	# Skip if SSH_AUTH_SOCK is already set
+	[ -e "$SSH_AUTH_SOCK" ] && return
+
+	# Skip if no SSH key is available
+	! find "$HOME/.ssh" -type f -name "id_*" | grep -q . && return
+
+	# Start the ssh-agent
+	if ! pgrep -u "$USER" ssh-agent > /dev/null; then
+		ssh-agent -t 1h > "$file"
+	fi
+
+	# Source the ssh-agent environment variables
+	_bashrc_try_source "$file" > /dev/null
+}
+
 _bashrc_try_source()
 {
 	[ -f "$1" ] && source "$1"
@@ -199,6 +224,9 @@ _bashrc_setup_path
 if _bashrc_is_enabled; then
 	# Exec tmux if needed
 	_bashrc_exec_tmux
+
+	# Start ssh-agent
+	_bashrc_ssh_agent
 
 	# Source configuration files
 	_bashrc_try_source "$_BASHRC_CONFIG_DIR/global.sh"
@@ -224,4 +252,5 @@ unset -f _bashrc_has_cmd
 unset -f _bashrc_has_colors
 unset -f _bashrc_is_enabled
 unset -f _bashrc_setup_path
+unset -f _bashrc_ssh_agent
 unset -f _bashrc_try_source
