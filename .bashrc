@@ -56,8 +56,7 @@ declare -a _BASHRC_GIT_PROMPT=(
 	/opt/local/share/git/contrib/completion/git-prompt.sh
 )
 
-_bashrc_add_path()
-{
+_bashrc_add_path() {
 	local mode=back
 	local path
 	local new_path
@@ -70,8 +69,7 @@ _bashrc_add_path()
 	esac
 
 	# Get path
-	path=$1
-	shift
+	path=$1 && shift
 
 	# Add each of the directories
 	for dir in "$@"; do
@@ -93,8 +91,7 @@ _bashrc_add_path()
 	echo "$path"
 }
 
-_bashrc_exec_tmux()
-{
+_bashrc_exec_tmux() {
 	# Skip if tmux is not installed
 	! _bashrc_has_cmd tmux && return
 
@@ -112,18 +109,15 @@ _bashrc_exec_tmux()
 	exec tmux
 }
 
-_bashrc_has_cmd()
-{
+_bashrc_has_cmd() {
 	command -v "$1" &> /dev/null
 }
 
-_bashrc_has_colors()
-{
+_bashrc_has_colors() {
 	[ "$(tput colors 2> /dev/null || echo 0)" -ge 256 ]
 }
 
-_bashrc_is_enabled()
-{
+_bashrc_is_enabled() {
 	# Skip if there is the sentinel defuse file
 	[ -e "$HOME/nobashrc" ] && return 1
 
@@ -142,8 +136,7 @@ _bashrc_is_enabled()
 	return 0
 }
 
-_bashrc_setup_path()
-{
+_bashrc_setup_path() {
 	if [ "$_BASHRC_OSTYPE" = "macos" ]; then
 		# Force fresh PATH
 		[ -x /usr/libexec/path_helper ] && eval $(unset PATH && /usr/libexec/path_helper -s)
@@ -188,8 +181,7 @@ _bashrc_setup_path()
 	! _bashrc_has_cmd cargo && _bashrc_try_source "$HOME/.cargo/env"
 }
 
-_bashrc_ssh_agent()
-{
+_bashrc_ssh_agent() {
 	local file=${XDG_RUNTIME_DIR:-$HOME/.ssh}/ssh-agent.env
 
 	# Skip if ssh is not installed
@@ -213,8 +205,7 @@ _bashrc_ssh_agent()
 	_bashrc_try_source "$file" > /dev/null
 }
 
-_bashrc_try_source()
-{
+_bashrc_try_source() {
 	[ -f "$1" ] && source "$1"
 }
 

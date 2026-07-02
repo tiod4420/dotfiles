@@ -2,8 +2,7 @@
 #
 # Prompt settings
 
-_prompt_color()
-{
+_prompt_color() {
 	local color
 	local text
 
@@ -20,8 +19,7 @@ _prompt_color()
 	fi
 }
 
-_prompt_git()
-{
+_prompt_git() {
 	_bashrc_has_cmd __git_ps1 && echo '$(__git_ps1)'
 }
 
