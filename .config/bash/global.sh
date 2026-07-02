@@ -56,4 +56,10 @@ if [ -z "$BASH_COMPLETION_VERSINFO" ]; then
 	done
 fi
 
+# Android SDK path
+for dir in "${_BASHRC_ANDROID_HOME[@]}"; do
+	[ -d "$dir" ] && export ANDROID_HOME=$dir && break
+done
+
 unset -v file
+unset -v dir

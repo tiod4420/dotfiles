@@ -14,6 +14,14 @@ case "$OSTYPE" in
 	*) echo "Are we GNU Hurd yet?" ;;
 esac
 
+# Android SDK paths
+declare -a _BASHRC_ANDROID_HOME=(
+	# Linux
+	$HOME/.local/android/sdk
+	# macOS
+	$HOME/Library/Android/sdk
+)
+
 # TTY color codes
 declare -A _BASHRC_COLORS=(
 	[reset]='0'         [bold]='1'           [black]='38;5;0'    [red]='38;5;1'
@@ -200,14 +208,15 @@ if _bashrc_is_enabled; then
 
 	# Source local configuration file
 	_bashrc_try_source "$_BASHRC_CONFIG_DIR/local.sh"
+	_bashrc_try_source "$_BASHRC_CONFIG_DIR/secrets.sh"
 fi
 
+unset -v _BASHRC_ANDROID_HOME
 unset -v _BASHRC_BASH_COMPLETION
 unset -v _BASHRC_COLORS
 unset -v _BASHRC_CONFIG_DIR
 unset -v _BASHRC_GIT_PROMPT
 unset -v _BASHRC_OSTYPE
-unset -v file
 
 unset -f _bashrc_add_path
 unset -f _bashrc_exec_tmux
