@@ -180,7 +180,7 @@ _bashrc_setup_path() {
 	fi
 
 	# Add Rust binaries to PATH
-	! _bashrc_has_cmd cargo && _bashrc_try_source "$HOME/.cargo/env"
+	_bashrc_try_source "$HOME/.cargo/env"
 }
 
 _bashrc_ssh_agent() {
