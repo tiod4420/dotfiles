@@ -1,540 +1,235 @@
 #!/usr/bin/env bash
+#
+# Deploy script for dotfiles
 
-shopt -s extglob
+set -Eeuo pipefail
 
-# Constants
+# XDG config directory
+XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
-CONFIG_DIR_PATH=${XDG_CONFIG_HOME:-${HOME}/.config}
-DRY_RUN="false"
-
-# Util functions
-
+# Deploy a file or a directory to its location
 deploy() {
-	local RES
-	local OPTARG
-	local OPTIND
-	local check="f"
-	local is_config="false"
-	local target
-	local src_dir
-	local dst_dir
-	local src
-	local dst
+	local src=$1
+	local file
+	local file2
 
-	# Get parameters
-	while getopts ":cd" opts; do
-		case "$opts" in
-			c) is_config="true";;
-			d) check="d";;
-			\?) echo "Invalid option: -${OPTARG}" && exit 1;;
-		esac
-	done
-
-	shift $((OPTIND - 1))
-
-	[ -n "$1" ] && target="$1" || return 1
-
-	# Set source and destination directories
-	if [ "true" = "$is_config" ]; then
-		src_dir=".config/${target}"
-		dst_dir="${CONFIG_DIR_PATH}/${target}"
+	if [ -f "$src" ]; then
+		# Deploy single file
+		deploy_target "$src"
 	else
-		src_dir="${target}"
-		dst_dir="${HOME}/${target}"
+		# Deploy a directory
+		for file in $src/*; do
+			if [ -f "$file" ]; then
+				# Single files
+				deploy_target "$file"
+			else
+				# Recurse one level in the directory
+				for file2 in $file/*; do
+					deploy_target "$file2"
+				done
+			fi
+		done
 	fi
-
-	# Create directory
-	mkdir -p "${dst_dir}"
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Deploy files
-	for src in ${src_dir}/*; do
-		# Check if source is file or dir
-		! [ -${check} "$src" ] && continue
-
-		# Set destination file
-		if [ "true" = "$is_config" ]; then
-			dst="${dst_dir}/${src##*/}"
-		else
-			dst="${HOME}/${src}"
-		fi
-
-		# Deploy
-		deploy_target "$src" "$dst"
-		RES=$?; [ 0 -ne $RES ] && return 1
-	done
 
 	return 0
 }
 
+# Create a symlink if destination doesn't exists
+deploy_symlink() {
+	! [ -e "$1" ] && ln -s "$1" "$2"
+}
+
+# Deploy a source file/directory to a destination
+# If destination exists, confirm from user input
 deploy_target() {
-	local RES
-	local src
+	local src=$1
 	local dst
+	local parent
+	local action
+	local prompt
 	local choice
 
-	# Get parameters
-	[ -n "$1" ] && src="$1" || return 1
-	[ -n "$2" ] && dst="$2" || dst="${HOME}/${src}"
+	! [ -e "$src" ] && return 1
+
+	# Set the destination to HOME or XDG_CONFIG_HOME
+	case "$src" in
+		.config/*) dst=${src/#".config/"/"$XDG_CONFIG_HOME/"} ;;
+		*) dst="$HOME/$src" ;;
+	esac
 
 	# Deploy file
-	if ! target_exists "$src" "$dst"; then
-		# Destination does not exist
-		file_copy "$src" "$dst"
-		RES=$?; [ 0 -ne $RES ] && return 1
+	if ! [ -e "$dst" ]; then
+		# Destination does not exist, create parent directory and copy source
+		parent=$(dirname "$dst")
+		! [ -e "$parent" ] && mkdir -p "$parent"
+		cp -r "$src" "$dst"
+		print_status "$dst" "DEPLOYED"
+	elif git diff --no-index --quiet "$dst" "$src" &> /dev/null; then
+		# Source and destination are the same
+		print_status "$dst" "SAME"
+	else
+		# Source and destination are different
+		print_status "$dst" "DIFF"
 
-		file_status "$dst" "DEPLOYED"
-	elif ! git diff --no-index --quiet $dst $src &> /dev/null; then
-		# Files are different
-		file_status "$dst" "DIFF"
+		# Make prompt
+		[ -f "$src" ] && action="overwrite file" || action="replace directory"
+		prompt="Do you want to ${action} '$(basename "$dst")'? [y/N/d/q] "
 
 		# Get user choice
-		read_choice "$src" "$dst"
-		RES=$?; [ 0 -ne $RES ] && echo "" && return 1
+		while true; do
+			# Quit if we failed to read
+			! read -p "$prompt" choice && echo "" && return 1
 
-		if [ "yes" = "$choice" ]; then
-			# Replace file
-			file_copy "$src" "$dst"
-			RES=$?; [ 0 -ne $RES ] && return 1
-
-			file_status "$dst" "DEPLOYED"
-		else
-			file_status "$dst" "SKIP"
-		fi
-	else
-		# Files are the same
-		file_status "$dst" "SAME"
+			case "${choice,,}" in
+				y|yes)
+					# Replace destination
+					rm -rf "$dst"
+					cp -r "$src" "$dst"
+					print_status "$dst" "REPLACED"
+					break
+					;;
+				n|no)
+					# Skip deployment
+					print_status "$dst" "SKIP"
+					break
+					;;
+				d|diff)
+					# Display diff and retry (or true, to avoid failure)
+					git diff --no-index "$dst" "$src" || true
+					;;
+				q*)
+					# Exit the deployment
+					print_status "$dst" "QUIT"
+					exit 0
+					;;
+				*)
+					# Invalid choice and retry
+					echo "Choices are: yes|no|diff|quit"
+					;;
+			esac
+		done
 	fi
 
 	return 0
 }
 
-file_copy() {
-	local RES
-	local src
-	local dst
-
-	# Get parameters
-	[ -n "$1" ] && src="$1" || return 1
-	[ -n "$2" ] && dst="$2" || return 1
-
-	if [ "true" != "$DRY_RUN" ]; then
-		if [ -f "$src" ]; then
-			# Copy file
-			cp "$src" "$dst"
-			RES=$?; [ 0 -ne $RES ] && exit 1
-		else
-			# Remove existing directory
-			if [ -d "$dst" ]; then
-				rm -rf "$dst"
-				RES=$?; [ 0 -ne $RES ] && return 1
-			fi
-
-			# Copy directory
-			cp -r "$src" "$dst"
-			RES=$?; [ 0 -ne $RES ] && return 1
-		fi
-	fi
-
-	return 0
+# Print header for deploying of a program
+print_deploy() {
+	local version=$(version_get "$1")
+	echo "Deploying $1 configuration -- ${version:+version }${version:-NOT FOUND}"
 }
 
-file_status() {
-	echo "    ${1} ... ${2}"
+# Print action taken for deploying a file
+print_status() {
+	echo "    ${1/#"$HOME"/"~"} ... ${2:-}"
 }
 
-os_type_get () {
-	case "$(uname | tr "[:upper:]" "[:lower:]")" in
-		linux*) echo "linux" ;;
-		darwin*) echo "macos" ;;
-		freebsd*) echo "freebsd" ;;
-		msys*) echo "windows" ;;
-		*) echo "unknown" ;;
-	esac
-}
-
-read_choice() {
-	local RES
-	local src
-	local dst
-	local reply
-	local prompt
-
-	# Get parameters
-	[ -n "$1" ] && src="$1" || return 1
-	[ -n "$2" ] && dst="$2" || return 1
-
-	# Get choice
-	[ -f "$src" ] && prompt="overwrite file" || prompt="replace directory"
-
-	choice=""
-	while [ -z "$choice" ]; do
-		# Default choice to no
-		read -p "Do you want to ${prompt} '$(basename ${dst})'? [y/N/d/q] "
-		RES=$?; [ 0 -ne $RES ] && echo "" && return 1
-		[ -n "$REPLY" ] && REPLY=${REPLY,,} || REPLY="no"
-
-		case "$REPLY" in
-			y?(es)) choice="yes";;
-			n?(o)) choice="no";;
-			d?(iff))
-				# Display diff and retry
-				git diff --no-index "$dst" "$src"
-				choice=""
-				;;
-			q?(uit))
-				# Quit deployment
-				exit 0
-				;;
-			*)
-				# Invalid choice and retry
-				echo "Choices are: yes|no|diff|quit"
-				choice=""
-				;;
-		esac
-	done
-}
-
-target_exists() {
-	local src
-	local dst
-
-	# Get parameters
-	[ -n "$1" ] && src="$1" || return 1
-	[ -n "$2" ] && dst="$2" || return 1
-
-	# Check if destination exists according to source type
-	if [ -f "$src" ]; then
-		[ -f "$dst" ]
-	else
-		[ -d "$dst" ]
-	fi
-}
-
+# Get a normalized version of a program
 version_get() {
-	local d="[0-9]+"
-	local prgm
-
-	# Get parameters
-	[ -n "$1" ] && prgm="$1" || return 1
+	local cmd=$1
+	local regex='[0-9]+(\.[0-9]+)+'
 
 	# Check if command exists
-	if ! command -v "$prgm" &> /dev/null; then
-		return 1
-	fi
+	! command -v "$cmd" &> /dev/null && return 0
 
 	# Extract version
-	case "$prgm" in
-		bash)
-			bash -c 'echo $BASH_VERSION' | sed -E "s/.*(${d})\.(${d})\.(${d}).*/\1.\2.\3/"
-			;;
-		clang-format)
-			clang-format --version | sed -E "s/.*clang-format version (${d})\.(${d})\.(${d}).*/\1.\2.\3/"
-			;;
-		gdb)
-			gdb --version | head -n 1 | sed -E "s/.*\(.*\) (${d})\.(${d}).*/\1.\2/"
-			;;
-		git)
-			git --version | sed -E "s/.*git version (${d})\.(${d})\.(${d}).*/\1.\2.\3/"
-			;;
-		infocmp)
-			infocmp -V | sed -E "s/.*ncurses (${d})\.(${d})\.(${d}).*/\1.\2.\3/"
-			;;
-		ssh)
-			ssh -V 2>&1 | sed -E "s/.*OpenSSH_(${d})\.(${d})p(${d}).*/\1.\2p\3/"
-			;;
-		tldr)
-			tldr --version  | sed -E "s/tealdeer[[:space:]]*(${d}\.${d}\.${d})/\1/"
-			;;
-		tmux)
-			tmux -V | sed -E "s/.*tmux (${d})\.(${d}).*/\1.\2/"
-			;;
-		vim)
-			vim --version | head -n 1 | sed -E "s/.*VIM - Vi IMproved (${d})\.(${d}).*/\1.\2/"
-			;;
-		*)
-			echo "0.0.0"
-			;;
+	case "$cmd" in
+		alacritty) alacritty --version | grep -Eo "$regex" ;;
+		bash) echo $BASH_VERSION | grep -Eo "$regex" ;;
+		cargo) cargo --version | grep -Eo "$regex" ;;
+		clang-format) clang-format --version | grep -Eo "$regex" ;;
+		gdb) gdb --version | grep -Eo "$regex" ;;
+		git) git --version | grep -Eo "$regex" ;;
+		ssh) ssh -V 2>&1 | grep -Eo "${regex}p[0-9]+" ;;
+		tldr) tldr --version | grep -Eo "$regex" ;;
+		tmux) tmux -V | grep -Eo "${regex}[a-z]" ;;
+		vim) vim --version | head -n 1 | grep -Eo "$regex" ;;
 	esac
+
+	return 0
 }
 
+# Return true if the lhs version is strictly older than the rhs
+# Returns false if the lhs is the empty string
 version_lt() {
-	[ "$(echo -e "$1\n$2" | sort -V -r | head -n 1)" != "$1" ]
+	local oldest=$({ echo "$1"; echo "$2"; } | sort -V | head -n 1)
+	[ -n "$1" ] && [ "$1" != "$2" ] && [ "$1" = "$oldest" ]
 }
 
-# Deploy functions
-
-setup_alacritty() {
-	local RES
-
-	echo "Deploying alacritty configuration"
-
-	# Deploy configuration
-	deploy -c alacritty
-	RES=$?; [ 0 -ne $RES ] && exit 1
-
-	deploy -c -d alacritty/base16-alacritty
-	RES=$?; [ 0 -ne $RES ] && exit 1
-
-	return 0
-}
-
-setup_bash() {
-	local RES
-	local version
-
-	echo -n "Deploying bash configuration -- "
-
-	# Get version
-	version=$(version_get bash)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Deploy main files in $HOME
-	deploy_target .bash_profile
-	RES=$?; [ 0 -ne $RES ] && return 1
-	deploy_target .bashrc
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Deploy configuration
-	deploy -c bash
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
-setup_clang_format() {
-	local RES
-	local version
-	local file
-	local i
-
-	echo -n "Deploying clang-format configuration -- "
-
-	# Get version
-	version=$(version_get clang-format)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Deploy configuration
-	deploy_target .clang-format "${HOME}/.clang-format"
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
-setup_gdb() {
-	local RES
-	local version
-
-	echo -n "Deploying gdb configuration -- "
-
-	# Get version
-	version=$(version_get gdb)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Deploy configuration
-	deploy -c gdb
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Support for XDG_CONFIG_HOME is from 11.1
-	if command -v gdb &> /dev/null && version_lt "$version" 11.1; then
-		if ! [ -e "$HOME/.gdbinit" ]; then
-			ln -s $CONFIG_DIR_PATH/gdb/gdbinit $HOME/.gdbinit
-			RES=$?; [ 0 -ne $RES ] && return 1
-		fi
-	fi
-
-	return 0
-}
-
-setup_git() {
-	local RES
-	local version
-
-	echo -n "Deploying git configuration -- "
-
-	# Get version
-	version=$(version_get git)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Deploy configuration
-	deploy -c git
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
-setup_rust() {
-	local RES
-	local os
-
-	echo "Deploying rust configuration"
-
-	# Get OS type
-	os=$(os_type_get)
-
-	# Deploy cargo configuration
-	mkdir -p "${HOME}/.cargo"
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	deploy_target .cargo/config.toml
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
-setup_ssh() {
-	local RES
-	local version
-
-	echo -n "Deploying ssh configuration -- "
-
-	# Get version
-	version=$(version_get ssh)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Create directory with appropriate permissions
-	if ! [ -d "$HOME/.ssh" ]; then
-		mkdir "$HOME/.ssh"
-		RES=$?; [ 0 -ne $RES ] && return 1
-
-		chmod 700 "$HOME/.ssh/"
-		RES=$?; [ 0 -ne $RES ] && return 1
-	fi
-
-	# Deploy configuration
-	deploy .ssh
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
-setup_tealdeer() {
-	local RES
-	local version
-
-	echo -n "Deploying tealdeer configuration -- "
-
-	# Get version
-	version=$(version_get tldr)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Deploy configuration
-	deploy -c tealdeer
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
-setup_tmux() {
-	local RES
-	local version
-	local dir
-
-	echo -n "Deploying tmux configuration -- "
-
-	# Get version
-	version=$(version_get tmux)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Deploy configuration
-	deploy -c tmux
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
-setup_vim() {
-	local RES
-	local version
-
-	echo -n "Deploying vim configuration -- "
-
-	# Get version
-	version=$(version_get vim)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Deploy configuration
-	deploy -c vim
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	deploy -c vim/config
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	deploy -c -d vim/pack
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	# Support for XDG_CONFIG_HOME is from 9.2
-	if version_lt "$version" 9.2; then
-		if ! [ -e "$HOME/.vim" ]; then
-			ln -s $CONFIG_DIR_PATH/vim $HOME/.vim
-			RES=$?; [ 0 -ne $RES ] && return 1
-		fi
-	fi
-
-	return 0
-}
-
-# Main script
-
-# Check if is a dry run
-if [ "-d" = "$1" ] || [ "--dry-run" = "$1" ]; then
-	DRY_RUN="true"
+# Check that git exists
+if ! command -v git &> /dev/null; then
+	echo "git: command not found"
+	exit 1
 fi
 
-# Check that git exists and initialize modules
-command -v git &> /dev/null
-RES=$?; [ 0 -ne $RES ] && echo "git: command not found" && exit 1
-echo "Checking git -- FOUND"
-
-cd $(dirname ${BASH_SOURCE})
-RES=$?; [ 0 -ne $RES ] && exit 1
-
+# Initialize and update git submodules
 git submodule update --init --recursive
-RES=$?; [ 0 -ne $RES ] && exit 1
-echo "Updating submodules -- DONE"
 echo ""
 
-# Deploy configurations
-setup_alacritty
-RES=$?; [ 0 -ne $RES ] && exit 1
+# Alacritty
+print_deploy alacritty
+deploy .config/alacritty
 echo ""
 
-setup_bash
-RES=$?; [ 0 -ne $RES ] && exit 1
+# Bash
+print_deploy bash
+deploy .bashrc
+deploy .bash_profile
+deploy .config/bash
 echo ""
 
-setup_clang_format
-RES=$?; [ 0 -ne $RES ] && exit 1
+# Cargo
+print_deploy cargo
+deploy .cargo
 echo ""
 
-setup_gdb
-RES=$?; [ 0 -ne $RES ] && exit 1
+# clang-format
+print_deploy clang-format
+deploy .clang-format
 echo ""
 
-setup_git
-RES=$?; [ 0 -ne $RES ] && exit 1
+# GDB
+version=
+print_deploy gdb
+deploy .config/gdb
+
+if version_lt "$(version_get gdb)" 11.1; then
+	deploy_symlink "$XDG_CONFIG_HOME/gdb/gdbinit" "$HOME/.gdbinit"
+fi
+
 echo ""
 
-setup_rust
-RES=$?; [ 0 -ne $RES ] && exit 1
+# Git
+print_deploy git
+deploy .config/git
 echo ""
 
-setup_ssh
-RES=$?; [ 0 -ne $RES ] && exit 1
+# SSH
+print_deploy ssh
+! [ -d "$HOME/.ssh" ] && mkdir --mode 700 "$HOME/.ssh"
+deploy .ssh
 echo ""
 
-setup_tealdeer
-RES=$?; [ 0 -ne $RES ] && exit 1
+# Tealdeer
+print_deploy tldr
+deploy .config/tealdeer
 echo ""
 
-setup_tmux
-RES=$?; [ 0 -ne $RES ] && exit 1
+# Tmux
+print_deploy tmux
+deploy .config/tmux
 echo ""
 
-setup_vim
-RES=$?; [ 0 -ne $RES ] && exit 1
+# Vim
+print_deploy vim
+deploy .config/vim
+
+if version_lt "$(version_get vim)" 9.2; then
+	deploy_symlink "$XDG_CONFIG_HOME/vim" "$HOME/.vim"
+fi
+
 echo ""
 
-echo "Deployment completed successfully."
-
+# End of deployment
+echo "Deployment completed successfully!"
 exit 0
