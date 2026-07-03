@@ -109,34 +109,6 @@ deploy_target() {
 	return 0
 }
 
-deploy_terminfo() {
-	local RES
-	local termname
-	local file
-	local location
-
-	[ -n "$1" ] && termname="$1" || return 1
-	[ -n "$2" ] && file="$2" || return 1
-
-	location=$(find "${HOME}/.terminfo" -name "$termname" 2> /dev/null)
-
-	if [ -n "$location" ]; then
-		# Terminfo is installed by the user
-		file_status "$termname" "SKIP"
-	elif infocmp "$termname" &> /dev/null; then
-		# Terminfo is installed by the system
-		file_status "$termname" "SKIP"
-	else
-		# Terminfo is not installed
-		tic -xe "$termname" "$file"
-		RES=$?; [ 0 -ne $RES ] && return 1
-
-		file_status "$termname" "DEPLOYED"
-	fi
-
-	return 0
-}
-
 file_copy() {
 	local RES
 	local src
@@ -453,32 +425,6 @@ setup_tealdeer() {
 	return 0
 }
 
-setup_terminfo() {
-	local RES
-	local version
-
-	echo -n "Deploying terminfo -- "
-
-	# Get version
-	version=$(version_get infocmp)
-	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
-
-	# Short circuit setup of terminfo if ncurses is not installed
-	[ -z "$version" ] && return 0
-
-	# Deploy missing terminfo files
-	deploy_terminfo alacritty terminfo/alacritty.info
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	deploy_terminfo alacritty-direct terminfo/alacritty.info
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	deploy_terminfo tmux-256color terminfo/terminfo.src
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	return 0
-}
-
 setup_tmux() {
 	local RES
 	local version
@@ -578,10 +524,6 @@ RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
 setup_tealdeer
-RES=$?; [ 0 -ne $RES ] && exit 1
-echo ""
-
-setup_terminfo
 RES=$?; [ 0 -ne $RES ] && exit 1
 echo ""
 
