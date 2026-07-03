@@ -2,10 +2,11 @@
 
 " Disable Vi compatibility
 set nocompatible
-" Disable modelines (commands in top of file)
-set nomodeline
 " Set encoding to UTF-8
 set encoding=utf-8
+
+" Use XDG directories for viminfo
+runtime xdg.vim
 
 " Enable mouse support
 if has("mouse") | set mouse=a | endif
@@ -16,6 +17,8 @@ if has ("title") | set title | endif
 
 " Disable backup files
 set nobackup
+" Disable modelines (commands in top of file)
+set nomodeline
 " Disable undo files
 set noundofile
 " Set undo levels

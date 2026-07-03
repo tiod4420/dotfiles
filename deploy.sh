@@ -9,8 +9,7 @@ DRY_RUN="false"
 
 # Util functions
 
-deploy()
-{
+deploy() {
 	local RES
 	local OPTARG
 	local OPTIND
@@ -68,8 +67,7 @@ deploy()
 	return 0
 }
 
-deploy_target()
-{
+deploy_target() {
 	local RES
 	local src
 	local dst
@@ -111,8 +109,7 @@ deploy_target()
 	return 0
 }
 
-deploy_terminfo()
-{
+deploy_terminfo() {
 	local RES
 	local termname
 	local file
@@ -140,8 +137,7 @@ deploy_terminfo()
 	return 0
 }
 
-file_copy()
-{
+file_copy() {
 	local RES
 	local src
 	local dst
@@ -171,13 +167,11 @@ file_copy()
 	return 0
 }
 
-file_status()
-{
+file_status() {
 	echo "    ${1} ... ${2}"
 }
 
-os_type_get ()
-{
+os_type_get () {
 	case "$(uname | tr "[:upper:]" "[:lower:]")" in
 		linux*) echo "linux" ;;
 		darwin*) echo "macos" ;;
@@ -187,8 +181,7 @@ os_type_get ()
 	esac
 }
 
-read_choice()
-{
+read_choice() {
 	local RES
 	local src
 	local dst
@@ -230,8 +223,7 @@ read_choice()
 	done
 }
 
-target_exists()
-{
+target_exists() {
 	local src
 	local dst
 
@@ -247,8 +239,7 @@ target_exists()
 	fi
 }
 
-version_get()
-{
+version_get() {
 	local d="[0-9]+"
 	local prgm
 
@@ -295,15 +286,13 @@ version_get()
 	esac
 }
 
-version_lt()
-{
+version_lt() {
 	[ "$(echo -e "$1\n$2" | sort -V -r | head -n 1)" != "$1" ]
 }
 
 # Deploy functions
 
-setup_alacritty()
-{
+setup_alacritty() {
 	local RES
 
 	echo "Deploying alacritty configuration"
@@ -318,8 +307,7 @@ setup_alacritty()
 	return 0
 }
 
-setup_bash()
-{
+setup_bash() {
 	local RES
 	local version
 
@@ -342,8 +330,7 @@ setup_bash()
 	return 0
 }
 
-setup_clang_format()
-{
+setup_clang_format() {
 	local RES
 	local version
 	local file
@@ -362,8 +349,7 @@ setup_clang_format()
 	return 0
 }
 
-setup_gdb()
-{
+setup_gdb() {
 	local RES
 	local version
 
@@ -377,7 +363,7 @@ setup_gdb()
 	deploy -c gdb
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# XDG_CONFIG_HOME not supported before 11.1
+	# Support for XDG_CONFIG_HOME is from 11.1
 	if command -v gdb &> /dev/null && version_lt "$version" 11.1; then
 		if ! [ -e "$HOME/.gdbinit" ]; then
 			ln -s $CONFIG_DIR_PATH/gdb/gdbinit $HOME/.gdbinit
@@ -388,8 +374,7 @@ setup_gdb()
 	return 0
 }
 
-setup_git()
-{
+setup_git() {
 	local RES
 	local version
 
@@ -406,8 +391,7 @@ setup_git()
 	return 0
 }
 
-setup_rust()
-{
+setup_rust() {
 	local RES
 	local os
 
@@ -426,8 +410,7 @@ setup_rust()
 	return 0
 }
 
-setup_ssh()
-{
+setup_ssh() {
 	local RES
 	local version
 
@@ -453,8 +436,7 @@ setup_ssh()
 	return 0
 }
 
-setup_tealdeer()
-{
+setup_tealdeer() {
 	local RES
 	local version
 
@@ -471,8 +453,7 @@ setup_tealdeer()
 	return 0
 }
 
-setup_terminfo()
-{
+setup_terminfo() {
 	local RES
 	local version
 
@@ -498,8 +479,7 @@ setup_terminfo()
 	return 0
 }
 
-setup_tmux()
-{
+setup_tmux() {
 	local RES
 	local version
 	local dir
@@ -517,8 +497,7 @@ setup_tmux()
 	return 0
 }
 
-setup_vim()
-{
+setup_vim() {
 	local RES
 	local version
 
@@ -528,20 +507,23 @@ setup_vim()
 	version=$(version_get vim)
 	[ 0 -eq $? ] && echo "version '${version}'" || echo "not found"
 
-	# Deploy vimrc
-	mkdir -p "${HOME}/.vim"
-	RES=$?; [ 0 -ne $RES ] && return 1
-
-	deploy_target .vim/vimrc
-	RES=$?; [ 0 -ne $RES ] && return 1
-
 	# Deploy configuration
-	deploy .vim/config
+	deploy -c vim
 	RES=$?; [ 0 -ne $RES ] && return 1
 
-	# Deploy plugins
-	deploy -d .vim/pack
+	deploy -c vim/config
 	RES=$?; [ 0 -ne $RES ] && return 1
+
+	deploy -c -d vim/pack
+	RES=$?; [ 0 -ne $RES ] && return 1
+
+	# Support for XDG_CONFIG_HOME is from 9.2
+	if version_lt "$version" 9.2; then
+		if ! [ -e "$HOME/.vim" ]; then
+			ln -s $CONFIG_DIR_PATH/vim $HOME/.vim
+			RES=$?; [ 0 -ne $RES ] && return 1
+		fi
+	fi
 
 	return 0
 }
