@@ -22,8 +22,8 @@ epoch() {
 	esac
 
 	case "$mode" in
-		epoch) date --date "${1:-now}" +%s ;;
-		revert) date --date "@${1:-0}" +%FT%T ;;
+		epoch) date ${1:+--date "$1"} +%s ;;
+		revert) date ${1:+--date @"$1"} +%FT%T ;;
 	esac
 }
 
@@ -52,11 +52,6 @@ notes() {
 	vim "$dir/$file"
 }
 
-# Display date in sort of ISO 8601 format
-now() {
-	date --date "${1:-now}" +%FT%T
-}
-
 # Plot data with gnuplot
 plot() {
 	local file=${1:--}
@@ -74,4 +69,16 @@ shaline() {
 	for i in $(seq ${nl:-0}); do
 		head -n $i "$file" | sha256sum | cut -d' ' -f1
 	done
+}
+
+# Display today's date in sort of ISO 8601 format
+today() {
+	local format="%F"
+
+	case "$1" in
+		-f|--full) format="%FT%T" && shift ;;
+		-i|--iso) format="%FT%T%:z" && shift ;;
+	esac
+
+	date ${1:+--date "$1"} +"$format"
 }
