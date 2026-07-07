@@ -82,3 +82,30 @@ today() {
 
 	date ${1:+--date "$1"} +"$format"
 }
+
+# Download a X.509 certificate from an URL
+x509_fetch() {
+	local showcerts
+	local server
+	local name
+
+	# Show full certificate chain
+	case "$1" in
+		-a|--all) showcerts=all && shift ;;
+	esac
+
+	# Get hostname if different from server
+	case "$1" in
+		-s|--servername) name=$1 && shift ;;
+	esac
+
+	server=$1
+
+	# Add default port to 443 if not specified
+	! echo "$server" | grep -qE ":[0-9]+$" && server+=":443"
+
+	openssl s_client -connect "$server" \
+		${showcerts:+-showcerts} ${name:+-servername "$name"} \
+		< /dev/null \
+		| sed -n "/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p"
+}
