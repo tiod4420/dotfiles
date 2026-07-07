@@ -50,10 +50,10 @@ alias untar='tar xvf'
 alias count='(sort | uniq -c | sort -nr)'
 # Hexdump of data (can be reversed with -r)
 alias dump='xxd -g 1'
+# Git diff out of repository
+alias ffid='git diff --no-index'
 # Filter file to keep only last extension
 alias fileext='sed -nE "s/^.*[^/]\.([^./]+)$/\1/p"'
-# Git diff out of repository
-alias gdiff='git diff --no-index'
 # List history commands without prefix number
 alias hist='history | sed -nE "s/^[[:space:]]*[0-9]+[[:space:]]+//p"'
 # Spawn a HTTP server on current directory
