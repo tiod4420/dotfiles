@@ -140,6 +140,7 @@ version_get() {
 		clang-format) clang-format --version | grep -Eo "$regex" ;;
 		gdb) gdb --version | grep -Eo "$regex" ;;
 		git) git --version | grep -Eo "$regex" ;;
+		hledger) hledger --version | grep -Eo "$regex" ;;
 		ssh) ssh -V 2>&1 | grep -Eo "${regex}p[0-9]+" ;;
 		tldr) tldr --version | grep -Eo "$regex" ;;
 		tmux) tmux -V | grep -Eo "${regex}[a-z]" ;;
@@ -202,6 +203,11 @@ echo ""
 # Git
 print_deploy git
 deploy .config/git
+echo ""
+
+# Hledger
+print_deploy hledger
+deploy .config/hledger
 echo ""
 
 # SSH
