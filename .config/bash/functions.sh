@@ -9,7 +9,8 @@ calc() {
 
 # Search for files without NL at end of file
 crlf() {
-	find "${1:-.}" -type f -exec grep -q "$(printf \\r)" {} \; -print
+	local dir=${1:-.}
+	find "$dir" -type f -exec grep -q "$(printf \\r)" {} \; -print
 }
 
 # Convert Epoch timestamp to date or reverse
@@ -17,7 +18,7 @@ epoch() {
 	local mode=epoch
 
 	# Parse parameters
-	case "$1" in
+	case "${1:-}" in
 		-r|--revert) mode=revert && shift ;;
 	esac
 
@@ -29,23 +30,25 @@ epoch() {
 
 # Make a .tar.gz archive from a list of anything
 mktar() {
-	local file=$(basename "$1")
-	tar czvf $file.tar.gz "$@"
+	local name=$(basename "${1:-}")
+	[ -n "$name" ] && tar czvf "$name.tar.gz" "$@"
 }
 
 # Search for files without NL at end of file
 nonl() {
-	find "${1:-.}" -type f -not -exec sh -c '[ -z "$(tail -c1 $0)" ]' {} \; -print
+	local dir=${1:-.}
+	find "$dir" -type f -not -exec sh -c '[ -z "$(tail -c1 $0)" ]' {} \; -print
 }
 
 # Open notes directory
 notes() {
 	local dir=${NOTES_DIR:-$HOME}
 	local file=${1:-todo}
+	local new_File
 
-	if [ ! -f "$dir/$file" ]; then
+	if ! [ -f "$dir/$file" ]; then
 		# Try to lowercase the name and add .md extension
-		local new_file=${file,,?}.md
+		new_file=${file,,?}.md
 		[ -f "$dir/$new_file" ] && file=$new_file
 	fi
 
@@ -62,8 +65,12 @@ plot() {
 
 # Hash a file line by line
 shaline() {
-	local file=$1
-	local nl=$(wc -l < "$file")
+	local file=${1:-}
+	local nl
+
+	! [ -f "$file" ] && return
+
+	nl=$(wc -l "$file" | cut -d' ' -f1)
 
 	# Compute SHA256 from start to i^th line
 	for i in $(seq ${nl:-0}); do
@@ -75,7 +82,7 @@ shaline() {
 today() {
 	local format="%F"
 
-	case "$1" in
+	case "${1:-}" in
 		-f|--full) format="%FT%T" && shift ;;
 		-i|--iso) format="%FT%T%:z" && shift ;;
 	esac
@@ -86,26 +93,41 @@ today() {
 # Download a X.509 certificate from an URL
 x509_fetch() {
 	local showcerts
-	local server
-	local name
+	local host
+	local servername
 
-	# Show full certificate chain
-	case "$1" in
-		-a|--all) showcerts=all && shift ;;
-	esac
+	# Parse options
+	while [ "$#" -gt 0 ]; do
+		case "$1" in
+			-a|--all)
+				showcerts=all
+				shift
+				;;
+			-s|--servername)
+				[ -z "${2:-}" ] && echo "$FUNCNAME: option $1 requires an argument" && return 1
+				servername=$2
+				shift 2
+				;;
+			--)
+				shift
+				break
+				;;
+			-*)
+				echo "$FUNCNAME: invalid option -- ${1:-}" && return 1
+				;;
+			*)
+				break
+				;;
+		esac
+	done
 
-	# Get hostname if different from server
-	case "$1" in
-		-s|--servername) name=$1 && shift ;;
-	esac
-
-	server=$1
+	host=$1
 
 	# Add default port to 443 if not specified
-	! echo "$server" | grep -qE ":[0-9]+$" && server+=":443"
+	! echo "$host" | grep -qE ":[0-9]+$" && host+=":443"
 
-	openssl s_client -connect "$server" \
-		${showcerts:+-showcerts} ${name:+-servername "$name"} \
+	openssl s_client -connect "$host" \
+		${showcerts:+-showcerts} ${servername:+-servername "$servername"} \
 		< /dev/null \
 		| sed -n "/-----BEGIN CERTIFICATE-----/,/-----END CERTIFICATE-----/p"
 }

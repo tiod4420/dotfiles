@@ -3,18 +3,14 @@
 # Prompt settings
 
 _prompt_color() {
-	local color
-	local text
+	local color=${1:-}
+	local text=${2:-}
 	local prefix
 	local suffix
 
-	# Get color and text
-	[ -n "$1" ] && color=$1 && shift
-	[ -n "$1" ] && text=$1 && shift
-
 	# Set prefix and suffix if we have colors
 	if _bashrc_has_colors; then
-		[ -n "$color" ] && prefix="\[\e[${_BASHRC_COLORS[${color}]}m\]"
+		prefix=${color:+"\[\e[${_BASHRC_COLORS[$color]}m\]"}
 		suffix="\[\e[${_BASHRC_COLORS[reset]}m\]"
 	fi
 
@@ -35,20 +31,21 @@ PS1+='@'
 PS1+=$(_prompt_color $_PROMPT_HOST '\h')
 PS1+=' \w'
 PS1+=$(_bashrc_has_cmd __git_ps1 && echo '$(__git_ps1)')
-PS1+='\n\$ '
+PS1+='\n\$'
 PS1+=$(_prompt_color)
+PS1+=' '
 
 # Set PS2
 PS2+=$(_prompt_color)
 
 if _bashrc_has_colors; then
 	# Configure git prompt
-	_bashrc_has_colors && GIT_PS1_SHOWCOLORHINTS=yes
+	GIT_PS1_SHOWCOLORHINTS=yes
 
 	# Set vi editing mode strings
 	bind "set show-mode-in-prompt on"
-	bind "set vi-ins-mode-string \1\e[${_BASHRC_COLORS[reset]}m\2"
 	bind "set vi-cmd-mode-string \1\e[${_BASHRC_COLORS[red]}m\2"
+	bind "set vi-ins-mode-string \1\e[${_BASHRC_COLORS[reset]}m\2"
 fi
 
 unset -v _PROMPT_HOST

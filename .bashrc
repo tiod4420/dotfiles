@@ -6,7 +6,7 @@
 _BASHRC_CONFIG_DIR=${XDG_CONFIG_HOME:-$HOME/.config}/bash
 
 # Set normalized OS name
-case "$OSTYPE" in
+case "${OSTYPE:-}" in
 	linux*) _BASHRC_OSTYPE=linux ;;
 	darwin*) _BASHRC_OSTYPE=macos ;;
 	mingw*|msys*|cygwin*) _BASHRC_OSTYPE=windows ;;
@@ -24,12 +24,13 @@ declare -a _BASHRC_ANDROID_HOME=(
 
 # TTY color codes
 declare -A _BASHRC_COLORS=(
-	[reset]='0'         [bold]='1'           [black]='38;5;0'    [red]='38;5;1'
-	[green]='38;5;2'    [yellow]='38;5;3'    [blue]='38;5;4'     [magenta]='38;5;5'
-	[cyan]='38;5;6'     [white]='38;5;7'     [brblack]='38;5;8'  [brred]='38;5;9'
-	[brgreen]='38;5;10' [bryellow]='38;5;11' [brblue]='38;5;12'  [brmagenta]='38;5;13'
-	[brcyan]='38;5;14'  [brwhite]='38;5;15'  [color16]='38;5;16' [color17]='38;5;17'
-	[color18]='38;5;18' [color19]='38;5;19'  [color20]='38;5;20' [color21]='38;5;21'
+	[reset]="0"         [bold]="1"            [dim]="2"           [italic]="3"
+	[black]="38;5;0"    [red]="38;5;1"        [green]="38;5;2"    [yellow]="38;5;3"
+	[blue]="38;5;4"     [magenta]="38;5;5"    [cyan]="38;5;6"     [white]="38;5;7"
+	[brblack]="38;5;8"  [brred]="38;5;9"      [brgreen]="38;5;10" [bryellow]="38;5;11"
+	[brblue]="38;5;12"  [brmagenta]="38;5;13" [brcyan]="38;5;14"  [brwhite]="38;5;15"
+	[color16]="38;5;16" [color17]="38;5;17"   [color18]="38;5;18" [color19]="38;5;19"
+	[color20]="38;5;20" [color21]="38;5;21"
 )
 
 # Bash completion paths
@@ -125,7 +126,8 @@ _bashrc_has_cmd() {
 }
 
 _bashrc_has_colors() {
-	[ "$(tput colors 2> /dev/null || echo 0)" -ge 256 ]
+	local colors=$(tput colors 2> /dev/null)
+	[ "${colors:-0}" -ge 256 ]
 }
 
 _bashrc_is_enabled() {
@@ -158,15 +160,15 @@ _bashrc_setup_path() {
 
 			# Setup PATH
 			_bashrc_add_path --path  \
-				"${HOMEBREW_PREFIX}/opt/coreutils/libexec/gnubin" \
-				"${HOMEBREW_PREFIX}/opt/findutils/libexec/gnubin" \
-				"${HOMEBREW_PREFIX}/opt/gawk/libexec/gnubin" \
-				"${HOMEBREW_PREFIX}/opt/gnu-sed/libexec/gnubin" \
-				"${HOMEBREW_PREFIX}/opt/gnu-tar/libexec/gnubin" \
-				"${HOMEBREW_PREFIX}/opt/grep/libexec/gnubin" \
-				"${HOMEBREW_PREFIX}/opt/make/libexec/gnubin" \
-				"${HOMEBREW_PREFIX}/opt/man-db/libexec/bin" \
-				"${HOMEBREW_PREFIX}/opt/python/libexec/bin"
+				"$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin" \
+				"$HOMEBREW_PREFIX/opt/findutils/libexec/gnubin" \
+				"$HOMEBREW_PREFIX/opt/gawk/libexec/gnubin" \
+				"$HOMEBREW_PREFIX/opt/gnu-sed/libexec/gnubin" \
+				"$HOMEBREW_PREFIX/opt/gnu-tar/libexec/gnubin" \
+				"$HOMEBREW_PREFIX/opt/grep/libexec/gnubin" \
+				"$HOMEBREW_PREFIX/opt/make/libexec/gnubin" \
+				"$HOMEBREW_PREFIX/opt/man-db/libexec/bin" \
+				"$HOMEBREW_PREFIX/opt/python/libexec/bin"
 		elif _bashrc_has_cmd /opt/local/bin/port; then
 			# Setup PATH and MANPATH
 			_bashrc_add_path --path "/opt/local/bin" "/opt/local/sbin" "/opt/local/libexec/gnubin"

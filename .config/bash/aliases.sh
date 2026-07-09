@@ -26,7 +26,6 @@ alias ff='find . -name'
 alias fh='history | grep'
 alias ft='grep -rIi --exclude-dir={.git,build,target}'
 
-
 # PATH and MANPATH aliases
 alias lsman='man --path | tr ":" "\n"'
 alias lspath='echo $PATH | tr ":" "\n"'
@@ -73,8 +72,12 @@ alias todo='ft "\<TODO\>"'
 # Trim line from front and back spaces
 alias trim='sed -nE "s/^[[:space:]]*(.*[^[:space:]])[[:space:]]*$/\1/p"'
 
-# Normalize open across Linux and OSX
-! _bashrc_has_cmd open && alias open='xdg-open';
+# Normalize open across Linux and macOS
+if ! _bashrc_has_cmd open; then
+	alias open='xdg-open'
+fi
 
 # clear doesn't clear tmux scrollback buffer on macOS
-[ "$_BASHRC_OSTYPE" = "macos" ] && alias clear='clear && tmux clear-history'
+if [ "$_BASHRC_OSTYPE" = "macos" ]; then
+	alias clear='clear && tmux clear-history'
+fi

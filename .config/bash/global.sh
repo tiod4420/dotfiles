@@ -40,7 +40,7 @@ done
 # Export locales for colors
 if _bashrc_has_colors; then
 	# ls colors
-	eval $(dircolors -b "$(dirname "${BASH_SOURCE[0]}")/dircolors.db")
+	eval $(dircolors -b "$_BASHRC_CONFIG_DIR/dircolors.db")
 
 	# gcc colors
 	GCC_COLORS=""
@@ -59,9 +59,8 @@ if _bashrc_has_colors; then
 	export MANPAGER="less -R --use-color -Ddb -Duy -DSkw -DPkw"
 fi
 
-# Export locales for macOS
+# Disable weird encoding of manpages on macOS
 if [ "$_BASHRC_OSTYPE" = "macos" ]; then
-	# Disable weird encoding of manpages
 	export MANOPT="-E ascii"
 fi
 
