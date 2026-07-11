@@ -10,6 +10,9 @@
 [submodule ".vim/pack/filetypes/start/thrift.vim"]
 	path = .config/vim/pack/filetypes/start/thrift.vim
 	url = https://github.com/solarnz/thrift.vim
+[submodule ".config/vim/pack/filetypes/start/vim-ledger"]
+	path = .config/vim/pack/filetypes/start/vim-ledger
+	url = https://github.com/ledger/vim-ledger
 [submodule ".vim/pack/filetypes/start/vim-toml"]
 	path = .config/vim/pack/filetypes/start/vim-toml
 	url = https://github.com/cespare/vim-toml
