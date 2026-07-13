@@ -82,6 +82,10 @@ augroup Development
         \ "vimgrep_ft": [ "cpp", "h", "cxx", "hpp", "c" ]
         \ })
 
+  call <SID>AddDevelopment("sh,bash", '#', {
+        \ "formatprg": "shfmt\\ -bn\\ -ci\\ -sr\\ -s"
+        \ })
+
   call <SID>AddDevelopment("rust", '//', {
         \ "files": "*.lalrpop",
         \ "colorcolumn":"80,120",
@@ -109,9 +113,8 @@ augroup Development
         \ })
 
   call <SID>AddDevelopment("asm,nasm", ';')
-  call <SID>AddDevelopment("sh,bash", '#')
   call <SID>AddDevelopment("tex", '%', { "expandtab": { "shiftwidth": 2, "tabstop": 2 } })
   call <SID>AddDevelopment("ledger", '#', { "expandtab": { "shiftwidth": 4, "tabstop": 4 } })
-  call <SID>AddDevelopment("vim", '"')
+  call <SID>AddDevelopment("vim", '"', { "expandtab": { "shiftwidth": 2, "tabstop": 2 } })
   call <SID>AddDevelopment("cmake,make,tmux,toml", '#')
 augroup end
