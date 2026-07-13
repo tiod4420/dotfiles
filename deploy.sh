@@ -96,19 +96,19 @@ deploy_target() {
 			! read -p "$prompt" choice && echo "" && return 1
 
 			case "${choice,,}" in
-				y|yes)
+				y | yes)
 					# Replace destination
 					run rm -rf "$dst"
 					run cp -r "$src" "$dst"
 					print_status "$dst" "REPLACED"
 					break
 					;;
-				n|no)
+				n | no)
 					# Skip deployment
 					print_status "$dst" "SKIP"
 					break
 					;;
-				d|diff)
+				d | diff)
 					# Display diff and retry (or true, to avoid failure)
 					git diff --no-index "$dst" "$src" || true
 					;;
@@ -182,14 +182,14 @@ print_status() {
 
 	if [ -n "${DRY_RUN:-}" ]; then
 		case "$status" in
-			DEPLOYED|REPLACED) status="DRY RUN" ;;
+			DEPLOYED | REPLACED) status="DRY RUN" ;;
 		esac
 	fi
 
 	echo -n "    $path ... "
 
 	case "${status:-}" in
-		DEPLOYED) echo -n "$(print_color green)";;
+		DEPLOYED) echo -n "$(print_color green)" ;;
 		DIFF) echo -n "$(print_color bold yellow)" ;;
 		DRY\ RUN) echo -n "$(print_color magenta)" ;;
 		QUIT) echo -n "$(print_color red)" ;;
@@ -233,7 +233,10 @@ version() {
 # Return true if the lhs version is strictly older than the rhs
 # Returns false if the lhs is the empty string
 version_lt() {
-	local oldest=$({ echo "$1"; echo "$2"; } | sort -V | head -n 1)
+	local oldest=$({
+		echo "$1"
+		echo "$2"
+	} | sort -V | head -n 1)
 	[ -n "$1" ] && [ "$1" != "$2" ] && [ "$1" = "$oldest" ]
 }
 
@@ -242,7 +245,7 @@ XDG_CONFIG_HOME=${XDG_CONFIG_HOME:-$HOME/.config}
 
 # Set dry run
 case "${1:-}" in
-	-d|--dry-run) DRY_RUN=true && shift ;;
+	-d | --dry-run) DRY_RUN=true && shift ;;
 esac
 
 # Check that git exists
