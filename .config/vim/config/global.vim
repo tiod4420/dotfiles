@@ -38,5 +38,8 @@ set smartcase
 set autoindent
 " Enable backspacing over everything (insert mode)
 set backspace=indent,eol,start
-" Disable octal number recognition
+
+" Numbers are negative only if preceding whitespace
+set nrformats+=blank
+" Numbers are never octal
 set nrformats-=octal
