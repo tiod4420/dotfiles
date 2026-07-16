@@ -15,7 +15,7 @@
 
 	## Log
 	# Show number of commits per month
-	activity = !"f() { git log --format=%ad --date=format:%Y-%m ${1:+--since=\"$1\"} | sort | uniq -c; }; f"
+	activity = "!f() { git log --format=%ad --date=format:%Y-%m-01 ${1:+--since=\"$1\"} | sort | uniq -c | awk '{ print $2,$1 }'; }; f"
 	# Log commits as a graph
 	graph = log --graph --oneline
 	# Log only commit hashes
@@ -23,7 +23,7 @@
 	# Log changes on a single file
 	history = log --patch --find-renames --follow --stat
 	# Log summary of last N commits
-	last = !"f() { git summary --max-count=${1:-1}; }; f"
+	last = "!f() { git summary --max-count=${1:-1}; }; f"
 	# Log last 30 commits as a graph
 	lo = graph --max-count=30
 	# Log commits that I authored
@@ -33,7 +33,7 @@
 	# Log summary of commits
 	summary = log --compact-summary
 	# Log what files are been edited the most
-	whatsup = !"f() { git log --format= --name-only ${1:+--since=\"$1\"} | sort | uniq -c | sort -nr; }; f"
+	whatsup = "!f() { git log --format= --name-only ${1:+--since=\"$1\"} | sort | uniq -c | sort -nr; }; f"
 
 	## Rebase
 	# Rebase and auto-squash fixup commits
@@ -65,9 +65,9 @@
 	# List authors (again)
 	who = authors
 	# List current author
-	whoami = !"f() { echo \"$(git config user.name) <$(git config user.email)>\"; }; f"
+	whoami = "!f() { echo \"$(git config user.name) <$(git config user.email)>\"; }; f"
 	# Set local author
-	su = !"f() { [ -n \"$1\" -a -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
+	su = "!f() { [ -n \"$1\" -a -n \"$2\" ] && git config --local user.name \"$1\" && git config --local user.email \"$2\"; }; f"
 
 	## GPG signature
 	# List commits as a graph, with their GPG signature status
@@ -77,7 +77,7 @@
 	# Amend commit to remove GPG signature
 	unsign = oops --only --no-gpg-sign
 	# Verify GPG signature of a commit or a tag
-	verify = !"f() { case $(git cat-file -t \"$1\") in commit) git verify-commit -v \"$1\";; tag) git verify-tag -v \"$1\";; esac; }; f"
+	verify = "!f() { case $(git cat-file -t \"$1\") in commit) git verify-commit -v \"$1\";; tag) git verify-tag -v \"$1\";; esac; }; f"
 
 	## Lists
 	# List aliases
@@ -93,15 +93,15 @@
 
 	## Undo
 	# Reset last N commits
-	undo = !"f() { git reset HEAD~$1; }; f"
+	undo = "!f() { git reset HEAD~$1; }; f"
 	# Restore staged changes of a file
 	unstage = restore --staged
 
 	## WIP commits
 	# Create a WIP commit
-	wip = !"f() { git add --all && git commit -m \"WIP${1:+ -- $*}\"; }; f"
+	wip = "!f() { git add --all && git commit -m \"WIP${1:+ -- $*}\"; }; f"
 	# Restore a WIP commit
-	unwip = !"f() { git show --no-patch --format='%s' | grep -qE '^WIP( -- .*)?$' && git undo; }; f"
+	unwip = "!f() { git show --no-patch --format='%s' | grep -qE '^WIP( -- .*)?$' && git undo; }; f"
 
 	## Misc
 	# Find branches containing commit
@@ -109,11 +109,11 @@
 	# Show commit of reference
 	desc  = rev-list --max-count=1 --oneline
 	# Mirror repository to backup remote
-	mirror = !"f() { git push --mirror ${1:-backup}; }; f"
-	# Print git root directory
-	root = rev-parse --show-toplevel
+	mirror = "!f() { git push --mirror ${1:-backup}; }; f"
+	# Print git root directory (shell commands are executed from top-level directory)
+	root = !pwd
 	# Squash commits since given revision
-	squash = !"f() { git reset --hard $1 && git merge --squash ORIG_HEAD && git commit; }; f"
+	squash = "!f() { git reset --hard $1 && git merge --squash ORIG_HEAD && git commit; }; f"
 	# Pop most recent stash
 	unstash = stash pop
 	# Show ignored files
