@@ -57,14 +57,25 @@ notes() {
 
 # Plot data with gnuplot
 plot() {
+	local mode=lines
 	local range=1:2
-	local style=linespoints
 	local terminal=dumb
+	local -a args=()
 	local file
+	local style
+	local yrange
 
 	# Parse options
 	while [ "$#" -gt 0 ]; do
 		case "$1" in
+			-g | --gui)
+				terminal="qt persist"
+				shift
+				;;
+			-h | --histogram)
+				mode=histogram
+				shift
+				;;
 			-r | --range)
 				if [ -z "${2:-}" ]; then
 					echo "$FUNCNAME: option $1 requires an argument" >&2
@@ -73,21 +84,9 @@ plot() {
 				range=$2
 				shift 2
 				;;
-			-s | --style)
-				if [ -z "${2:-}" ]; then
-					echo "$FUNCNAME: option $1 requires an argument" >&2
-					return 1
-				fi
-				style=$2
-				shift 2
-				;;
-			-t | --terminal)
-				if [ -z "${2:-}" ]; then
-					echo "$FUNCNAME: option $1 requires an argument" >&2
-					return 1
-				fi
-				terminal=$2
-				shift 2
+			-z | --zero)
+				yrange=0
+				shift
 				;;
 			--)
 				shift
@@ -106,8 +105,35 @@ plot() {
 	# STDIN if not specified
 	file=${1:--}
 
+	# Set gnuplot commands
+	args=(
+		-e "set terminal $terminal"
+		-e "unset key"
+		-e "set xtics scale 0"
+		-e "set ytics scale 0"
+		-e "set grid ytics"
+		-e 'set format y "%.0f"'
+		-e "set yrange [${yrange:-}:]"
+	)
+
 	# Plot graph
-	gnuplot -e "set terminal $terminal; plot '$file' using $range with $style;"
+	case "$mode" in
+		histogram)
+			args+=(
+				-e 'set format x "%Y\n%b"'
+				-e "set xdata time"
+				-e "set boxwidth 20*24*60*60 absolute"
+				-e "set style fill solid noborder"
+				-e 'set timefmt "%Y-%m-%d"'
+			)
+			style=boxes
+			;;
+		lines)
+			style=linespoints
+			;;
+	esac
+
+	gnuplot "${args[@]}" -e "plot '$file' using $range with $style"
 }
 
 # Hash a file line by line
@@ -123,6 +149,19 @@ shaline() {
 	for i in $(seq ${nl:-0}); do
 		head -n $i "$file" | sha256sum | cut -d' ' -f1
 	done
+}
+
+# Swap (or select) fields
+swap() {
+	local left=${1:--1}
+	local right=${2:-0}
+
+	# Normalize if negative value
+	[ "$left" -lt 0 ] && left="NF + $left"
+	[ "$right" -lt 0 ] && right="NF + $right"
+
+	# 0-based index
+	awk "{ print \$($left + 1),\$($right + 1) }"
 }
 
 # Display today's date in sort of ISO 8601 format
