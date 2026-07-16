@@ -57,10 +57,57 @@ notes() {
 
 # Plot data with gnuplot
 plot() {
-	local file=${1:--}
-	local terminal=${2:-dumb}
-	# Plot graph defaulting on terminal for output, and using STDIN if not file specified
-	gnuplot -e "set terminal $terminal; plot '$file' using 0:1 with linespoints;"
+	local range=1:2
+	local style=linespoints
+	local terminal=dumb
+	local file
+
+	# Parse options
+	while [ "$#" -gt 0 ]; do
+		case "$1" in
+			-r | --range)
+				if [ -z "${2:-}" ]; then
+					echo "$FUNCNAME: option $1 requires an argument" >&2
+					return 1
+				fi
+				range=$2
+				shift 2
+				;;
+			-s | --style)
+				if [ -z "${2:-}" ]; then
+					echo "$FUNCNAME: option $1 requires an argument" >&2
+					return 1
+				fi
+				style=$2
+				shift 2
+				;;
+			-t | --terminal)
+				if [ -z "${2:-}" ]; then
+					echo "$FUNCNAME: option $1 requires an argument" >&2
+					return 1
+				fi
+				terminal=$2
+				shift 2
+				;;
+			--)
+				shift
+				break
+				;;
+			-*)
+				echo "$FUNCNAME: invalid option -- ${1:-}" >&2
+				return 1
+				;;
+			*)
+				break
+				;;
+		esac
+	done
+
+	# STDIN if not specified
+	file=${1:--}
+
+	# Plot graph
+	gnuplot -e "set terminal $terminal; plot '$file' using $range with $style;"
 }
 
 # Hash a file line by line
@@ -104,7 +151,10 @@ x509_fetch() {
 				shift
 				;;
 			-s | --servername)
-				[ -z "${2:-}" ] && echo "$FUNCNAME: option $1 requires an argument" && return 1
+				if [ -z "${2:-}" ]; then
+					echo "$FUNCNAME: option $1 requires an argument" >&2
+					return 1
+				fi
 				servername=$2
 				shift 2
 				;;
@@ -113,7 +163,8 @@ x509_fetch() {
 				break
 				;;
 			-*)
-				echo "$FUNCNAME: invalid option -- ${1:-}" && return 1
+				echo "$FUNCNAME: invalid option -- ${1:-}" >&2
+				return 1
 				;;
 			*)
 				break
