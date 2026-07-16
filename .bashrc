@@ -9,7 +9,7 @@ _BASHRC_CONFIG_DIR=${XDG_CONFIG_HOME:-$HOME/.config}/bash
 case "${OSTYPE:-}" in
 	linux*) _BASHRC_OSTYPE=linux ;;
 	darwin*) _BASHRC_OSTYPE=macos ;;
-	mingw*|msys*|cygwin*) _BASHRC_OSTYPE=windows ;;
+	mingw* | msys* | cygwin*) _BASHRC_OSTYPE=windows ;;
 	*bsd*) _BASHRC_OSTYPE=bsd ;;
 	*) echo "Are we GNU Hurd yet?" ;;
 esac
@@ -24,12 +24,12 @@ declare -a _BASHRC_ANDROID_HOME=(
 
 # TTY color codes
 declare -A _BASHRC_COLORS=(
-	[reset]="0"         [bold]="1"            [dim]="2"           [italic]="3"
-	[black]="38;5;0"    [red]="38;5;1"        [green]="38;5;2"    [yellow]="38;5;3"
-	[blue]="38;5;4"     [magenta]="38;5;5"    [cyan]="38;5;6"     [white]="38;5;7"
-	[brblack]="38;5;8"  [brred]="38;5;9"      [brgreen]="38;5;10" [bryellow]="38;5;11"
-	[brblue]="38;5;12"  [brmagenta]="38;5;13" [brcyan]="38;5;14"  [brwhite]="38;5;15"
-	[color16]="38;5;16" [color17]="38;5;17"   [color18]="38;5;18" [color19]="38;5;19"
+	[reset]="0" [bold]="1" [dim]="2" [italic]="3"
+	[black]="38;5;0" [red]="38;5;1" [green]="38;5;2" [yellow]="38;5;3"
+	[blue]="38;5;4" [magenta]="38;5;5" [cyan]="38;5;6" [white]="38;5;7"
+	[brblack]="38;5;8" [brred]="38;5;9" [brgreen]="38;5;10" [bryellow]="38;5;11"
+	[brblue]="38;5;12" [brmagenta]="38;5;13" [brcyan]="38;5;14" [brwhite]="38;5;15"
+	[color16]="38;5;16" [color17]="38;5;17" [color18]="38;5;18" [color19]="38;5;19"
 	[color20]="38;5;20" [color21]="38;5;21"
 )
 
@@ -65,10 +65,10 @@ _bashrc_add_path() {
 
 	# Add to PATH or MANPATH, front or back
 	case "$1" in
-		-p|--path) mode=pathfront && shift ;;
-		-P|--PATH) mode=pathback && shift ;;
-		-m|--manpath) mode=manfront && shift ;;
-		-M|--MANPATH) mode=manback && shift ;;
+		-p | --path) mode=pathfront && shift ;;
+		-P | --PATH) mode=pathback && shift ;;
+		-m | --manpath) mode=manfront && shift ;;
+		-M | --MANPATH) mode=manback && shift ;;
 	esac
 
 	# Get original path
@@ -159,7 +159,7 @@ _bashrc_setup_path() {
 			eval "$(/opt/homebrew/bin/brew shellenv bash)"
 
 			# Setup PATH
-			_bashrc_add_path --path  \
+			_bashrc_add_path --path \
 				"$HOMEBREW_PREFIX/opt/coreutils/libexec/gnubin" \
 				"$HOMEBREW_PREFIX/opt/findutils/libexec/gnubin" \
 				"$HOMEBREW_PREFIX/opt/gawk/libexec/gnubin" \

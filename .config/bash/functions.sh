@@ -19,7 +19,7 @@ epoch() {
 
 	# Parse parameters
 	case "${1:-}" in
-		-r|--revert) mode=revert && shift ;;
+		-r | --revert) mode=revert && shift ;;
 	esac
 
 	case "$mode" in
@@ -83,8 +83,8 @@ today() {
 	local format="%F"
 
 	case "${1:-}" in
-		-f|--full) format="%FT%T" && shift ;;
-		-i|--iso) format="%FT%T%:z" && shift ;;
+		-f | --full) format="%FT%T" && shift ;;
+		-i | --iso) format="%FT%T%:z" && shift ;;
 	esac
 
 	date ${1:+--date "$1"} +"$format"
@@ -99,11 +99,11 @@ x509_fetch() {
 	# Parse options
 	while [ "$#" -gt 0 ]; do
 		case "$1" in
-			-a|--all)
+			-a | --all)
 				showcerts=all
 				shift
 				;;
-			-s|--servername)
+			-s | --servername)
 				[ -z "${2:-}" ] && echo "$FUNCNAME: option $1 requires an argument" && return 1
 				servername=$2
 				shift 2
