@@ -65,6 +65,8 @@ alias nodupes='(cat -n | sort -k 2 -u | sort -k 1 -n | cut -f 2-)'
 alias rot13='tr "[:upper:][:lower:]" "N-ZA-Mn-za-m"'
 # List unique lines only
 alias soun='sort | uniq'
+# Swap first column and second column
+alias swap='awk "{print \$2,\$1}"'
 # Search for SyncThing conflicts
 alias syncoops='[ -d "$SYNCTHING_DIR" ] && find $SYNCTHING_DIR -name "*.sync-conflict*"'
 # Search for TODOs
