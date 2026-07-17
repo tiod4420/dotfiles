@@ -15,7 +15,7 @@
 
 	## Log
 	# Show number of commits per month
-	activity = "!f() { git log --format=%ad --date=format:%Y-%m-01 ${1:+--since=\"$1\"} | sort | uniq -c | awk '{ print $2,$1 }'; }; f"
+	activity = "!f() { git log --format=%ad --date=format:%Y-%m-01 ${1:+--since=\"$1\"} | sort | uniq -c | awk '{ print $2, $1 }'; }; f"
 	# Log commits as a graph
 	graph = log --graph --oneline
 	# Log only commit hashes
@@ -81,7 +81,7 @@
 
 	## Lists
 	# List aliases
-	alias = !git config --get-regexp '^alias\\.' | sort
+	aliases = !git config --get-regexp '^alias\\.' | sed 's/^alias\\.\\([^[:space:]]*\\)[[:space:]]/\\1 = /' | sort
 	# List branches
 	branches = branch --all --verbose --verbose
 	# List remotes
