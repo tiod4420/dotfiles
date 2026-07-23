@@ -45,7 +45,7 @@ functions() {
 	if [ "$#" -eq 0 ]; then
 		declare -F | sed -e 's/^declare -f //' -e '/^_/d'
 	else
-		declare -f "$1"
+		declare -f -- "$1"
 	fi
 }
 
@@ -93,7 +93,7 @@ filename() {
 	ext=$(echo "$name" | sed -n -e 's/^\.//' -e 's/.*\(\.[^.]*\)$/\1/p')
 
 	case "$mode" in
-		name) basename "$name" "$ext" ;;
+		name) basename -- "$name" "$ext" ;;
 		ext) [ -n "$ext" ] && echo "$ext" ;;
 	esac
 }
@@ -116,13 +116,13 @@ hex() {
 
 # Make a directory and cd into it
 mkcd() {
-	[ -n "${1:-}" ] && mkdir -p -- "$1" && cd "$1"
+	[ -n "${1:-}" ] && mkdir -p -- "$1" && cd -- "$1"
 }
 
 # Make a .tar.gz archive from a list of anything
 mktar() {
 	local name=$(basename "${1:-}")
-	[ -n "$name" ] && tar czvf "$name.tar.gz" "$@"
+	[ -n "$name" ] && tar czvf "$name.tar.gz" -- "$@"
 }
 
 # Open notes directory
@@ -137,7 +137,7 @@ notes() {
 		[ -f "$dir/$new_file" ] && file=$new_file
 	fi
 
-	vim "$dir/$file"
+	vim -- "$dir/$file"
 }
 
 # Display today's date in sort of ISO 8601 format
@@ -296,11 +296,11 @@ shaline() {
 
 	! [ -f "$file" ] && return
 
-	nl=$(wc -l "$file" | cut -d' ' -f1)
+	nl=$(wc -l -- "$file" | cut -d' ' -f1)
 
 	# Compute SHA256 from start to i^th line
 	for i in $(seq ${nl:-0}); do
-		head -n $i "$file" | sha256sum | cut -d' ' -f1
+		head -n $i -- "$file" | sha256sum | cut -d' ' -f1
 	done
 }
 
