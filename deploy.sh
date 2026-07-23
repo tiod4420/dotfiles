@@ -44,7 +44,7 @@ deploy_symlink() {
 	! [ -e "$target" ] && error "'$target': No such file or directory"
 
 	if ! [ -e "$link" ]; then
-		run ln -s "$target" "$link"
+		run ln -s -- "$target" "$link"
 		print_status "$link" "DEPLOYED"
 	else
 		print_status "$link" "SAME"
@@ -73,8 +73,8 @@ deploy_target() {
 	if ! [ -e "$dst" ]; then
 		# Destination does not exist, create parent directory and copy source
 		parent=$(dirname "$dst")
-		! [ -e "$parent" ] && run mkdir -p "$parent"
-		run cp -r "$src" "$dst"
+		! [ -e "$parent" ] && run mkdir -p -- "$parent"
+		run cp -r -- "$src" "$dst"
 		print_status "$dst" "DEPLOYED"
 	elif git diff --no-index --quiet "$dst" "$src" &> /dev/null; then
 		# Source and destination are the same
@@ -98,8 +98,8 @@ deploy_target() {
 			case "${choice,,}" in
 				y | yes)
 					# Replace destination
-					run rm -rf "$dst"
-					run cp -r "$src" "$dst"
+					run rm -rf -- "$dst"
+					run cp -r -- "$src" "$dst"
 					print_status "$dst" "REPLACED"
 					break
 					;;
@@ -295,7 +295,7 @@ echo ""
 
 # SSH
 print_deploy ssh
-! [ -d "$HOME/.ssh" ] && run mkdir --mode 700 "$HOME/.ssh"
+! [ -d "$HOME/.ssh" ] && run mkdir --mode 700 -- "$HOME/.ssh"
 deploy .ssh
 echo ""
 
