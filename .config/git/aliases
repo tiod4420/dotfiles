@@ -104,12 +104,12 @@
 	unwip = "!f() { git show --no-patch --format='%s' | grep -qE '^WIP( -- .*)?$' && git undo; }; f"
 
 	## Misc
+	# Mirror repository to backup remote
+	backup = "!f() { git push --mirror ${1:-backup}; }; f"
 	# Find branches containing commit
 	contains = branch --all --contains
 	# Show commit of reference
 	desc  = rev-list --max-count=1 --oneline
-	# Mirror repository to backup remote
-	mirror = "!f() { git push --mirror ${1:-backup}; }; f"
 	# Print git root directory (shell commands are executed from top-level directory)
 	root = !pwd
 	# Squash commits since given revision
