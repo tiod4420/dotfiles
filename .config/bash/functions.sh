@@ -298,9 +298,9 @@ shaline() {
 
 	nl=$(wc -l -- "$file" | cut -d' ' -f1)
 
-	# Compute SHA256 from start to i^th line
+	# Compute SHA256 line by line
 	for i in $(seq ${nl:-0}); do
-		head -n $i -- "$file" | sha256sum | cut -d' ' -f1
+		head -n $i -- "$file" | tail -n 1 | sha256sum | cut -d' ' -f1
 	done
 }
 
