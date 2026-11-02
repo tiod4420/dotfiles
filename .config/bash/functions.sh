@@ -140,20 +140,6 @@ notes() {
 	vim -- "$dir/$file"
 }
 
-# Display today's date in sort of ISO 8601 format
-now() {
-	local format="%F"
-
-	# Parse options
-	case "${1:-}" in
-		-f | --full) format="%FT%T" && shift ;;
-		-i | --iso) format="%FT%T%:z" && shift ;;
-	esac
-
-	# Display date
-	date ${1:+--date "$1"} +"$format"
-}
-
 # Plot data with gnuplot
 plot() {
 	local mode=lines
@@ -309,6 +295,20 @@ strjoin() {
 	local IFS="$1"
 	shift
 	echo "$*"
+}
+
+# Display today's date in sort of ISO 8601 format
+today() {
+	local format="%F"
+
+	# Parse options
+	case "${1:-}" in
+		-f | --full) format="%FT%T" && shift ;;
+		-i | --iso) format="%FT%T%:z" && shift ;;
+	esac
+
+	# Display date
+	date ${1:+--date "$1"} +"$format"
 }
 
 # Transpose lines into columns
